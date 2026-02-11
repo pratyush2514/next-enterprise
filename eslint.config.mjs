@@ -18,6 +18,7 @@ const eslintIgnore = [
   "*.config.js",
   "*.d.ts",
   "report-bundle-size.js",
+  "storybook-static/",
 ]
 
 const config = typescriptEslint.config(
