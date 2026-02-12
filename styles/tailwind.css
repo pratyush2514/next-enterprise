@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Enable class-based dark mode for next-themes */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -15,5 +18,31 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+/* View Transition easing */
+:root {
+  --expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Reset default view-transition animation so Skipper UI controls it */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+/* Audio preview volume bar animation */
+@theme {
+  --animate-bounce-music: bounce-music 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes bounce-music {
+  0% {
+    transform: scaleY(0.3);
+  }
+  100% {
+    transform: scaleY(1);
   }
 }

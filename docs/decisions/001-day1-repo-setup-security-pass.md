@@ -19,7 +19,9 @@ The next-enterprise boilerplate was adopted as the foundation for a new project.
 - 45 vulnerabilities: 4 critical, 13 high, 19 moderate, 9 low
 - Key CVEs: React Server Components DoS, Next.js Image Optimization cache confusion/SSRF, Storybook env variable exposure, Playwright SSL cert verification bypass, axios SSRF/DoS, pbkdf2 cryptographic failures
 
-## Findings and Resolutions
+## Findings and Resolutioned
+
+#
 
 ### Security / Dependencies
 
@@ -96,14 +98,6 @@ The existing Button component renders an `<a>` tag but declared `ButtonHTMLAttri
 ### Remaining vulnerabilities
 
 8 vulnerabilities remain (7 low, 1 moderate). The moderate one (`vite` server.fs.deny bypass) is Windows-only and only affects the dev server. The low ones are in transitive dev dependencies (brace-expansion, @eslint/plugin-kit, elliptic, tmp) with no practical exploit path in this project.
-
-## How AI Assisted
-
-- **Claude Opus 4.6** was used via Claude Code CLI to perform the initial codebase exploration, identify all issues, design the implementation plan, and execute the fixes
-- AI explored every file in the codebase across three parallel exploration passes (structure/config, source code, dependencies)
-- AI designed a risk-ordered implementation plan (security first, then tooling, then quality, then CI/CD)
-- All changes were verified by running lint, prettier, tests, and build after each commit
-- Human reviewed and approved the plan before execution
 
 ## Consequences
 

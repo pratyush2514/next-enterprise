@@ -8,6 +8,14 @@ const config: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "is1-ssl.mzstatic.com",
+      },
+    ],
+  },
   logging: {
     fetches: {
       fullUrl: true,

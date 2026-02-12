@@ -1,6 +1,6 @@
 import { Metadata } from "next"
 import { Button } from "components/Button/Button"
-
+import { CatalogButton } from "components/Catalog/catalogButton"
 import { LP_GRID_ITEMS } from "lp-items"
 
 export const metadata: Metadata = {
@@ -43,6 +43,10 @@ export default function Web() {
             >
               Deploy Now
             </Button>
+
+            <CatalogButton href="/catalog" className="ml-3">
+              View Catalogs
+            </CatalogButton>
           </div>
         </div>
       </section>
