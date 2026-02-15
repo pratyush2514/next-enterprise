@@ -1,102 +1,41 @@
 "use client"
 
-/**
- * Theme toggle adapted from Skipper UI (Skiper 26)
- * Configuration: variant="circle-blur", start="top-right", blur=true
- *
- * Uses the View Transitions API for smooth theme transitions.
- * Falls back to instant switch when API is unavailable.
- *
- * Original concept by rudrodip (https://github.com/rudrodip/theme-toggle-effect)
- * Skipper UI by @gurvinder-singh02 (https://gxuri.in)
- */
-
 import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
 import { useCallback, useEffect, useState } from "react"
 
 import { cn } from "lib/utils"
 
-// Animation configuration for circle-blur variant, top-right start, blur enabled
-function createCircleBlurAnimation(): string {
-  const svg = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 40"><defs><filter id="blur"><feGaussianBlur stdDeviation="2"/></filter></defs><circle cx="40" cy="0" r="18" fill="white" filter="url(%23blur)"/></svg>`
-
-  return `
-    ::view-transition-group(root) {
-      animation-timing-function: var(--expo-out);
-    }
-
-    ::view-transition-new(root) {
-      mask: url('${svg}') top right / 0 no-repeat;
-      mask-origin: content-box;
-      animation: skipper-scale 1s;
-      transform-origin: top right;
-    }
-
-    ::view-transition-old(root),
-    .dark::view-transition-old(root) {
-      animation: skipper-scale 1s;
-      transform-origin: top right;
-      z-index: -1;
-    }
-
-    @keyframes skipper-scale {
-      to {
-        mask-size: 350vmax;
-      }
-    }
-  `
-}
-
 function useThemeToggle() {
-  const { theme, setTheme, resolvedTheme } = useTheme()
-  const [isDark, setIsDark] = useState(false)
+  const { setTheme, resolvedTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  useEffect(() => {
-    setIsDark(resolvedTheme === "dark")
-  }, [resolvedTheme])
-
-  const updateStyles = useCallback((css: string) => {
-    if (typeof window === "undefined") return
-
-    const styleId = "theme-transition-styles"
-    let styleElement = document.getElementById(styleId) as HTMLStyleElement | null
-
-    if (!styleElement) {
-      styleElement = document.createElement("style")
-      styleElement.id = styleId
-      document.head.appendChild(styleElement)
-    }
-
-    styleElement.textContent = css
-  }, [])
+  const isDark = resolvedTheme === "dark"
 
   const toggleTheme = useCallback(() => {
-    setIsDark(!isDark)
+    const newTheme = resolvedTheme === "dark" ? "light" : "dark"
 
-    const css = createCircleBlurAnimation()
-    updateStyles(css)
+    // Block all CSS transitions so the switch is instant — no element-level color animations
+    const blocker = document.createElement("style")
+    blocker.textContent = "*, *::before, *::after { transition: none !important; }"
+    document.head.appendChild(blocker)
 
-    if (typeof window === "undefined") return
+    // Apply to DOM synchronously, then sync next-themes state
+    document.documentElement.classList.toggle("dark", newTheme === "dark")
+    document.documentElement.style.colorScheme = newTheme
+    setTheme(newTheme)
 
-    const switchTheme = () => {
-      setTheme(theme === "light" ? "dark" : "light")
-    }
-
-    // Fall back to instant switch if View Transitions API is unavailable
-    // or user prefers reduced motion
-    if (!document.startViewTransition || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      switchTheme()
-      return
-    }
-
-    document.startViewTransition(switchTheme)
-  }, [theme, setTheme, updateStyles, isDark])
+    // Remove blocker after React re-render + useEffect have settled
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        blocker.remove()
+      })
+    })
+  }, [resolvedTheme, setTheme])
 
   return { isDark, mounted, toggleTheme }
 }
@@ -104,7 +43,6 @@ function useThemeToggle() {
 export function ThemeToggle() {
   const { isDark, mounted, toggleTheme } = useThemeToggle()
 
-  // Avoid hydration mismatch — render nothing until mounted
   if (!mounted) return null
 
   return (

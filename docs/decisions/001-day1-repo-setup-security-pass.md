@@ -19,9 +19,7 @@ The next-enterprise boilerplate was adopted as the foundation for a new project.
 - 45 vulnerabilities: 4 critical, 13 high, 19 moderate, 9 low
 - Key CVEs: React Server Components DoS, Next.js Image Optimization cache confusion/SSRF, Storybook env variable exposure, Playwright SSL cert verification bypass, axios SSRF/DoS, pbkdf2 cryptographic failures
 
-## Findings and Resolutioned
-
-#
+## Findings and Resolutions
 
 ### Security / Dependencies
 

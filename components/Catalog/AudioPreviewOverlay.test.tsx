@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react"
 import React from "react"
-import { beforeAll, describe, expect, it, vi } from "vitest"
+import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { ITunesResult } from "hooks/useCatalogSearch"
 
@@ -73,6 +73,15 @@ const mockResult: ITunesResult = {
 }
 
 describe("AudioPreviewOverlay", () => {
+  beforeEach(() => {
+    mockState.activeTrackId = null
+    mockState.isPlaying = false
+    mockState.currentTime = 0
+    mockState.duration = 30
+    mockToggle.mockClear()
+    mockSeek.mockClear()
+  })
+
   it("renders track name and artist", () => {
     render(<AudioPreviewOverlay result={mockResult} />)
     expect(screen.getByText("Test Song")).toBeInTheDocument()

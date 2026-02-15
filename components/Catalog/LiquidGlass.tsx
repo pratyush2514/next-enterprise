@@ -138,7 +138,7 @@ function LiquidGlassCard({ className, glassSize, glassEffect = true, children, .
         </>
       )}
 
-      <div className="relative z-10">{children}</div>
+      <div className="relative z-10 w-full min-w-0 overflow-hidden">{children}</div>
 
       <div className="pointer-events-none absolute inset-0 z-20 rounded-lg bg-gradient-to-r from-transparent via-black/5 to-transparent opacity-0 transition-opacity duration-200 group-hover:opacity-100 dark:via-white/5" />
     </Card>

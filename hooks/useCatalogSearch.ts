@@ -26,50 +26,65 @@ interface CatalogSearchState {
   hasMore: boolean
 }
 
-const LIMIT = 20
+const PAGE_SIZE = 20
+const MAX_LIMIT = 200
+const DEFAULT_TERM = "top hits"
 
-export function useCatalogSearch(debouncedTerm: string) {
+/**
+ * Deduplicate results by trackId, preserving insertion order.
+ */
+function deduplicateResults(results: ITunesResult[]): ITunesResult[] {
+  const seen = new Set<number>()
+  return results.filter((r) => {
+    if (seen.has(r.trackId)) return false
+    seen.add(r.trackId)
+    return true
+  })
+}
+
+export function useCatalogSearch(debouncedTerm: string, retryKey: number = 0) {
+  const effectiveTerm = debouncedTerm.trim() || DEFAULT_TERM
+  const isFeatured = !debouncedTerm.trim()
+
   const [state, setState] = useState<CatalogSearchState>({
     results: [],
-    isLoading: false,
+    isLoading: true,
     isLoadingMore: false,
     error: null,
     hasMore: false,
   })
-  const abortControllerRef = useRef<AbortController | null>(null)
-  const offsetRef = useRef(0)
+  const searchControllerRef = useRef<AbortController | null>(null)
+  const loadMoreControllerRef = useRef<AbortController | null>(null)
+  const nextLimitRef = useRef(PAGE_SIZE)
 
+  // Initial fetch — runs when search term changes
   useEffect(() => {
-    if (!debouncedTerm.trim()) {
-      setState({ results: [], isLoading: false, isLoadingMore: false, error: null, hasMore: false })
-      return
-    }
-
-    abortControllerRef.current?.abort()
+    searchControllerRef.current?.abort()
+    loadMoreControllerRef.current?.abort()
     const controller = new AbortController()
-    abortControllerRef.current = controller
-    offsetRef.current = 0
+    searchControllerRef.current = controller
+    nextLimitRef.current = PAGE_SIZE
 
     const fetchResults = async () => {
       setState((prev) => ({ ...prev, isLoading: true, error: null, results: [] }))
 
       try {
-        const url = `/api/itunes?term=${encodeURIComponent(debouncedTerm)}&limit=${LIMIT}&offset=0`
+        const url = `/api/itunes?term=${encodeURIComponent(effectiveTerm)}&limit=${PAGE_SIZE}`
         const response = await fetch(url, { signal: controller.signal })
 
         if (!response.ok) throw new Error("Failed to fetch results")
 
         const data = (await response.json()) as ITunesResponse
-        const results = data.results ?? []
+        const results = deduplicateResults(data.results ?? [])
 
         setState({
           results,
           isLoading: false,
           isLoadingMore: false,
           error: null,
-          hasMore: results.length === LIMIT,
+          hasMore: results.length >= PAGE_SIZE && nextLimitRef.current < MAX_LIMIT,
         })
-        offsetRef.current = results.length
+        nextLimitRef.current = PAGE_SIZE + PAGE_SIZE
       } catch (err) {
         if (err instanceof DOMException && err.name === "AbortError") return
         setState((prev) => ({
@@ -85,33 +100,41 @@ export function useCatalogSearch(debouncedTerm: string) {
     return () => {
       controller.abort()
     }
-  }, [debouncedTerm])
+  }, [effectiveTerm, retryKey])
 
+  // Load more — fetches with a larger limit and appends only new unique results
   const loadMore = useCallback(async () => {
     if (state.isLoadingMore || !state.hasMore) return
 
-    abortControllerRef.current?.abort()
+    loadMoreControllerRef.current?.abort()
     const controller = new AbortController()
-    abortControllerRef.current = controller
+    loadMoreControllerRef.current = controller
+
+    const fetchLimit = nextLimitRef.current
 
     setState((prev) => ({ ...prev, isLoadingMore: true, error: null }))
 
     try {
-      const url = `/api/itunes?term=${encodeURIComponent(debouncedTerm)}&limit=${LIMIT}&offset=${offsetRef.current}`
+      const url = `/api/itunes?term=${encodeURIComponent(effectiveTerm)}&limit=${fetchLimit}`
       const response = await fetch(url, { signal: controller.signal })
 
       if (!response.ok) throw new Error("Failed to load more results")
 
       const data = (await response.json()) as ITunesResponse
-      const newResults = data.results ?? []
+      const allResults = deduplicateResults(data.results ?? [])
 
-      setState((prev) => ({
-        ...prev,
-        results: [...prev.results, ...newResults],
-        isLoadingMore: false,
-        hasMore: newResults.length === LIMIT,
-      }))
-      offsetRef.current += newResults.length
+      setState((prev) => {
+        const existingIds = new Set(prev.results.map((r) => r.trackId))
+        const uniqueNew = allResults.filter((r) => !existingIds.has(r.trackId))
+        const merged = [...prev.results, ...uniqueNew]
+        return {
+          ...prev,
+          results: merged,
+          isLoadingMore: false,
+          hasMore: uniqueNew.length > 0 && fetchLimit < MAX_LIMIT,
+        }
+      })
+      nextLimitRef.current = Math.min(fetchLimit + PAGE_SIZE, MAX_LIMIT)
     } catch (err) {
       if (err instanceof DOMException && err.name === "AbortError") return
       setState((prev) => ({
@@ -120,7 +143,7 @@ export function useCatalogSearch(debouncedTerm: string) {
         error: err instanceof Error ? err.message : "An unexpected error occurred",
       }))
     }
-  }, [debouncedTerm, state.isLoadingMore, state.hasMore])
+  }, [effectiveTerm, state.isLoadingMore, state.hasMore])
 
-  return { ...state, loadMore }
+  return { ...state, loadMore, isFeatured }
 }

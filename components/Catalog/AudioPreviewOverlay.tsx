@@ -52,11 +52,11 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
     >
       <LiquidGlassCard
         glassSize="sm"
-        className="flex h-full flex-col items-center justify-center gap-2 rounded-lg border-0 bg-black/50 p-3 dark:bg-black/60"
+        className="flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border-0 bg-black/50 p-3 dark:bg-black/60"
       >
         {/* Track info */}
-        <h4 className="w-full truncate text-center text-sm font-semibold text-white">{result.trackName}</h4>
-        <p className="w-full truncate text-center text-xs text-white/70">{result.artistName}</p>
+        <h4 className="w-full min-w-0 truncate text-center text-sm font-semibold text-white">{result.trackName}</h4>
+        <p className="w-full min-w-0 truncate text-center text-xs text-white/70">{result.artistName}</p>
 
         {/* Volume bars + play control */}
         <div className="flex items-center gap-3">

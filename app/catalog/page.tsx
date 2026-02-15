@@ -3,8 +3,8 @@ import { Metadata } from "next"
 import { CatalogGrid } from "components/Catalog/CatalogGrid"
 
 export const metadata: Metadata = {
-  title: "Music Catalog | Next.js Enterprise Boilerplate",
-  description: "Search and browse the iTunes music catalog",
+  title: "Catalog | Melodix",
+  description: "Search and preview millions of tracks. Discover the perfect sound for your space.",
 }
 
 export default function CatalogPage() {

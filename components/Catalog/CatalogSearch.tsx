@@ -10,12 +10,12 @@ interface CatalogSearchProps {
 
 export function CatalogSearch({ value, onChange, className }: CatalogSearchProps) {
   return (
-    <div className={cn("relative w-full max-w-md", className)}>
+    <div className={cn("relative w-full", className)}>
       <label htmlFor="catalog-search" className="sr-only">
-        Search iTunes catalog
+        Search music catalog
       </label>
       <svg
-        className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+        className="absolute top-1/2 left-4 size-4 -translate-y-1/2 text-gray-400 dark:text-gray-500"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -36,17 +36,23 @@ export function CatalogSearch({ value, onChange, className }: CatalogSearchProps
         onChange={(e) => onChange(e.target.value)}
         placeholder="Search for music..."
         className={cn(
-          "w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-10 pl-10 text-sm",
+          "w-full rounded-full border border-gray-200 bg-white py-3 pr-11 pl-11 text-sm",
+          "shadow-sm transition-all duration-300",
           "placeholder:text-gray-400",
-          "focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none",
-          "dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500"
+          "focus:border-emerald-400 focus:shadow-md focus:ring-2 focus:shadow-emerald-500/10 focus:ring-emerald-500/20 focus:outline-none",
+          "dark:border-gray-800 dark:bg-gray-900 dark:text-white dark:placeholder:text-gray-500",
+          "dark:focus:border-emerald-500/50 dark:focus:shadow-emerald-500/5"
         )}
-        aria-label="Search for music on iTunes"
+        aria-label="Search for music"
       />
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+          className={cn(
+            "absolute top-1/2 right-3.5 -translate-y-1/2 rounded-full p-0.5",
+            "text-gray-400 transition-colors duration-200 hover:text-gray-600",
+            "dark:text-gray-500 dark:hover:text-gray-300"
+          )}
           aria-label="Clear search"
           type="button"
         >
@@ -56,7 +62,7 @@ export function CatalogSearch({ value, onChange, className }: CatalogSearchProps
             viewBox="0 0 24 24"
             strokeWidth={2}
             stroke="currentColor"
-            className="h-4 w-4"
+            className="size-4"
             aria-hidden="true"
           >
             <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

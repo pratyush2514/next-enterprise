@@ -21,21 +21,22 @@
   }
 }
 
-/* View Transition easing */
+/* Theme color-scheme */
 :root {
-  --expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+  color-scheme: light;
 }
 
-/* Reset default view-transition animation so Skipper UI controls it */
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
+.dark {
+  color-scheme: dark;
 }
 
 /* Audio preview volume bar animation */
 @theme {
   --animate-bounce-music: bounce-music 0.6s ease-in-out infinite alternate;
+  --animate-gradient-shift: gradient-shift 8s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-marquee: marquee 30s linear infinite;
 }
 
 @keyframes bounce-music {
@@ -44,5 +45,55 @@
   }
   100% {
     transform: scaleY(1);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
