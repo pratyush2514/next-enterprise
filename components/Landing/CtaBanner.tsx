@@ -1,6 +1,7 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+import Link from "next/link"
 
 import { cn } from "lib/utils"
 
@@ -41,7 +42,7 @@ export function CtaBanner() {
               </p>
 
               <div className="mt-8">
-                <a
+                <Link
                   href="/catalog"
                   className={cn(
                     "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
@@ -60,7 +61,7 @@ export function CtaBanner() {
                       clipRule="evenodd"
                     />
                   </svg>
-                </a>
+                </Link>
               </div>
             </div>
           </motion.div>

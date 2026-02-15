@@ -23,15 +23,17 @@ interface ITunesTrack {
 
 async function fetchPosters(term: string, limit: number): Promise<PreviewPoster[]> {
   try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&limit=${limit}&media=music`
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&limit=${limit}&media=music&entity=song`
     const res = await fetch(url, { next: { revalidate: 86400 } })
     if (!res.ok) return []
     const data = (await res.json()) as { results: ITunesTrack[] }
-    return (data.results ?? []).map((t) => ({
-      trackName: t.trackName,
-      artistName: t.artistName,
-      artworkUrl: t.artworkUrl100.replace("100x100", "300x300"),
-    }))
+    return (data.results ?? [])
+      .filter((t) => t.trackName && t.artistName && t.artworkUrl100)
+      .map((t) => ({
+        trackName: t.trackName,
+        artistName: t.artistName,
+        artworkUrl: t.artworkUrl100.replace("100x100", "300x300"),
+      }))
   } catch {
     return []
   }

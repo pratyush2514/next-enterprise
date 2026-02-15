@@ -101,7 +101,7 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
           </button>
 
           {/* CTA Button */}
-          <a
+          <Link
             href="/catalog"
             className={cn(
               "rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300",
@@ -112,7 +112,7 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
             )}
           >
             Explore Catalog
-          </a>
+          </Link>
         </div>
       </div>
     </motion.nav>
