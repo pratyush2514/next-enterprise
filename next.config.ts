@@ -5,9 +5,6 @@ import { env } from "./env.mjs"
 
 const config: NextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   logging: {
     fetches: {
       fullUrl: true,
