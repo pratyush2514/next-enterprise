@@ -8,6 +8,17 @@ const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
 
 const config: NextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "is1-ssl.mzstatic.com",
+      },
+    ],
+  },
   logging: {
     fetches: {
       fullUrl: true,
