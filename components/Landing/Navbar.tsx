@@ -5,6 +5,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 
 import { Link } from "i18n/navigation"
+import { trackNavCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { GlobeIcon } from "./icons"
@@ -98,7 +99,7 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
             <GlobeIcon />
           </button>
 
-          <Link href="/catalog" className={ctaClasses}>
+          <Link href="/catalog" onClick={() => trackNavCtaClicked("/catalog")} className={ctaClasses}>
             {t("cta.control")}
           </Link>
         </div>

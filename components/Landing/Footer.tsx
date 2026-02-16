@@ -1,6 +1,7 @@
 "use client"
 
 import { Link } from "i18n/navigation"
+import { trackAppStoreClicked, trackSocialLinkClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import {
@@ -47,6 +48,7 @@ export function Footer() {
                   <a
                     key={link.name}
                     href={link.href}
+                    onClick={() => trackSocialLinkClicked(link.name.toLowerCase())}
                     className={cn(
                       "flex size-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300",
                       "hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
@@ -114,6 +116,7 @@ export function Footer() {
           <div className="flex items-center gap-3">
             <a
               href="#"
+              onClick={() => trackAppStoreClicked("app_store")}
               className={cn(
                 "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3.5 py-2 text-white transition-opacity hover:opacity-80",
                 "dark:bg-white dark:text-gray-900"
@@ -129,6 +132,7 @@ export function Footer() {
 
             <a
               href="#"
+              onClick={() => trackAppStoreClicked("google_play")}
               className={cn(
                 "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3.5 py-2 text-white transition-opacity hover:opacity-80",
                 "dark:bg-white dark:text-gray-900"
