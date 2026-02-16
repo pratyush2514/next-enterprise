@@ -2,6 +2,7 @@ import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { getMessages, setRequestLocale } from "next-intl/server"
 
+import { PostHogProvider } from "components/PostHogProvider/PostHogProvider"
 import { ThemeProvider } from "components/ThemeProvider/ThemeProvider"
 import { ThemeToggle } from "components/ThemeToggle/ThemeToggle"
 import { routing } from "i18n/routing"
@@ -30,8 +31,10 @@ export default async function LocaleLayout({
       <body className="bg-white text-gray-900 antialiased dark:bg-gray-950 dark:text-white">
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
-            <ThemeToggle />
-            {children}
+            <PostHogProvider>
+              <ThemeToggle />
+              {children}
+            </PostHogProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
