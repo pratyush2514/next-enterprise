@@ -1,7 +1,9 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+
 import { Link } from "i18n/navigation"
+import { trackCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { ArrowRightIcon } from "./icons"
@@ -44,6 +46,7 @@ export function CtaBanner() {
               <div className="mt-8">
                 <Link
                   href="/catalog"
+                  onClick={() => trackCtaClicked("cta_banner", "/catalog")}
                   className={cn(
                     "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
                     "bg-emerald-600 shadow-lg shadow-emerald-600/25",
