@@ -1,0 +1,16 @@
+import { vi } from "vitest"
+
+export const trackSearch = vi.fn()
+export const trackItemSelected = vi.fn()
+export const trackThemeSwitch = vi.fn()
+export const trackCtaClicked = vi.fn()
+export const trackNavCtaClicked = vi.fn()
+export const trackFaqExpanded = vi.fn()
+export const trackTrackPreviewStarted = vi.fn()
+export const trackTrackExternalLinkClicked = vi.fn()
+export const trackLoadMoreClicked = vi.fn()
+export const trackSearchCleared = vi.fn()
+export const trackSearchRetryClicked = vi.fn()
+export const trackNotFoundClicked = vi.fn()
+export const trackSocialLinkClicked = vi.fn()
+export const trackAppStoreClicked = vi.fn()
