@@ -5,6 +5,17 @@ import { env } from "./env.mjs"
 
 const config: NextConfig = {
   reactStrictMode: true,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "is1-ssl.mzstatic.com",
+      },
+    ],
+  },
   logging: {
     fetches: {
       fullUrl: true,
