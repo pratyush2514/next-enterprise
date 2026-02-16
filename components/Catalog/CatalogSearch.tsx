@@ -1,5 +1,6 @@
 "use client"
 
+import { trackSearchCleared } from "lib/analytics"
 import { cn } from "lib/utils"
 
 interface CatalogSearchProps {
@@ -47,7 +48,10 @@ export function CatalogSearch({ value, onChange, className }: CatalogSearchProps
       />
       {value && (
         <button
-          onClick={() => onChange("")}
+          onClick={() => {
+            trackSearchCleared(value)
+            onChange("")
+          }}
           className={cn(
             "absolute top-1/2 right-3.5 -translate-y-1/2 rounded-full p-0.5",
             "text-gray-400 transition-colors duration-200 hover:text-gray-600",

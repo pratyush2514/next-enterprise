@@ -4,6 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest"
 
 import type { ITunesResult } from "hooks/useCatalogSearch"
 
+vi.mock("lib/analytics")
+
 // Mock window.matchMedia (not available in jsdom)
 beforeAll(() => {
   Object.defineProperty(window, "matchMedia", {

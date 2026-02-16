@@ -1,11 +1,13 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
-import { useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { AudioPreviewProvider } from "hooks/useAudioPreview"
 import { useCatalogSearch } from "hooks/useCatalogSearch"
 import { useDebounce } from "hooks/useDebounce"
+import { useExperimentVariant } from "hooks/useExperimentVariant"
+import { trackLoadMoreClicked, trackSearch, trackSearchRetryClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { CatalogCard } from "./CatalogCard"
@@ -23,6 +25,23 @@ export function CatalogGrid() {
     retryKey
   )
   const prefersReducedMotion = useReducedMotion()
+  const catalogLayout = useExperimentVariant("new-catalog-layout", "control")
+
+  const gridClassName =
+    catalogLayout === "compact"
+      ? "grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6"
+      : "grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+
+  // ── Search event tracking ────────────────────────────────────────
+  const prevQueryRef = useRef("")
+
+  useEffect(() => {
+    if (!debouncedQuery.trim() || isLoading || isFeatured) return
+    if (prevQueryRef.current === debouncedQuery) return
+
+    prevQueryRef.current = debouncedQuery
+    trackSearch(debouncedQuery, results.length)
+  }, [debouncedQuery, results.length, isLoading, isFeatured])
 
   return (
     <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
@@ -61,7 +80,10 @@ export function CatalogGrid() {
           </div>
           <p className="text-base font-medium text-red-600 dark:text-red-400">{error}</p>
           <button
-            onClick={() => setRetryKey((k) => k + 1)}
+            onClick={() => {
+              trackSearchRetryClicked()
+              setRetryKey((k) => k + 1)
+            }}
             className={cn(
               "rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-white",
               "transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-600 active:scale-[0.98]",
@@ -109,19 +131,11 @@ export function CatalogGrid() {
           )}
 
           {isLoading ? (
-            <div
-              className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-              role="list"
-              aria-label="Loading results"
-            >
+            <div className={gridClassName} role="list" aria-label="Loading results">
               <CatalogSkeleton count={10} />
             </div>
           ) : (
-            <div
-              className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
-              role="list"
-              aria-label={isFeatured ? "Featured tracks" : "Search results"}
-            >
+            <div className={gridClassName} role="list" aria-label={isFeatured ? "Featured tracks" : "Search results"}>
               {results.map((result, index) => (
                 <motion.div
                   key={result.trackId}
@@ -176,7 +190,10 @@ export function CatalogGrid() {
       {hasMore && !isFeatured && !isLoading && results.length > 0 && (
         <div className="mt-12 flex justify-center">
           <button
-            onClick={loadMore}
+            onClick={() => {
+              trackLoadMoreClicked(results.length, debouncedQuery)
+              loadMore()
+            }}
             disabled={isLoadingMore}
             className={cn(
               "rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-white",

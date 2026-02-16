@@ -6,10 +6,28 @@ import React from "react"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
+import { useFeatureFlag } from "hooks/useFeatureFlag"
 import { useHoverIntent } from "hooks/useHoverIntent"
 import { cn } from "lib/utils"
 
 import { AudioPreviewOverlay } from "./AudioPreviewOverlay"
+
+const AI_SUMMARIES: Record<string, string> = {
+  Pop: "Upbeat and catchy — perfect for energizing your space",
+  Rock: "Raw energy with driving rhythms and bold guitar",
+  "R&B/Soul": "Smooth grooves and soulful vocals for a relaxed vibe",
+  Jazz: "Sophisticated and mellow — ideal for dining atmospheres",
+  "Hip-Hop/Rap": "Bold beats and lyrical flow with modern edge",
+  Electronic: "Pulsing synths and dynamic textures for the dancefloor",
+  Country: "Heartfelt storytelling with acoustic warmth",
+  Classical: "Timeless compositions with orchestral depth",
+  Alternative: "Eclectic sounds that push creative boundaries",
+  Dance: "High-energy rhythms built to move your body",
+}
+
+function getAiSummary(genre: string): string {
+  return AI_SUMMARIES[genre] ?? "A curated pick for your playlist"
+}
 
 interface CatalogCardProps {
   result: ITunesResult
@@ -19,6 +37,7 @@ interface CatalogCardProps {
 export const CatalogCard = React.memo(function CatalogCard({ result, className }: CatalogCardProps) {
   const { activeTrackId } = useAudioPreview()
   const { containerProps, isHovering } = useHoverIntent(250)
+  const showAiSummary = useFeatureFlag("ai-summaries")
   const artworkUrl = result.artworkUrl100?.replace("100x100", "300x300") ?? ""
   const hasPreview = Boolean(result.previewUrl)
   const isThisCardActive = activeTrackId === result.trackId
@@ -83,6 +102,11 @@ export const CatalogCard = React.memo(function CatalogCard({ result, className }
           </span>
           <span className="truncate pl-2 text-[11px] text-gray-400 dark:text-gray-500">{result.primaryGenreName}</span>
         </div>
+        {showAiSummary && result.primaryGenreName && (
+          <p className="mt-1 text-[11px] leading-snug text-gray-400 italic dark:text-gray-500">
+            {getAiSummary(result.primaryGenreName)}
+          </p>
+        )}
       </div>
 
       {/* Glass preview overlay — absolute, covers entire card, no layout shift */}

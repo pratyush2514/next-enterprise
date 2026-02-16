@@ -4,6 +4,7 @@ import { motion } from "framer-motion"
 import { useTheme } from "next-themes"
 import { useCallback, useEffect, useState } from "react"
 
+import { trackThemeSwitch } from "lib/analytics"
 import { cn } from "lib/utils"
 
 function useThemeToggle() {
@@ -17,7 +18,10 @@ function useThemeToggle() {
   const isDark = resolvedTheme === "dark"
 
   const toggleTheme = useCallback(() => {
+    const from = resolvedTheme ?? "unknown"
     const newTheme = resolvedTheme === "dark" ? "light" : "dark"
+
+    trackThemeSwitch(from, newTheme)
 
     // Block all CSS transitions so the switch is instant — no element-level color animations
     const blocker = document.createElement("style")

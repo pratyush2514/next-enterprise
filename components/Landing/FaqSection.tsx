@@ -2,8 +2,9 @@
 
 import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
-import { useState } from "react"
+import { useCallback, useState } from "react"
 
+import { trackFaqExpanded } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { ScrollReveal } from "./ScrollReveal"
@@ -122,6 +123,16 @@ function AccordionItem({
 export function FaqSection() {
   const [openItem, setOpenItem] = useState<string>("")
 
+  const handleValueChange = useCallback((value: string) => {
+    setOpenItem(value)
+    if (value) {
+      const faqItem = FAQ_ITEMS.find((item) => item.id === value)
+      if (faqItem) {
+        trackFaqExpanded(faqItem.id, faqItem.question)
+      }
+    }
+  }, [])
+
   return (
     <section className="bg-white py-20 lg:py-28 dark:bg-gray-950">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
@@ -138,7 +149,7 @@ export function FaqSection() {
 
           {/* Right column — accordion */}
           <ScrollReveal direction="right" delay={0.15}>
-            <Accordion.Root type="single" collapsible value={openItem} onValueChange={setOpenItem}>
+            <Accordion.Root type="single" collapsible value={openItem} onValueChange={handleValueChange}>
               {FAQ_ITEMS.map((item) => (
                 <AccordionItem key={item.id} {...item} isOpen={openItem === item.id} />
               ))}

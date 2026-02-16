@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import Link from "next/link"
 import { useCallback, useEffect, useState } from "react"
 
+import { trackNavCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { MusicalConfetti } from "./MusicalConfetti"
@@ -103,6 +104,7 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
           {/* CTA Button */}
           <Link
             href="/catalog"
+            onClick={() => trackNavCtaClicked("/catalog")}
             className={cn(
               "rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300",
               "hover:scale-[1.02] active:scale-[0.98]",

@@ -2,6 +2,14 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import React from "react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
+vi.mock("lib/analytics")
+vi.mock("hooks/useExperimentVariant", () => ({
+  useExperimentVariant: () => "control",
+}))
+vi.mock("hooks/useFeatureFlag", () => ({
+  useFeatureFlag: () => false,
+}))
+
 // Mock framer-motion to avoid animation issues in tests
 const MOTION_PROPS = new Set([
   "whileHover",

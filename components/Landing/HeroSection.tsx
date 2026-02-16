@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 
+import { trackCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 export function HeroSection() {
@@ -69,6 +70,7 @@ export function HeroSection() {
 
           <motion.a
             href="/catalog"
+            onClick={() => trackCtaClicked("hero", "/catalog")}
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
               "bg-emerald-600 shadow-lg shadow-emerald-600/25",

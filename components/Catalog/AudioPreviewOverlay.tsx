@@ -5,6 +5,7 @@ import React, { useEffect, useState } from "react"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
+import { trackItemSelected, trackTrackExternalLinkClicked, trackTrackPreviewStarted } from "lib/analytics"
 
 import { LiquidButton, LiquidGlassCard, Pause, Play, ProgressBar, VolumeBars } from "./LiquidGlass"
 
@@ -28,7 +29,12 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
   const handleToggle = (e: React.MouseEvent) => {
     e.stopPropagation()
     if (previewUrl) {
+      const wasPlaying = isThisTrackPlaying
       toggle(result.trackId, previewUrl)
+      trackItemSelected(result.trackId, result.trackName, result.artistName, "hover_play")
+      if (!wasPlaying) {
+        trackTrackPreviewStarted(result.trackId, result.trackName, result.artistName)
+      }
     }
   }
 
@@ -36,8 +42,18 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
     if ((e.key === "Enter" || e.key === " ") && previewUrl) {
       e.preventDefault()
       e.stopPropagation()
+      const wasPlaying = isThisTrackPlaying
       toggle(result.trackId, previewUrl)
+      trackItemSelected(result.trackId, result.trackName, result.artistName, "keyboard")
+      if (!wasPlaying) {
+        trackTrackPreviewStarted(result.trackId, result.trackName, result.artistName)
+      }
     }
+  }
+
+  const handleExternalLinkClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    trackTrackExternalLinkClicked(result.trackId, result.trackName, result.artistName, result.trackViewUrl ?? "")
   }
 
   return (
@@ -80,7 +96,7 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
             rel="noopener noreferrer"
             className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:text-white"
             aria-label={`Open ${result.trackName} in iTunes Store`}
-            onClick={(e) => e.stopPropagation()}
+            onClick={handleExternalLinkClick}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
