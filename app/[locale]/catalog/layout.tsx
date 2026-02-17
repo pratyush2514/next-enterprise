@@ -1,5 +1,10 @@
 import { CatalogShell } from "components/Catalog/CatalogShell"
+import { FavoritesProvider } from "hooks/useFavorites"
 
 export default function CatalogLayout({ children }: { children: React.ReactNode }) {
-  return <CatalogShell>{children}</CatalogShell>
+  return (
+    <FavoritesProvider>
+      <CatalogShell>{children}</CatalogShell>
+    </FavoritesProvider>
+  )
 }
