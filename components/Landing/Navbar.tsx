@@ -1,9 +1,10 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
 import { useCallback, useEffect, useState } from "react"
 
+import { Link } from "i18n/navigation"
 import { cn } from "lib/utils"
 
 import { GlobeIcon } from "./icons"
@@ -17,6 +18,7 @@ type NavbarProps = {
 }
 
 export function Navbar({ variant = "transparent" }: NavbarProps) {
+  const t = useTranslations("nav")
   const [scrolled, setScrolled] = useState(false)
   const prefersReducedMotion = useReducedMotion()
 
@@ -89,15 +91,15 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
         {/* Right controls — mr-11 leaves room for the fixed ThemeToggle (z-50) */}
         <div className="mr-11 flex items-center gap-3">
           <a href="#" className={navLinkClasses}>
-            Log In
+            {t("logIn")}
           </a>
 
-          <button type="button" className={globeButtonClasses} aria-label="Select language">
+          <button type="button" className={globeButtonClasses} aria-label={t("selectLanguage")}>
             <GlobeIcon />
           </button>
 
           <Link href="/catalog" className={ctaClasses}>
-            Explore Catalog
+            {t("cta.control")}
           </Link>
         </div>
       </div>

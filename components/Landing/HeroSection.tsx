@@ -1,15 +1,18 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
+import { Link } from "i18n/navigation"
 import { cn } from "lib/utils"
 
 import { ArrowRightIcon } from "./icons"
 
 export function HeroSection() {
+  const t = useTranslations("hero")
   const prefersReducedMotion = useReducedMotion()
 
-  const headingWords = "It is time for the next tune...".split(" ")
+  const headingWords = t("heading").split(" ")
 
   return (
     <section className={cn("relative overflow-hidden", "from-brand-700 via-brand-800 to-brand-900 bg-gradient-to-b")}>
@@ -35,7 +38,7 @@ export function HeroSection() {
         {/* Heading */}
         <h1 className="mx-auto max-w-3xl text-center text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
           {prefersReducedMotion
-            ? "It is time for the next tune..."
+            ? t("heading")
             : headingWords.map((word, i) => (
                 <motion.span
                   key={i}
@@ -66,11 +69,9 @@ export function HeroSection() {
             delay: 0.6,
           }}
         >
-          <p className="text-base leading-relaxed text-white/60 sm:text-lg">
-            Search millions of tracks, preview on hover, and discover your next favorite song.
-          </p>
+          <p className="text-base leading-relaxed text-white/60 sm:text-lg">{t("tagline")}</p>
 
-          <motion.a
+          <Link
             href="/catalog"
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
@@ -78,13 +79,10 @@ export function HeroSection() {
               "transition-colors duration-300 hover:bg-emerald-500 hover:shadow-xl hover:shadow-emerald-500/30",
               "focus-visible:ring-offset-brand-800 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             )}
-            whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
-            whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-            transition={{ type: "spring", stiffness: 80, damping: 20 }}
           >
-            Explore Catalog
+            {t("cta")}
             <ArrowRightIcon className="size-5" />
-          </motion.a>
+          </Link>
         </motion.div>
       </div>
     </section>

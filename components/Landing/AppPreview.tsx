@@ -2,6 +2,7 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
+import { useTranslations } from "next-intl"
 
 import { cn } from "lib/utils"
 
@@ -32,20 +33,15 @@ export interface AppPreviewData {
   nowPlaying: PreviewPoster | null
 }
 
-/* ── Sidebar navigation ──────────────────────────────────────────── */
+/* ── Sidebar navigation (icons + keys — labels resolved via i18n) ── */
 
-const SIDEBAR_ITEMS: { label: string; icon: SidebarIconType; active?: boolean }[] = [
-  { label: "Agendas", icon: "calendar" },
-  { label: "Channels", icon: "channels", active: true },
-  { label: "Playlists", icon: "playlist" },
-  { label: "Search", icon: "search" },
-  { label: "Settings", icon: "settings" },
+const SIDEBAR_ITEMS: { key: string; icon: SidebarIconType; active?: boolean }[] = [
+  { key: "agendas", icon: "calendar" },
+  { key: "channels", icon: "channels", active: true },
+  { key: "playlists", icon: "playlist" },
+  { key: "search", icon: "search" },
+  { key: "settings", icon: "settings" },
 ]
-
-/* ── Category labels ─────────────────────────────────────────────── */
-
-const QUICK_START_LABELS = ["Hit Factory", "Popular & Nostalgic", "Young & Alternative", "Stylish & Artist"]
-const MOOD_LABELS = ["Barista Bar", "Beauty Salon", "Chill Out Zone", "Club Lounge"]
 
 /* ── Poster section — reusable grid with title + guard ────────────── */
 
@@ -111,7 +107,13 @@ function PosterCard({ poster, label }: { poster: PreviewPoster; label?: string }
 
 /* ── Mini Player ─────────────────────────────────────────────────── */
 
-function MiniPlayer({ nowPlaying }: { nowPlaying?: PreviewPoster | null }) {
+function MiniPlayer({
+  nowPlaying,
+  ariaLabels,
+}: {
+  nowPlaying?: PreviewPoster | null
+  ariaLabels: { queue: string; pause: string; next: string; moreOptions: string }
+}) {
   const track = nowPlaying ?? { trackName: "The Hipsters", artistName: "Deacon Blue", artworkUrl: "" }
 
   return (
@@ -135,23 +137,23 @@ function MiniPlayer({ nowPlaying }: { nowPlaying?: PreviewPoster | null }) {
 
       {/* Controls */}
       <div className="flex items-center gap-1.5">
-        <button type="button" className="text-white/40" aria-label="Queue">
+        <button type="button" className="text-white/40" aria-label={ariaLabels.queue}>
           <QueueIcon />
         </button>
         <button
           type="button"
           className="flex size-7 items-center justify-center rounded-full bg-white text-gray-900"
-          aria-label="Pause"
+          aria-label={ariaLabels.pause}
         >
           <PauseIcon />
         </button>
-        <button type="button" className="text-white/40" aria-label="Next">
+        <button type="button" className="text-white/40" aria-label={ariaLabels.next}>
           <SkipNextIcon />
         </button>
       </div>
 
       {/* More menu */}
-      <button type="button" className="text-white/30" aria-label="More options">
+      <button type="button" className="text-white/30" aria-label={ariaLabels.moreOptions}>
         <MoreMenuIcon />
       </button>
     </div>
@@ -161,12 +163,16 @@ function MiniPlayer({ nowPlaying }: { nowPlaying?: PreviewPoster | null }) {
 /* ── Main section ────────────────────────────────────────────────── */
 
 export function AppPreview({ data }: { data?: AppPreviewData }) {
+  const t = useTranslations("appPreview")
   const prefersReducedMotion = useReducedMotion()
 
   const quickStart = data?.quickStart ?? []
   const mood = data?.mood ?? []
   const discover = data?.discover ?? []
   const nowPlaying = data?.nowPlaying ?? null
+
+  const quickStartLabels = t.raw("quickStartLabels") as string[]
+  const moodLabels = t.raw("moodLabels") as string[]
 
   return (
     <section className="from-brand-900 to-brand-950 relative bg-gradient-to-b pb-24 lg:pb-32">
@@ -193,14 +199,14 @@ export function AppPreview({ data }: { data?: AppPreviewData }) {
                 <nav className="flex flex-col gap-0.5">
                   {SIDEBAR_ITEMS.map((item) => (
                     <div
-                      key={item.label}
+                      key={item.key}
                       className={cn(
                         "flex items-center gap-2.5 rounded-lg px-3 py-2 text-xs font-medium transition-colors",
                         item.active ? "bg-emerald-400/15 text-emerald-400" : "text-white/40 hover:text-white/60"
                       )}
                     >
                       <SidebarIcon type={item.icon} />
-                      <span>{item.label}</span>
+                      <span>{t(`sidebar.${item.key}`)}</span>
                     </div>
                   ))}
                 </nav>
@@ -209,27 +215,37 @@ export function AppPreview({ data }: { data?: AppPreviewData }) {
               {/* Main content */}
               <div className="flex flex-1 flex-col">
                 <div className="flex-1 overflow-hidden p-5 sm:p-6">
-                  <p className="mb-4 text-[10px] font-bold tracking-[0.2em] text-white/30 uppercase">Music Channels</p>
+                  <p className="mb-4 text-[10px] font-bold tracking-[0.2em] text-white/30 uppercase">
+                    {t("sectionLabel")}
+                  </p>
 
                   <PosterSection
-                    title="Quick start"
+                    title={t("quickStart")}
                     posters={quickStart}
-                    labels={QUICK_START_LABELS}
+                    labels={quickStartLabels}
                     keyPrefix="qs"
                     className="mb-5"
                   />
                   <PosterSection
-                    title="Create mood"
+                    title={t("createMood")}
                     posters={mood}
-                    labels={MOOD_LABELS}
+                    labels={moodLabels}
                     keyPrefix="mood"
                     className="mb-5"
                   />
-                  <PosterSection title="Discover more" posters={discover} columns={5} keyPrefix="disc" />
+                  <PosterSection title={t("discoverMore")} posters={discover} columns={5} keyPrefix="disc" />
                 </div>
 
                 {/* Mini Player */}
-                <MiniPlayer nowPlaying={nowPlaying} />
+                <MiniPlayer
+                  nowPlaying={nowPlaying}
+                  ariaLabels={{
+                    queue: t("miniPlayer.queue"),
+                    pause: t("miniPlayer.pause"),
+                    next: t("miniPlayer.next"),
+                    moreOptions: t("miniPlayer.moreOptions"),
+                  }}
+                />
               </div>
             </div>
           </motion.div>
