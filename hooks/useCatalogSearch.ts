@@ -57,15 +57,9 @@ export function useCatalogSearch(debouncedTerm: string, retryKey: number = 0) {
   const loadMoreControllerRef = useRef<AbortController | null>(null)
   const nextLimitRef = useRef(PAGE_SIZE)
 
-  // Initial fetch — runs when search term changes
-  useEffect(() => {
-    searchControllerRef.current?.abort()
-    loadMoreControllerRef.current?.abort()
-    const controller = new AbortController()
-    searchControllerRef.current = controller
-    nextLimitRef.current = PAGE_SIZE
-
-    const fetchResults = async () => {
+  // Fetch function extracted from useEffect
+  const fetchResults = useCallback(
+    async (controller: AbortController) => {
       setState((prev) => ({ ...prev, isLoading: true, error: null, results: [] }))
 
       try {
@@ -93,14 +87,24 @@ export function useCatalogSearch(debouncedTerm: string, retryKey: number = 0) {
           error: err instanceof Error ? err.message : "An unexpected error occurred",
         }))
       }
-    }
+    },
+    [effectiveTerm]
+  )
 
-    fetchResults()
+  // Initial fetch — runs when search term changes
+  useEffect(() => {
+    searchControllerRef.current?.abort()
+    loadMoreControllerRef.current?.abort()
+    const controller = new AbortController()
+    searchControllerRef.current = controller
+    nextLimitRef.current = PAGE_SIZE
+
+    fetchResults(controller)
 
     return () => {
       controller.abort()
     }
-  }, [effectiveTerm, retryKey])
+  }, [fetchResults, retryKey])
 
   // Load more — fetches with a larger limit and appends only new unique results
   const loadMore = useCallback(async () => {
