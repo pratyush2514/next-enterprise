@@ -1,13 +1,13 @@
 import withBundleAnalyzer from "@next/bundle-analyzer"
 import { type NextConfig } from "next"
+import createNextIntlPlugin from "next-intl/plugin"
 
 import { env } from "./env.mjs"
 
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts")
+
 const config: NextConfig = {
   reactStrictMode: true,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
   images: {
     remotePatterns: [
       {
@@ -29,4 +29,6 @@ const config: NextConfig = {
   ],
 }
 
-export default env.ANALYZE ? withBundleAnalyzer({ enabled: env.ANALYZE })(config) : config
+const nextIntlConfig = withNextIntl(config)
+
+export default env.ANALYZE ? withBundleAnalyzer({ enabled: env.ANALYZE })(nextIntlConfig) : nextIntlConfig
