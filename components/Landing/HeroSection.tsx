@@ -4,18 +4,21 @@ import { motion, useReducedMotion } from "framer-motion"
 
 import { cn } from "lib/utils"
 
+import { ArrowRightIcon } from "./icons"
+
 export function HeroSection() {
   const prefersReducedMotion = useReducedMotion()
 
   const headingWords = "It is time for the next tune...".split(" ")
 
   return (
-    <section className={cn("relative overflow-hidden", "bg-gradient-to-b from-[#0B4D35] via-[#0A3928] to-[#061A11]")}>
+    <section className={cn("relative overflow-hidden", "from-brand-700 via-brand-800 to-brand-900 bg-gradient-to-b")}>
       {/* Subtle radial glow — centered on heading area */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
-          background: "radial-gradient(ellipse 70% 50% at 50% 35%, rgba(45, 210, 130, 0.12), transparent)",
+          background:
+            "radial-gradient(ellipse 70% 50% at 50% 35%, color-mix(in srgb, var(--color-emerald-400) 12%, transparent), transparent)",
         }}
       />
 
@@ -73,20 +76,14 @@ export function HeroSection() {
               "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
               "bg-emerald-600 shadow-lg shadow-emerald-600/25",
               "transition-colors duration-300 hover:bg-emerald-500 hover:shadow-xl hover:shadow-emerald-500/30",
-              "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-[#0A3928] focus-visible:outline-none"
+              "focus-visible:ring-offset-brand-800 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             )}
             whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
             transition={{ type: "spring", stiffness: 80, damping: 20 }}
           >
             Explore Catalog
-            <svg viewBox="0 0 20 20" fill="currentColor" className="size-5">
-              <path
-                fillRule="evenodd"
-                d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <ArrowRightIcon className="size-5" />
           </motion.a>
         </motion.div>
       </div>
