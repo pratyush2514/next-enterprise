@@ -5,11 +5,11 @@ import { AnimatePresence, motion } from "framer-motion"
 import dynamic from "next/dynamic"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useHoverIntent } from "hooks/useHoverIntent"
+import { useRouter } from "i18n/navigation"
 import { cn } from "lib/utils"
 
 import { FavoriteButton } from "./FavoriteButton"

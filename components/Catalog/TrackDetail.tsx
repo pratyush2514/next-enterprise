@@ -2,11 +2,11 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
-import Link from "next/link"
 import { useEffect } from "react"
 
 import { AudioPreviewProvider, useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
+import { Link } from "i18n/navigation"
 import { trackDetailViewed } from "lib/analytics"
 import { cn } from "lib/utils"
 

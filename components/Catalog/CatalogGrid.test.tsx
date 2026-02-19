@@ -57,6 +57,13 @@ vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
 }))
 
+vi.mock("i18n/navigation", () => ({
+  Link: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <a {...props}>{children}</a>,
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => "/",
+  redirect: vi.fn(),
+}))
+
 vi.mock("framer-motion", () => ({
   motion: {
     div: React.forwardRef(function MockMotionDiv(

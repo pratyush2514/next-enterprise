@@ -2,10 +2,9 @@
 
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
-import Link from "next/link"
-import { useRouter } from "next/navigation"
-
 import { useFavorites } from "hooks/useFavorites"
+import { Link, useRouter } from "i18n/navigation"
+
 import { cn } from "lib/utils"
 
 import { FavoriteButton } from "./FavoriteButton"
