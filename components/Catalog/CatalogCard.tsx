@@ -2,15 +2,22 @@
 
 import React from "react"
 import { AnimatePresence, motion } from "framer-motion"
+import dynamic from "next/dynamic"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useHoverIntent } from "hooks/useHoverIntent"
+import { useRouter } from "i18n/navigation"
 import { cn } from "lib/utils"
 
-import { AudioPreviewOverlay } from "./AudioPreviewOverlay"
+import { FavoriteButton } from "./FavoriteButton"
+
+const AudioPreviewOverlay = dynamic(
+  () => import("./AudioPreviewOverlay").then((mod) => ({ default: mod.AudioPreviewOverlay })),
+  { ssr: false }
+)
 
 interface CatalogCardProps {
   result: ITunesResult
@@ -19,6 +26,7 @@ interface CatalogCardProps {
 
 export const CatalogCard = React.memo(function CatalogCard({ result, className }: CatalogCardProps) {
   const t = useTranslations("catalog")
+  const router = useRouter()
   const { activeTrackId } = useAudioPreview()
   const { containerProps, isHovering } = useHoverIntent(250)
   const artworkUrl = result.artworkUrl100?.replace("100x100", "300x300") ?? ""
@@ -26,13 +34,20 @@ export const CatalogCard = React.memo(function CatalogCard({ result, className }
   const isThisCardActive = activeTrackId === result.trackId
   const showOverlay = (isHovering || isThisCardActive) && hasPreview
 
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Don't navigate if clicking on interactive elements (buttons, links)
+    const target = e.target as HTMLElement
+    if (target.closest("button, a")) return
+    router.push(`/catalog/${result.trackId}`)
+  }
+
   return (
     <motion.div
       {...containerProps}
       whileHover={{ y: -4, scale: 1.02 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
       className={cn(
-        "group relative flex flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white",
+        "group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-gray-200/80 bg-white",
         "shadow-sm transition-[box-shadow,border-color] duration-300",
         "hover:border-gray-300/80 hover:shadow-lg hover:shadow-gray-200/50",
         "dark:border-gray-800 dark:bg-gray-900 dark:hover:border-gray-700 dark:hover:shadow-black/20",
@@ -41,6 +56,12 @@ export const CatalogCard = React.memo(function CatalogCard({ result, className }
       role="group"
       aria-label={`${result.trackName} by ${result.artistName}`}
       tabIndex={0}
+      onClick={handleCardClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter") {
+          router.push(`/catalog/${result.trackId}`)
+        }
+      }}
     >
       {/* Artwork area */}
       <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
@@ -54,6 +75,18 @@ export const CatalogCard = React.memo(function CatalogCard({ result, className }
             unoptimized
           />
         )}
+
+        {/* Favorite button */}
+        <div className="absolute top-2 right-2 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+          <FavoriteButton
+            track={{
+              trackId: result.trackId,
+              trackName: result.trackName,
+              artistName: result.artistName,
+              artworkUrl100: result.artworkUrl100,
+            }}
+          />
+        </div>
 
         {/* No preview badge */}
         {!hasPreview && (

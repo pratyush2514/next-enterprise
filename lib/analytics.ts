@@ -17,6 +17,8 @@ const EVENT = {
   NOT_FOUND_CATALOG_CLICKED: "not_found_catalog_clicked",
   SOCIAL_LINK_CLICKED: "social_link_clicked",
   APP_STORE_CLICKED: "app_store_clicked",
+  DETAIL_VIEWED: "detail_viewed",
+  FAVORITE_TOGGLED: "favorite_toggled",
 } as const
 
 // ── Typed event payloads ─────────────────────────────────────────────
@@ -79,6 +81,18 @@ interface SocialLinkClickedPayload {
 
 interface AppStoreClickedPayload {
   store: "app_store" | "google_play"
+}
+
+interface DetailViewedPayload {
+  track_id: number
+  track_name: string
+  artist_name: string
+}
+
+interface FavoriteToggledPayload {
+  track_id: number
+  track_name: string
+  action: "add" | "remove"
 }
 
 // ── Internal capture helper ──────────────────────────────────────────
@@ -168,4 +182,20 @@ export function trackSocialLinkClicked(platform: string): void {
 
 export function trackAppStoreClicked(store: AppStoreClickedPayload["store"]): void {
   capture(EVENT.APP_STORE_CLICKED, { store } satisfies AppStoreClickedPayload)
+}
+
+export function trackDetailViewed(trackId: number, trackName: string, artistName: string): void {
+  capture(EVENT.DETAIL_VIEWED, {
+    track_id: trackId,
+    track_name: trackName,
+    artist_name: artistName,
+  } satisfies DetailViewedPayload)
+}
+
+export function trackFavoriteToggled(trackId: number, trackName: string, action: "add" | "remove"): void {
+  capture(EVENT.FAVORITE_TOGGLED, {
+    track_id: trackId,
+    track_name: trackName,
+    action,
+  } satisfies FavoriteToggledPayload)
 }

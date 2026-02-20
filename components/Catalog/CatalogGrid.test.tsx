@@ -53,6 +53,17 @@ vi.mock("next-intl", () => ({
   },
 }))
 
+vi.mock("next/navigation", () => ({
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+}))
+
+vi.mock("i18n/navigation", () => ({
+  Link: ({ children, ...props }: React.PropsWithChildren<Record<string, unknown>>) => <a {...props}>{children}</a>,
+  useRouter: () => ({ push: vi.fn(), replace: vi.fn(), back: vi.fn() }),
+  usePathname: () => "/",
+  redirect: vi.fn(),
+}))
+
 vi.mock("framer-motion", () => ({
   motion: {
     div: React.forwardRef(function MockMotionDiv(
@@ -74,7 +85,17 @@ vi.mock("framer-motion", () => ({
   useReducedMotion: () => false,
 }))
 
+import { FavoritesProvider } from "hooks/useFavorites"
+
 import { CatalogGrid } from "./CatalogGrid"
+
+function WrappedCatalogGrid() {
+  return (
+    <FavoritesProvider>
+      <CatalogGrid />
+    </FavoritesProvider>
+  )
+}
 
 const mockResults = {
   resultCount: 2,
@@ -174,7 +195,7 @@ describe("CatalogGrid", () => {
       json: async () => featuredResults,
     })
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
 
     await waitFor(() => {
       expect(screen.getByText("Trending Hit")).toBeInTheDocument()
@@ -196,7 +217,7 @@ describe("CatalogGrid", () => {
         json: async () => mockResults,
       })
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
     const input = screen.getByRole("searchbox")
 
     await act(async () => {
@@ -221,7 +242,7 @@ describe("CatalogGrid", () => {
         json: async () => mockResults,
       })
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
     const input = screen.getByRole("searchbox")
 
     await act(async () => {
@@ -245,7 +266,7 @@ describe("CatalogGrid", () => {
         json: async () => ({ resultCount: 0, results: [] }),
       })
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
     const input = screen.getByRole("searchbox")
 
     await act(async () => {
@@ -266,7 +287,7 @@ describe("CatalogGrid", () => {
       })
       .mockRejectedValueOnce(new Error("Network error"))
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
     const input = screen.getByRole("searchbox")
 
     await act(async () => {
@@ -280,7 +301,7 @@ describe("CatalogGrid", () => {
   })
 
   it("clears search with clear button", async () => {
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
 
     // Wait for initial featured fetch to settle
     await act(async () => {
@@ -342,7 +363,7 @@ describe("CatalogGrid", () => {
         json: async () => ({ resultCount: 1, results: page2Results }),
       })
 
-    render(<CatalogGrid />)
+    render(<WrappedCatalogGrid />)
     const input = screen.getByRole("searchbox")
 
     await act(async () => {

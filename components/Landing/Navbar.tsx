@@ -100,6 +100,11 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
             <GlobeIcon />
           </button>
 
+          {/* Favorites link */}
+          <Link href="/catalog/favorites" className={navLinkClasses}>
+            Favorites
+          </Link>
+
           <Link href={ROUTES.CATALOG} onClick={() => trackNavCtaClicked(ROUTES.CATALOG)} className={ctaClasses}>
             {t("cta.control")}
           </Link>
