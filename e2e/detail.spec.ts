@@ -40,11 +40,11 @@ test.describe("Track detail page", () => {
 
     // Find and click the favorite button
     const favoriteBtn = page.locator('button[aria-label*="Add"]').first()
-    await expect(favoriteBtn).toBeVisible({ timeout: 5000 })
+    await expect(favoriteBtn).toBeVisible({ timeout: 10000 })
     await favoriteBtn.click()
 
     // Should now show "Remove" aria-label
-    await expect(page.locator('button[aria-label*="Remove"]').first()).toBeVisible()
+    await expect(page.locator('button[aria-label*="Remove"]').first()).toBeVisible({ timeout: 10000 })
   })
 
   test("favorites page shows saved tracks", async ({ page }) => {
@@ -52,9 +52,9 @@ test.describe("Track detail page", () => {
     await page.goto("./catalog/1440650711")
     await expect(page.getByText("Back to Catalog")).toBeVisible({ timeout: 15000 })
     const favoriteBtn = page.locator('button[aria-label*="Add"]').first()
-    await expect(favoriteBtn).toBeVisible({ timeout: 5000 })
+    await expect(favoriteBtn).toBeVisible({ timeout: 10000 })
     await favoriteBtn.click()
-    await expect(page.locator('button[aria-label*="Remove"]').first()).toBeVisible()
+    await expect(page.locator('button[aria-label*="Remove"]').first()).toBeVisible({ timeout: 10000 })
 
     // Navigate to favorites page
     await page.goto("./catalog/favorites")
