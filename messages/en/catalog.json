@@ -1,0 +1,19 @@
+{
+  "catalog": {
+    "heading": "Music Catalog",
+    "subtext": "Search millions of tracks. Hover to preview. Discover your sound.",
+    "searchLabel": "Search music catalog",
+    "searchPlaceholder": "Search for music...",
+    "clearSearch": "Clear search",
+    "tryAgain": "Try again",
+    "trendingNow": "Trending Now",
+    "noResults": "No results for \u201c{query}\u201d",
+    "noResultsHint": "Try searching for an artist, song, or album name",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "loadingResults": "Loading results",
+    "featuredTracks": "Featured tracks",
+    "searchResults": "Search results",
+    "noPreview": "No preview"
+  }
+}

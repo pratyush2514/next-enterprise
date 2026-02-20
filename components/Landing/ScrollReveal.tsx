@@ -1,7 +1,7 @@
 "use client"
 
-import { motion, useReducedMotion } from "framer-motion"
 import React from "react"
+import { motion, useReducedMotion } from "framer-motion"
 
 type ScrollRevealProps = {
   children: React.ReactNode

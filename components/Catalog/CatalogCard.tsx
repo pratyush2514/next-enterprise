@@ -1,8 +1,9 @@
 "use client"
 
+import React from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
-import React from "react"
+import { useTranslations } from "next-intl"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
@@ -17,6 +18,7 @@ interface CatalogCardProps {
 }
 
 export const CatalogCard = React.memo(function CatalogCard({ result, className }: CatalogCardProps) {
+  const t = useTranslations("catalog")
   const { activeTrackId } = useAudioPreview()
   const { containerProps, isHovering } = useHoverIntent(250)
   const artworkUrl = result.artworkUrl100?.replace("100x100", "300x300") ?? ""
@@ -59,7 +61,7 @@ export const CatalogCard = React.memo(function CatalogCard({ result, className }
             className="absolute right-2 bottom-2 rounded-full bg-black/50 px-2.5 py-1 text-[11px] font-medium text-white/80 backdrop-blur-sm"
             aria-label="No preview available"
           >
-            No preview
+            {t("noPreview")}
           </span>
         )}
       </div>

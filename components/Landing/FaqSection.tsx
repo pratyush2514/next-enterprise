@@ -1,8 +1,8 @@
 "use client"
 
+import { useState } from "react"
 import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
-import { useState } from "react"
 
 import { cn } from "lib/utils"
 
