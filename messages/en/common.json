@@ -6,5 +6,11 @@
     "cta": {
       "control": "Explore Catalog"
     }
+  },
+  "notFound": {
+    "heading": "Track not found",
+    "subtext": "The song you're looking for seems to have skipped off the playlist. Let's get you back to the music.",
+    "backHome": "Back Home",
+    "exploreCatalog": "Explore Catalog"
   }
 }
