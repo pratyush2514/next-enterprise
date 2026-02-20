@@ -148,8 +148,7 @@ export default function NotFound() {
           variants={childVariants}
           className="mx-auto mt-4 max-w-md text-base leading-relaxed text-gray-500 dark:text-gray-400"
         >
-          The song you&apos;re looking for seems to have skipped off the playlist. Let&apos;s get you back to the
-          music.
+          The song you&apos;re looking for seems to have skipped off the playlist. Let&apos;s get you back to the music.
         </motion.p>
 
         {/* CTAs */}
