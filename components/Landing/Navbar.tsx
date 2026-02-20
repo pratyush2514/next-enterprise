@@ -8,6 +8,7 @@ import { Link } from "i18n/navigation"
 import { trackNavCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
+import { ROUTES } from "./constants"
 import { GlobeIcon } from "./icons"
 import { MusicalConfetti } from "./MusicalConfetti"
 
@@ -99,7 +100,7 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
             <GlobeIcon />
           </button>
 
-          <Link href="/catalog" onClick={() => trackNavCtaClicked("/catalog")} className={ctaClasses}>
+          <Link href={ROUTES.CATALOG} onClick={() => trackNavCtaClicked(ROUTES.CATALOG)} className={ctaClasses}>
             {t("cta.control")}
           </Link>
         </div>

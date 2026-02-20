@@ -7,6 +7,7 @@ import { Link } from "i18n/navigation"
 import { trackCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
+import { ROUTES } from "./constants"
 import { ArrowRightIcon } from "./icons"
 
 export function HeroSection() {
@@ -70,8 +71,8 @@ export function HeroSection() {
           <p className="text-base leading-relaxed text-white/60 sm:text-lg">{t("tagline")}</p>
 
           <Link
-            href="/catalog"
-            onClick={() => trackCtaClicked("hero", "/catalog")}
+            href={ROUTES.CATALOG}
+            onClick={() => trackCtaClicked("hero", ROUTES.CATALOG)}
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
               "bg-emerald-600 shadow-lg shadow-emerald-600/25",
