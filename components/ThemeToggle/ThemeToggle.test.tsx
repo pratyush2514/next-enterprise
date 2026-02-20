@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from "@testing-library/react"
-import { describe, expect, it, vi } from "vitest"
+import { beforeEach, describe, expect, it, vi } from "vitest"
 
-const mockSetTheme = vi.fn()
+const mockSetTheme = vi.hoisted(() => vi.fn())
 vi.mock("next-themes", () => ({
   useTheme: () => ({
     theme: "light",
@@ -13,6 +13,10 @@ vi.mock("next-themes", () => ({
 import { ThemeToggle } from "./ThemeToggle"
 
 describe("ThemeToggle", () => {
+  beforeEach(() => {
+    mockSetTheme.mockClear()
+  })
+
   it("renders the toggle button after mounting", async () => {
     render(<ThemeToggle />)
     const button = await screen.findByRole("button", { name: /switch to dark mode/i })
