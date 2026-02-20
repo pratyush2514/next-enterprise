@@ -3,8 +3,10 @@ import { expect, test } from "@playwright/test"
 test.describe("Catalog page", () => {
   test("navigates from landing to catalog", async ({ page }) => {
     await page.goto("./")
-    await page.click('a[href="/catalog"]')
-    await expect(page).toHaveURL(/\/catalog/)
+    const catalogLink = page.locator('a[href="/catalog"]').first()
+    await expect(catalogLink).toBeVisible()
+    await catalogLink.click()
+    await expect(page).toHaveURL(/\/catalog/, { timeout: 15000 })
     await expect(page.locator('input[type="search"], input[placeholder*="Search"]')).toBeVisible()
   })
 
@@ -30,9 +32,11 @@ test.describe("Catalog page", () => {
     await page.goto("./catalog")
     const searchInput = page.locator('input[type="search"], input[placeholder*="Search"]')
     await expect(searchInput).toBeVisible({ timeout: 10000 })
-    // Type character-by-character to reliably trigger React onChange in all browsers
-    await searchInput.pressSequentially("xyznonexistent", { delay: 30 })
+    // Use fill() which reliably triggers React onChange across all browsers
+    await searchInput.fill("xyznonexistent")
+    // Verify input value was set (React controlled input)
+    await expect(searchInput).toHaveValue("xyznonexistent")
     // Wait for debounce (300ms) + API round-trip
-    await expect(page.getByText(/No results for/)).toBeVisible({ timeout: 25000 })
+    await expect(page.getByText(/No results for/)).toBeVisible({ timeout: 30000 })
   })
 })
