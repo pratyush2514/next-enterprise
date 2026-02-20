@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useTheme } from "next-themes"
 
+import { trackThemeSwitch } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { THEME, THEME_LABELS } from "./constants"
@@ -19,7 +20,10 @@ function useThemeToggle() {
   const isDark = resolvedTheme === THEME.DARK
 
   const toggleTheme = useCallback(() => {
+    const from = resolvedTheme ?? "unknown"
     const newTheme = resolvedTheme === THEME.DARK ? THEME.LIGHT : THEME.DARK
+
+    trackThemeSwitch(from, newTheme)
 
     // Block all CSS transitions so the switch is instant — no element-level color animations
     const blocker = document.createElement("style")
