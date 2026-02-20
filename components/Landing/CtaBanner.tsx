@@ -1,6 +1,8 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+import { useTranslations } from "next-intl"
+
 import { Link } from "i18n/navigation"
 import { cn } from "lib/utils"
 
@@ -8,6 +10,7 @@ import { ArrowRightIcon } from "./icons"
 import { ScrollReveal } from "./ScrollReveal"
 
 export function CtaBanner() {
+  const t = useTranslations("cta")
   const prefersReducedMotion = useReducedMotion()
 
   return (
@@ -33,12 +36,11 @@ export function CtaBanner() {
 
             <div className="relative">
               <h2 className="mx-auto max-w-xl text-3xl leading-tight font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
-                Ready to Find Your Next Favorite Song?
+                {t("heading")}
               </h2>
 
               <p className="mx-auto mt-5 max-w-md text-base leading-relaxed text-gray-700 dark:text-gray-300">
-                Search millions of tracks, preview them instantly, and discover music across every genre — all in one
-                place.
+                {t("description")}
               </p>
 
               <div className="mt-8">
@@ -53,7 +55,7 @@ export function CtaBanner() {
                     "dark:bg-emerald-500 dark:shadow-emerald-500/20 dark:hover:bg-emerald-400"
                   )}
                 >
-                  Explore Catalog
+                  {t("button")}
                   <ArrowRightIcon className="size-5" />
                 </Link>
               </div>

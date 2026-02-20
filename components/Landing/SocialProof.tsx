@@ -21,7 +21,7 @@ export function SocialProof() {
         {/* Heading */}
         <ScrollReveal>
           <h2 className="mx-auto mb-16 max-w-2xl text-center text-2xl leading-snug font-bold text-gray-900 sm:text-3xl lg:text-4xl dark:text-white">
-            Join over 10.000 bars, restaurants, stores, and other businesses!
+            Join over 10,000 bars, restaurants, stores, and other businesses!
           </h2>
         </ScrollReveal>
 

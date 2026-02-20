@@ -1,4 +1,9 @@
-import type { PreviewPoster } from "components/Landing/AppPreview"
+/** Shared type for poster artwork returned by the iTunes API */
+export interface PreviewPoster {
+  trackName: string
+  artistName: string
+  artworkUrl: string
+}
 
 /** Named constants for poster genre search terms */
 export const POSTER_GENRES = {

@@ -10,8 +10,8 @@ import {
   GooglePlayIcon,
   InstagramIcon,
   LinkedInIcon,
+  MailIcon,
   PhoneIcon,
-  PlaySmallIcon,
   YouTubeIcon,
 } from "./icons"
 import { ScrollReveal } from "./ScrollReveal"
@@ -89,14 +89,20 @@ export function Footer() {
               </ul>
 
               <div className="mt-6 space-y-1.5">
-                <p className="flex items-center gap-2 text-sm text-gray-500 sm:justify-end dark:text-gray-400">
-                  <PlaySmallIcon className="shrink-0 text-emerald-500" />
+                <a
+                  href="mailto:info@melodix.com"
+                  className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-gray-900 sm:justify-end dark:text-gray-400 dark:hover:text-white"
+                >
+                  <MailIcon className="shrink-0" />
                   info@melodix.com
-                </p>
-                <p className="flex items-center gap-2 text-sm text-gray-500 sm:justify-end dark:text-gray-400">
+                </a>
+                <a
+                  href="tel:08000233029"
+                  className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-gray-900 sm:justify-end dark:text-gray-400 dark:hover:text-white"
+                >
                   <PhoneIcon className="shrink-0" />
                   0800 023 3029
-                </p>
+                </a>
               </div>
             </div>
           </div>

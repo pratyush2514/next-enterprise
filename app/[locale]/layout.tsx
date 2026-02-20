@@ -4,11 +4,10 @@ import { getMessages, setRequestLocale } from "next-intl/server"
 
 import { ThemeProvider } from "components/ThemeProvider/ThemeProvider"
 import { ThemeToggle } from "components/ThemeToggle/ThemeToggle"
-import { locales } from "i18n/config"
 import { routing } from "i18n/routing"
 
 export function generateStaticParams() {
-  return locales.map((locale) => ({ locale }))
+  return routing.locales.map((locale) => ({ locale }))
 }
 
 export default async function LocaleLayout({

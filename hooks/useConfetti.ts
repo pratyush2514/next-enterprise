@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useReducedMotion } from "framer-motion"
 
 const NOTES = ["♩", "♪", "♫", "♬", "♭", "♯"]
@@ -63,6 +63,12 @@ export function useConfetti() {
       setParticles([])
     }, PARTICLE_LIFETIME_MS)
   }, [prefersReducedMotion])
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) clearTimeout(timeoutRef.current)
+    }
+  }, [])
 
   return { particles, trigger }
 }

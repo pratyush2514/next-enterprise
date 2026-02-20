@@ -60,14 +60,11 @@ export function HeroSection() {
         {/* Tagline + CTA */}
         <motion.div
           className="mx-auto mt-12 flex max-w-lg flex-col items-center gap-5 text-center"
-          initial={{ opacity: 0, y: 30 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{
-            type: "spring",
-            stiffness: 60,
-            damping: 18,
-            delay: 0.6,
-          }}
+          transition={
+            prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 60, damping: 18, delay: 0.6 }
+          }
         >
           <p className="text-base leading-relaxed text-white/60 sm:text-lg">{t("tagline")}</p>
 

@@ -3,12 +3,13 @@
 import { AnimatePresence, motion } from "framer-motion"
 
 import { useConfetti } from "hooks/useConfetti"
+import { cn } from "lib/utils"
 
 export function MusicalConfetti({ children, className }: { children: React.ReactNode; className?: string }) {
   const { particles, trigger } = useConfetti()
 
   return (
-    <span className={`relative inline-flex ${className ?? ""}`} onMouseEnter={trigger}>
+    <span className={cn("relative inline-flex", className)} onMouseEnter={trigger}>
       {children}
 
       <AnimatePresence>

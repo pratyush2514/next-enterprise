@@ -4,6 +4,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
+import type { PreviewPoster } from "lib/services/itunes"
 import { cn } from "lib/utils"
 
 import {
@@ -20,11 +21,7 @@ import { ScrollReveal } from "./ScrollReveal"
 
 /* ── Shared types ────────────────────────────────────────────────── */
 
-export interface PreviewPoster {
-  trackName: string
-  artistName: string
-  artworkUrl: string
-}
+export type { PreviewPoster }
 
 export interface AppPreviewData {
   quickStart: PreviewPoster[]
@@ -171,8 +168,10 @@ export function AppPreview({ data }: { data?: AppPreviewData }) {
   const discover = data?.discover ?? []
   const nowPlaying = data?.nowPlaying ?? null
 
-  const quickStartLabels = t.raw("quickStartLabels") as string[]
-  const moodLabels = t.raw("moodLabels") as string[]
+  const rawQuickStart = t.raw("quickStartLabels")
+  const quickStartLabels = Array.isArray(rawQuickStart) ? (rawQuickStart as string[]) : []
+  const rawMood = t.raw("moodLabels")
+  const moodLabels = Array.isArray(rawMood) ? (rawMood as string[]) : []
 
   return (
     <section className="from-brand-900 to-brand-950 relative bg-gradient-to-b pb-24 lg:pb-32">
