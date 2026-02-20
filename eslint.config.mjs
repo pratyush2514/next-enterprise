@@ -70,6 +70,11 @@ const config = typescriptEslint.config(
         {
           groups: ["external", "builtin", "internal", "sibling", "parent", "index"],
           pathGroups: [
+            {
+              pattern: "react",
+              group: "external",
+              position: "before",
+            },
             ...getDirectoriesToSort().map((singleDir) => ({
               pattern: `${singleDir}/**`,
               group: "internal",
