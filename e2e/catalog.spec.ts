@@ -29,7 +29,10 @@ test.describe("Catalog page", () => {
   test("shows empty state for nonsense query", async ({ page }) => {
     await page.goto("./catalog")
     const searchInput = page.locator('input[type="search"], input[placeholder*="Search"]')
-    await searchInput.fill("xyznonexistentquery12345")
-    await expect(page.getByText(/No results for/)).toBeVisible({ timeout: 15000 })
+    await expect(searchInput).toBeVisible({ timeout: 10000 })
+    // Type character-by-character to reliably trigger React onChange in all browsers
+    await searchInput.pressSequentially("xyznonexistent", { delay: 30 })
+    // Wait for debounce (300ms) + API round-trip
+    await expect(page.getByText(/No results for/)).toBeVisible({ timeout: 25000 })
   })
 })

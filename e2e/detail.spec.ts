@@ -14,10 +14,10 @@ test.describe("Track detail page", () => {
 
   test("deep link renders track detail standalone", async ({ page }) => {
     // Use a well-known track ID (Bohemian Rhapsody by Queen)
-    await page.goto("./catalog/1440806041")
+    await page.goto("./catalog/1440650711")
     await expect(page.getByText("Back to Catalog")).toBeVisible({ timeout: 15000 })
     // Should have track name, artist, and genre info
-    await expect(page.locator("h1")).toBeVisible()
+    await expect(page.locator("h1")).toHaveText(/.+/, { timeout: 10000 })
   })
 
   test("shows 404 for invalid track ID", async ({ page }) => {
@@ -27,7 +27,7 @@ test.describe("Track detail page", () => {
   })
 
   test("back link returns to catalog", async ({ page }) => {
-    await page.goto("./catalog/1440806041")
+    await page.goto("./catalog/1440650711")
     await expect(page.getByText("Back to Catalog")).toBeVisible({ timeout: 15000 })
     await page.click('a:has-text("Back to Catalog")')
     await expect(page).toHaveURL(/\/catalog$/)
@@ -35,7 +35,7 @@ test.describe("Track detail page", () => {
 
   test("favorite button toggles state on detail page", async ({ page }) => {
     // Deep link to a known track
-    await page.goto("./catalog/1440806041")
+    await page.goto("./catalog/1440650711")
     await expect(page.getByText("Back to Catalog")).toBeVisible({ timeout: 15000 })
 
     // Find and click the favorite button
@@ -49,7 +49,7 @@ test.describe("Track detail page", () => {
 
   test("favorites page shows saved tracks", async ({ page }) => {
     // Deep link to a track and favorite it
-    await page.goto("./catalog/1440806041")
+    await page.goto("./catalog/1440650711")
     await expect(page.getByText("Back to Catalog")).toBeVisible({ timeout: 15000 })
     const favoriteBtn = page.locator('button[aria-label*="Add"]').first()
     await expect(favoriteBtn).toBeVisible({ timeout: 5000 })

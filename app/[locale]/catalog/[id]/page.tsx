@@ -17,8 +17,11 @@ async function fetchTrack(id: string): Promise<ITunesResult | null> {
 
     if (!response.ok) return null
 
-    const data = (await response.json()) as { resultCount: number; results: ITunesResult[] }
-    return data.results?.[0] ?? null
+    const data = (await response.json()) as {
+      resultCount: number
+      results: (ITunesResult & { wrapperType?: string })[]
+    }
+    return data.results?.find((r) => r.wrapperType === "track") ?? data.results?.[0] ?? null
   } catch {
     return null
   }
