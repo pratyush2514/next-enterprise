@@ -1,8 +1,8 @@
 "use client"
 
+import { useCallback, useEffect, useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
-import { useCallback, useEffect, useState } from "react"
 
 import { Link } from "i18n/navigation"
 import { cn } from "lib/utils"

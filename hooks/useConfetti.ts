@@ -1,7 +1,7 @@
 "use client"
 
-import { useReducedMotion } from "framer-motion"
 import { useCallback, useRef, useState } from "react"
+import { useReducedMotion } from "framer-motion"
 
 const NOTES = ["♩", "♪", "♫", "♬", "♭", "♯"]
 const PARTICLE_COUNT = 10
