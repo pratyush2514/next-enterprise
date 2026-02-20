@@ -1,0 +1,10 @@
+{
+  "brand": "melodix",
+  "nav": {
+    "logIn": "Log In",
+    "selectLanguage": "Select language",
+    "cta": {
+      "control": "Explore Catalog"
+    }
+  }
+}

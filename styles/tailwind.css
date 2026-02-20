@@ -24,14 +24,35 @@
 /* Theme color-scheme */
 :root {
   color-scheme: light;
+
+  /* Confetti particle colors — auto-switch via dark mode */
+  --confetti-1: var(--color-emerald-400);
+  --confetti-2: var(--color-rose-400);
+  --confetti-3: var(--color-violet-400);
+  --confetti-4: var(--color-amber-400);
+  --confetti-5: var(--color-cyan-400);
+  --confetti-6: var(--color-pink-400);
 }
 
 .dark {
   color-scheme: dark;
+
+  --confetti-1: var(--color-emerald-300);
+  --confetti-2: var(--color-rose-300);
+  --confetti-3: var(--color-violet-300);
+  --confetti-4: var(--color-amber-300);
+  --confetti-5: var(--color-cyan-300);
+  --confetti-6: var(--color-pink-300);
 }
 
 /* Audio preview volume bar animation */
 @theme {
+  /* Brand gradient colors — used in hero & app preview sections */
+  --color-brand-950: #030D08;
+  --color-brand-900: #061A11;
+  --color-brand-800: #0A3928;
+  --color-brand-700: #0B4D35;
+
   --animate-bounce-music: bounce-music 0.6s ease-in-out infinite alternate;
   --animate-gradient-shift: gradient-shift 8s ease infinite;
   --animate-float: float 6s ease-in-out infinite;
