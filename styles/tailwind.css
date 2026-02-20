@@ -1,5 +1,8 @@
 @import 'tailwindcss';
 
+/* Enable class-based dark mode for next-themes */
+@custom-variant dark (&:where(.dark, .dark *));
+
 /*
   The default border color has changed to `currentColor` in Tailwind CSS v4,
   so we've added these compatibility styles to make sure everything still
@@ -15,5 +18,103 @@
   ::backdrop,
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
+  }
+}
+
+/* Theme color-scheme */
+:root {
+  color-scheme: light;
+
+  /* Confetti particle colors — auto-switch via dark mode */
+  --confetti-1: var(--color-emerald-400);
+  --confetti-2: var(--color-rose-400);
+  --confetti-3: var(--color-violet-400);
+  --confetti-4: var(--color-amber-400);
+  --confetti-5: var(--color-cyan-400);
+  --confetti-6: var(--color-pink-400);
+}
+
+.dark {
+  color-scheme: dark;
+
+  --confetti-1: var(--color-emerald-300);
+  --confetti-2: var(--color-rose-300);
+  --confetti-3: var(--color-violet-300);
+  --confetti-4: var(--color-amber-300);
+  --confetti-5: var(--color-cyan-300);
+  --confetti-6: var(--color-pink-300);
+}
+
+/* Audio preview volume bar animation */
+@theme {
+  /* Brand gradient colors — used in hero & app preview sections */
+  --color-brand-950: #030D08;
+  --color-brand-900: #061A11;
+  --color-brand-800: #0A3928;
+  --color-brand-700: #0B4D35;
+
+  --animate-bounce-music: bounce-music 0.6s ease-in-out infinite alternate;
+  --animate-gradient-shift: gradient-shift 8s ease infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-pulse-soft: pulse-soft 3s ease-in-out infinite;
+  --animate-marquee: marquee 30s linear infinite;
+}
+
+@keyframes bounce-music {
+  0% {
+    transform: scaleY(0.3);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
 }
