@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion"
+
 import { cn } from "lib/utils"
 
 import { ScrollReveal } from "./ScrollReveal"

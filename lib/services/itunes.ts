@@ -5,7 +5,9 @@ export interface PreviewPoster {
   artworkUrl: string
 }
 
-/** Named constants for poster genre search terms */
+import { env } from "../../env.mjs"
+
+/** Named constants for genre search terms used on the landing page */
 export const POSTER_GENRES = {
   quickStart: "pop hits",
   mood: "lounge jazz",
@@ -22,8 +24,13 @@ interface ITunesTrack {
 /** Fetch poster artwork from the iTunes Search API */
 export async function fetchPosters(term: string, limit: number): Promise<PreviewPoster[]> {
   try {
-    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(term)}&limit=${limit}&media=music&entity=song`
-    const res = await fetch(url, { next: { revalidate: 86400 } })
+    const url = new URL(env.ITUNES_API_URL)
+    url.searchParams.set("term", term)
+    url.searchParams.set("limit", limit.toString())
+    url.searchParams.set("media", "music")
+    url.searchParams.set("entity", "song")
+
+    const res = await fetch(url.toString(), { next: { revalidate: 86400 } })
     if (!res.ok) return []
     const data = (await res.json()) as { results: ITunesTrack[] }
     return (data.results ?? [])
