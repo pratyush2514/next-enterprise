@@ -13,9 +13,9 @@
  * - ProgressBar onSeek accepts time in seconds directly
  */
 
+import React from "react"
 import { cva, type VariantProps } from "class-variance-authority"
 import { Pause, Play } from "lucide-react"
-import React from "react"
 
 import { Button, type ButtonProps } from "components/ui/button"
 import { Card } from "components/ui/card"

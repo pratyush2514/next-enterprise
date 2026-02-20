@@ -1,5 +1,5 @@
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import React from "react"
+import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest"
 
 // Mock framer-motion to avoid animation issues in tests
@@ -27,6 +27,31 @@ function filterMotionProps(props: Record<string, unknown>) {
   }
   return filtered
 }
+
+vi.mock("next-intl", () => ({
+  useTranslations: () => {
+    const translations: Record<string, string> = {
+      heading: "Music Catalog",
+      subtext: "Search millions of tracks. Hover to preview. Discover your sound.",
+      searchLabel: "Search music catalog",
+      searchPlaceholder: "Search for music...",
+      clearSearch: "Clear search",
+      tryAgain: "Try again",
+      trendingNow: "Trending Now",
+      noResultsHint: "Try searching for an artist, song, or album name",
+      loadMore: "Load more",
+      loading: "Loading...",
+      loadingResults: "Loading results",
+      featuredTracks: "Featured tracks",
+      searchResults: "Search results",
+      noPreview: "No preview",
+    }
+    return (key: string, params?: Record<string, string>) => {
+      if (key === "noResults" && params?.query) return `No results for \u201c${params.query}\u201d`
+      return translations[key] ?? key
+    }
+  },
+}))
 
 vi.mock("framer-motion", () => ({
   motion: {
