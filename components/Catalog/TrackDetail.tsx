@@ -1,8 +1,8 @@
 "use client"
 
+import { useEffect } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
-import { useEffect } from "react"
 
 import { AudioPreviewProvider, useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
