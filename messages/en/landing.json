@@ -2,12 +2,12 @@
   "hero": {
     "heading": "It is time for the next tune...",
     "tagline": "Search millions of tracks, preview on hover, and discover your next favorite song.",
-    "cta": "Explore Catalog"
+    "cta": "Start Listening"
   },
   "cta": {
     "heading": "Ready to Find Your Next Favorite Song?",
     "description": "Search millions of tracks, preview them instantly, and discover music across every genre — all in one place.",
-    "button": "Explore Catalog"
+    "button": "Start Listening"
   },
   "appPreview": {
     "sectionLabel": "Music Channels",

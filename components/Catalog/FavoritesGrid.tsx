@@ -79,7 +79,7 @@ export function FavoritesGrid() {
               "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none"
             )}
           >
-            Explore Catalog
+            Start Listening
           </Link>
         </div>
       )}

@@ -184,7 +184,7 @@ export default function NotFound() {
               "dark:focus-visible:ring-offset-gray-950"
             )}
           >
-            Explore Catalog
+            Start Listening
             <ArrowRightIcon className="size-5" />
           </Link>
         </motion.div>

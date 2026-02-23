@@ -57,7 +57,7 @@ export function CtaBanner() {
                     "dark:bg-emerald-500 dark:shadow-emerald-500/20 dark:hover:bg-emerald-400"
                   )}
                 >
-                  Explore Catalog
+                  Start Listening
                   <ArrowRightIcon className="size-5" />
                 </Link>
               </div>
