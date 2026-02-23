@@ -4,13 +4,13 @@
     "logIn": "Log In",
     "selectLanguage": "Select language",
     "cta": {
-      "control": "Explore Catalog"
+      "control": "Start Listening"
     }
   },
   "notFound": {
     "heading": "Track not found",
     "subtext": "The song you're looking for seems to have skipped off the playlist. Let's get you back to the music.",
     "backHome": "Back Home",
-    "exploreCatalog": "Explore Catalog"
+    "exploreCatalog": "Start Listening"
   }
 }
