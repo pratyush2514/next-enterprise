@@ -10,7 +10,8 @@ import { useRouter } from "i18n/navigation"
 import { cn } from "lib/utils"
 import { generatePlaylistName } from "lib/utils/playlist-names"
 
-import { CloseIcon, PlaylistIcon, SyncIcon } from "./icons"
+import { AnimatedPlaylistIcon } from "./AnimatedPlaylistIcon"
+import { CloseIcon, SyncIcon } from "./icons"
 
 interface CreatePlaylistPopupProps {
   open: boolean
@@ -94,7 +95,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                     )}
                   >
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-400/10">
-                      <PlaylistIcon className="size-5 text-emerald-500" />
+                      <AnimatedPlaylistIcon className="size-5" playing />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-gray-900 dark:text-white">{t("playlistOption")}</p>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { useTranslations } from "next-intl"
 
 import { usePlaylists } from "hooks/usePlaylists"
@@ -7,6 +8,7 @@ import { useSession } from "hooks/useSession"
 import { Link, usePathname } from "i18n/navigation"
 import { cn } from "lib/utils"
 
+import { AnimatedPlaylistIcon } from "./AnimatedPlaylistIcon"
 import { PlaylistIcon } from "./icons"
 
 interface SidebarPlaylistsProps {
@@ -18,6 +20,8 @@ export function SidebarPlaylists({ isCollapsed }: SidebarPlaylistsProps) {
   const { isAuthenticated } = useSession()
   const { playlists, isLoading } = usePlaylists()
   const pathname = usePathname()
+
+  const [hoveredId, setHoveredId] = useState<string | null>(null)
 
   if (!isAuthenticated) return null
 
@@ -76,9 +80,11 @@ export function SidebarPlaylists({ isCollapsed }: SidebarPlaylistsProps) {
                     ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
                     : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5"
                 )}
+                onMouseEnter={() => setHoveredId(playlist.id)}
+                onMouseLeave={() => setHoveredId(null)}
               >
                 <div className="flex size-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-white/5">
-                  <PlaylistIcon className="size-4 text-gray-400 dark:text-white/40" />
+                  <AnimatedPlaylistIcon className="size-5" playing={hoveredId === playlist.id || isActive} />
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-xs font-medium">{playlist.name}</p>
