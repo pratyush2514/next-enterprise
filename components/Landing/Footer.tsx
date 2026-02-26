@@ -49,7 +49,7 @@ export function Footer() {
                     href="#"
                     onClick={() => trackSocialLinkClicked(link.key)}
                     className={cn(
-                      "flex size-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300",
+                      "flex size-9 min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-all duration-300",
                       "hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                     )}
                     aria-label={link.key}
@@ -80,7 +80,7 @@ export function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="inline-block py-1 text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
                     {t("about")}
                   </a>
@@ -88,7 +88,7 @@ export function Footer() {
                 <li>
                   <a
                     href="#"
-                    className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                    className="inline-block py-1 text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
                   >
                     {t("helpCenter")}
                   </a>

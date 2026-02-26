@@ -21,7 +21,7 @@ export function CtaBanner() {
         <ScrollReveal>
           <motion.div
             className={cn(
-              "relative overflow-hidden rounded-3xl px-8 py-16 text-center sm:px-16 sm:py-20",
+              "relative overflow-hidden rounded-3xl px-5 py-12 text-center sm:px-16 sm:py-20",
               "bg-gradient-to-br from-emerald-50 via-emerald-100/80 to-teal-100",
               "dark:from-emerald-950/60 dark:via-emerald-900/40 dark:to-teal-950/60"
             )}
@@ -37,7 +37,7 @@ export function CtaBanner() {
             />
 
             <div className="relative">
-              <h2 className="mx-auto max-w-xl text-3xl leading-tight font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
+              <h2 className="mx-auto max-w-xl text-2xl leading-tight font-bold text-gray-900 sm:text-3xl lg:text-5xl dark:text-white">
                 {t("heading")}
               </h2>
 
