@@ -83,8 +83,15 @@ export function SidebarPlaylists({ isCollapsed }: SidebarPlaylistsProps) {
                 onMouseEnter={() => setHoveredId(playlist.id)}
                 onMouseLeave={() => setHoveredId(null)}
               >
-                <div className="flex size-8 shrink-0 items-center justify-center rounded bg-gray-100 dark:bg-white/5">
-                  <AnimatedPlaylistIcon className="size-5" playing={hoveredId === playlist.id || isActive} />
+                <div className="size-8 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5">
+                  {playlist.coverUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={playlist.coverUrl} alt="" className="size-full object-cover" />
+                  ) : (
+                    <div className="flex size-full items-center justify-center">
+                      <AnimatedPlaylistIcon className="size-5" playing={hoveredId === playlist.id || isActive} />
+                    </div>
+                  )}
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-xs font-medium">{playlist.name}</p>
