@@ -2,6 +2,54 @@ import React from "react"
 import { act, renderHook } from "@testing-library/react"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 
+// Mock lib/supabase/client to prevent env.mjs validation in test env
+vi.mock("lib/supabase/client", () => {
+  const mockFrom = vi.fn(() => ({
+    select: vi.fn(() => ({
+      order: vi.fn().mockResolvedValue({ data: [], error: null }),
+    })),
+    delete: vi.fn(() => ({
+      eq: vi.fn(() => ({
+        eq: vi.fn().mockResolvedValue({ error: null }),
+      })),
+    })),
+    insert: vi.fn().mockResolvedValue({ error: null }),
+  }))
+
+  return {
+    createClient: () => ({
+      from: mockFrom,
+      auth: {
+        getUser: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+        onAuthStateChange: vi.fn(() => ({ data: { subscription: { unsubscribe: vi.fn() } } })),
+      },
+    }),
+  }
+})
+
+// Mock useSession to simulate authenticated user
+vi.mock("hooks/useSession", () => ({
+  useSession: () => ({
+    user: { id: "test-user-123", email: "test@example.com" },
+    status: "authenticated",
+    isAuthenticated: true,
+    isLoading: false,
+  }),
+}))
+
+// Mock auth context
+vi.mock("lib/contexts/auth-context", () => ({
+  useAuth: () => ({
+    user: { id: "test-user-123", email: "test@example.com" },
+    profile: null,
+    loading: false,
+    error: null,
+    signOut: vi.fn(),
+    refreshProfile: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => children,
+}))
+
 import { FavoritesProvider, useFavorites } from "./useFavorites"
 
 const mockTrack = {
@@ -24,7 +72,6 @@ function wrapper({ children }: { children: React.ReactNode }) {
 
 describe("useFavorites", () => {
   beforeEach(() => {
-    localStorage.clear()
     vi.restoreAllMocks()
   })
 
@@ -34,7 +81,7 @@ describe("useFavorites", () => {
     expect(result.current.count).toBe(0)
   })
 
-  it("adds a favorite", () => {
+  it("adds a favorite optimistically", () => {
     const { result } = renderHook(() => useFavorites(), { wrapper })
 
     act(() => {
@@ -71,27 +118,6 @@ describe("useFavorites", () => {
     expect(result.current.isFavorite(123)).toBe(true)
     expect(result.current.isFavorite(456)).toBe(true)
     expect(result.current.count).toBe(2)
-  })
-
-  it("persists to localStorage", () => {
-    const { result } = renderHook(() => useFavorites(), { wrapper })
-
-    act(() => {
-      result.current.toggleFavorite(mockTrack)
-    })
-
-    const stored = JSON.parse(localStorage.getItem("melodix-favorites") ?? "[]")
-    expect(stored).toHaveLength(1)
-    expect(stored[0].trackId).toBe(123)
-  })
-
-  it("loads from localStorage on mount", () => {
-    localStorage.setItem("melodix-favorites", JSON.stringify([mockTrack]))
-
-    const { result } = renderHook(() => useFavorites(), { wrapper })
-
-    expect(result.current.isFavorite(123)).toBe(true)
-    expect(result.current.count).toBe(1)
   })
 
   it("throws when used outside provider", () => {
