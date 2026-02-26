@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import { cn } from "lib/utils"
 
 import { ScrollReveal, StaggerContainer, StaggerItem } from "./ScrollReveal"
@@ -15,13 +17,15 @@ const BRAND_LOGOS = [
 ]
 
 export function SocialProof() {
+  const t = useTranslations("socialProof")
+
   return (
     <section className="bg-white py-20 lg:py-28 dark:bg-gray-950">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
         {/* Heading */}
         <ScrollReveal>
           <h2 className="mx-auto mb-16 max-w-2xl text-center text-2xl leading-snug font-bold text-gray-900 sm:text-3xl lg:text-4xl dark:text-white">
-            Join over 10,000 bars, restaurants, stores, and other businesses!
+            {t("heading")}
           </h2>
         </ScrollReveal>
 
