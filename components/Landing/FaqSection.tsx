@@ -3,6 +3,7 @@
 import { useCallback, useState } from "react"
 import * as Accordion from "@radix-ui/react-accordion"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 import { trackFaqExpanded } from "lib/analytics"
 import { cn } from "lib/utils"
@@ -10,44 +11,7 @@ import { cn } from "lib/utils"
 import { PlusIcon } from "./icons"
 import { ScrollReveal } from "./ScrollReveal"
 
-const FAQ_ITEMS = [
-  {
-    id: "faq-1",
-    question: "What is Melodix?",
-    answer:
-      "Melodix is a curated music platform designed for businesses. We provide handpicked music channels for bars, restaurants, retail stores, salons, and any space that deserves a great soundtrack.",
-  },
-  {
-    id: "faq-2",
-    question: "How does the music catalog work?",
-    answer:
-      "Our catalog lets you search millions of tracks, preview them instantly on hover, and discover the perfect sound for your space. Browse by genre, mood, or artist to find exactly what you need.",
-  },
-  {
-    id: "faq-3",
-    question: "Can I preview songs before saving?",
-    answer:
-      "Yes. Simply hover over any track in the catalog to hear a 30-second preview. You can control playback, seek through the track, and browse without interruption.",
-  },
-  {
-    id: "faq-4",
-    question: "What genres and moods are available?",
-    answer:
-      "We cover everything from jazz and lo-fi to pop hits and classical. Our curated channels include Quick Start playlists, mood-based collections like Barista Bar and Chill Out Zone, and constantly updated discovery feeds.",
-  },
-  {
-    id: "faq-5",
-    question: "Is Melodix free to use?",
-    answer:
-      "You can explore the catalog and preview tracks for free. Premium plans unlock unlimited playback, custom playlists, and scheduling features tailored for your business.",
-  },
-  {
-    id: "faq-6",
-    question: "Where can I go if I have questions?",
-    answer:
-      "You can reach our support team via email at info@melodix.com or call us at 0800 023 3029. Our Help Center also has detailed articles covering every feature.",
-  },
-]
+const FAQ_IDS = ["faq1", "faq2", "faq3", "faq4", "faq5", "faq6"] as const
 
 function AccordionItem({
   id,
@@ -111,16 +75,17 @@ function AccordionItem({
 
 export function FaqSection() {
   const [openItem, setOpenItem] = useState<string>("")
+  const t = useTranslations("faq")
 
-  const handleValueChange = useCallback((value: string) => {
-    setOpenItem(value)
-    if (value) {
-      const faqItem = FAQ_ITEMS.find((item) => item.id === value)
-      if (faqItem) {
-        trackFaqExpanded(faqItem.id, faqItem.question)
+  const handleValueChange = useCallback(
+    (value: string) => {
+      setOpenItem(value)
+      if (value) {
+        trackFaqExpanded(value, t(`items.${value}.question`))
       }
-    }
-  }, [])
+    },
+    [t]
+  )
 
   return (
     <section className="bg-white py-20 lg:py-28 dark:bg-gray-950">
@@ -129,18 +94,22 @@ export function FaqSection() {
           {/* Left column — heading */}
           <ScrollReveal direction="left">
             <div className="lg:sticky lg:top-32">
-              <h2 className="text-4xl font-bold text-gray-900 sm:text-5xl dark:text-white">FAQs</h2>
-              <p className="mt-4 leading-relaxed text-gray-500 dark:text-gray-400">
-                Dive into our FAQ section for more information on Melodix.
-              </p>
+              <h2 className="text-4xl font-bold text-gray-900 sm:text-5xl dark:text-white">{t("title")}</h2>
+              <p className="mt-4 leading-relaxed text-gray-500 dark:text-gray-400">{t("description")}</p>
             </div>
           </ScrollReveal>
 
           {/* Right column — accordion */}
           <ScrollReveal direction="right" delay={0.15}>
             <Accordion.Root type="single" collapsible value={openItem} onValueChange={handleValueChange}>
-              {FAQ_ITEMS.map((item) => (
-                <AccordionItem key={item.id} {...item} isOpen={openItem === item.id} />
+              {FAQ_IDS.map((id) => (
+                <AccordionItem
+                  key={id}
+                  id={id}
+                  question={t(`items.${id}.question`)}
+                  answer={t(`items.${id}.answer`)}
+                  isOpen={openItem === id}
+                />
               ))}
             </Accordion.Root>
           </ScrollReveal>

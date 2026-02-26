@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import { Link } from "i18n/navigation"
 import { trackAppStoreClicked, trackSocialLinkClicked } from "lib/analytics"
 import { cn } from "lib/utils"
@@ -18,18 +20,15 @@ import {
 import { ScrollReveal } from "./ScrollReveal"
 
 const SOCIAL_LINKS = [
-  { name: "LinkedIn", href: "#", icon: <LinkedInIcon /> },
-  { name: "Facebook", href: "#", icon: <FacebookIcon /> },
-  { name: "Instagram", href: "#", icon: <InstagramIcon /> },
-  { name: "YouTube", href: "#", icon: <YouTubeIcon /> },
-]
-
-const FOOTER_LINKS = [
-  { label: "About", href: "#" },
-  { label: "Help Center", href: "#" },
+  { key: "linkedin", icon: <LinkedInIcon /> },
+  { key: "facebook", icon: <FacebookIcon /> },
+  { key: "instagram", icon: <InstagramIcon /> },
+  { key: "youtube", icon: <YouTubeIcon /> },
 ]
 
 export function Footer() {
+  const t = useTranslations("footer")
+
   return (
     <footer className="border-t border-gray-100 bg-gray-50/80 dark:border-gray-800 dark:bg-gray-900/80">
       <div className="mx-auto max-w-5xl px-6 lg:px-8">
@@ -39,21 +38,21 @@ export function Footer() {
             {/* Left column */}
             <div>
               <Link href="/" className="inline-block">
-                <span className="text-xl font-bold text-gray-900 dark:text-white">melodix</span>
+                <span className="text-xl font-bold text-gray-900 dark:text-white">{t("brandName")}</span>
               </Link>
 
               {/* Social icons */}
               <div className="mt-5 flex items-center gap-3">
                 {SOCIAL_LINKS.map((link) => (
                   <a
-                    key={link.name}
-                    href={link.href}
-                    onClick={() => trackSocialLinkClicked(link.name.toLowerCase())}
+                    key={link.key}
+                    href="#"
+                    onClick={() => trackSocialLinkClicked(link.key)}
                     className={cn(
                       "flex size-9 items-center justify-center rounded-full text-gray-400 transition-all duration-300",
                       "hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-200"
                     )}
-                    aria-label={link.name}
+                    aria-label={link.key}
                   >
                     {link.icon}
                   </a>
@@ -70,24 +69,30 @@ export function Footer() {
                 )}
               >
                 <GlobeSmallIcon />
-                Other countries
+                {t("otherCountries")}
               </button>
             </div>
 
             {/* Right column */}
             <div className="sm:text-right">
-              <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">Melodix</h3>
+              <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">{t("heading")}</h3>
               <ul className="space-y-2.5">
-                {FOOTER_LINKS.map((link) => (
-                  <li key={link.label}>
-                    <a
-                      href={link.href}
-                      className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
-                    >
-                      {link.label}
-                    </a>
-                  </li>
-                ))}
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    {t("about")}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#"
+                    className="text-sm text-gray-500 transition-colors hover:text-gray-900 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    {t("helpCenter")}
+                  </a>
+                </li>
               </ul>
 
               <div className="mt-6 space-y-1.5">
@@ -96,14 +101,14 @@ export function Footer() {
                   className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-gray-900 sm:justify-end dark:text-gray-400 dark:hover:text-white"
                 >
                   <MailIcon className="shrink-0" />
-                  info@melodix.com
+                  {t("email")}
                 </a>
                 <a
                   href="tel:08000233029"
                   className="flex items-center gap-2 text-sm text-gray-500 transition-colors hover:text-gray-900 sm:justify-end dark:text-gray-400 dark:hover:text-white"
                 >
                   <PhoneIcon className="shrink-0" />
-                  0800 023 3029
+                  {t("phone")}
                 </a>
               </div>
             </div>
@@ -121,12 +126,12 @@ export function Footer() {
                 "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3.5 py-2 text-white transition-opacity hover:opacity-80",
                 "dark:bg-white dark:text-gray-900"
               )}
-              aria-label="Download on the App Store"
+              aria-label={t("appStore.appStoreLabel")}
             >
               <AppleIcon />
               <div className="text-left">
-                <div className="text-[8px] leading-none opacity-70">Download on the</div>
-                <div className="text-xs leading-tight font-semibold">App Store</div>
+                <div className="text-[8px] leading-none opacity-70">{t("appStore.downloadOn")}</div>
+                <div className="text-xs leading-tight font-semibold">{t("appStore.appStore")}</div>
               </div>
             </a>
 
@@ -137,24 +142,24 @@ export function Footer() {
                 "inline-flex items-center gap-2 rounded-lg bg-gray-900 px-3.5 py-2 text-white transition-opacity hover:opacity-80",
                 "dark:bg-white dark:text-gray-900"
               )}
-              aria-label="Get it on Google Play"
+              aria-label={t("appStore.googlePlayLabel")}
             >
               <GooglePlayIcon />
               <div className="text-left">
-                <div className="text-[8px] leading-none opacity-70">GET IT ON</div>
-                <div className="text-xs leading-tight font-semibold">Google Play</div>
+                <div className="text-[8px] leading-none opacity-70">{t("appStore.getItOn")}</div>
+                <div className="text-xs leading-tight font-semibold">{t("appStore.googlePlay")}</div>
               </div>
             </a>
           </div>
 
           {/* Copyright + links */}
           <div className="flex flex-wrap items-center gap-4 text-xs text-gray-400 dark:text-gray-500">
-            <span>&copy; 2026 Melodix</span>
+            <span>{t("copyright")}</span>
             <a href="#" className="transition-colors hover:text-gray-600 dark:hover:text-gray-300">
-              Privacy
+              {t("privacy")}
             </a>
             <a href="#" className="transition-colors hover:text-gray-600 dark:hover:text-gray-300">
-              General terms
+              {t("generalTerms")}
             </a>
           </div>
         </div>
