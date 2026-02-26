@@ -49,7 +49,7 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-1/2 right-4 -translate-y-1/2 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
+              className="absolute top-1/2 right-2 flex size-10 -translate-y-1/2 items-center justify-center text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
               aria-label={showPassword ? t("hide") : t("show")}
             >
               {showPassword ? <EyeOffIcon /> : <EyeIcon />}

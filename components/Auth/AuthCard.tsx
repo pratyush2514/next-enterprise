@@ -17,7 +17,7 @@ export function AuthCard({ children, className }: AuthCardProps) {
   return (
     <motion.div
       className={cn(
-        "w-full max-w-md rounded-2xl border border-transparent bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900",
+        "w-full max-w-md rounded-2xl border border-transparent bg-white p-5 shadow-xl sm:p-8 dark:border-gray-800 dark:bg-gray-900",
         className
       )}
       initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}

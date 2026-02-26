@@ -60,7 +60,7 @@ export function LoginForm() {
   return (
     <AuthCard>
       <div className="mb-8 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t("login.title")}</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">{t("login.title")}</h1>
         <p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{t("login.subtitle")}</p>
       </div>
 
@@ -103,7 +103,7 @@ export function LoginForm() {
         <div className="flex justify-end">
           <Link
             href={AUTH_ROUTES.FORGOT_PASSWORD}
-            className="text-sm text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400"
+            className="inline-block py-2 text-sm text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400"
           >
             {t("login.forgotPassword")}
           </Link>
