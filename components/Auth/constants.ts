@@ -1,6 +1,7 @@
 export const AUTH_ROUTES = {
   LOGIN: "/login",
   SIGNUP: "/signup",
+  FORGOT_PASSWORD: "/auth/forgot-password",
   SONG: "/song",
 } as const
 

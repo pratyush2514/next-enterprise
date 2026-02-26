@@ -6,6 +6,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { useForm } from "react-hook-form"
 
+import { Link } from "i18n/navigation"
 import { createClient } from "lib/supabase/client"
 import { cn } from "lib/utils"
 import { type LoginFormData, loginSchema } from "lib/validations/auth"
@@ -100,12 +101,12 @@ export function LoginForm() {
         />
 
         <div className="flex justify-end">
-          <a
-            href="#"
+          <Link
+            href={AUTH_ROUTES.FORGOT_PASSWORD}
             className="text-sm text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400"
           >
             {t("login.forgotPassword")}
-          </a>
+          </Link>
         </div>
 
         <button
