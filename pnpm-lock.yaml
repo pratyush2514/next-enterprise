@@ -26,6 +26,9 @@ overrides:
 importers:
   .:
     dependencies:
+      "@hookform/resolvers":
+        specifier: ^5.2.2
+        version: 5.2.2(react-hook-form@7.71.2(react@18.3.1))
       "@next/bundle-analyzer":
         specifier: ^15.5.12
         version: 15.5.12
@@ -92,6 +95,12 @@ importers:
       "@semantic-release/release-notes-generator":
         specifier: ^13.0.0
         version: 13.0.0(semantic-release@22.0.12(typescript@5.9.3))
+      "@supabase/ssr":
+        specifier: ^0.8.0
+        version: 0.8.0(@supabase/supabase-js@2.97.0)
+      "@supabase/supabase-js":
+        specifier: ^2.97.0
+        version: 2.97.0
       "@t3-oss/env-nextjs":
         specifier: ^0.10.1
         version: 0.10.1(typescript@5.9.3)(zod@3.25.76)
@@ -107,6 +116,9 @@ importers:
       framer-motion:
         specifier: ^12.34.0
         version: 12.34.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      lru-cache:
+        specifier: ^11.2.6
+        version: 11.2.6
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@18.3.1)
@@ -128,6 +140,9 @@ importers:
       react-dom:
         specifier: ^18.2.0
         version: 18.3.1(react@18.3.1)
+      react-hook-form:
+        specifier: ^7.71.2
+        version: 7.71.2(react@18.3.1)
       tailwind-merge:
         specifier: ^2.6.0
         version: 2.6.1
@@ -255,6 +270,9 @@ importers:
       eslint-plugin-tailwindcss:
         specifier: ^3.18.0
         version: 3.18.2(tailwindcss@4.1.18)
+      fast-check:
+        specifier: ^4.5.3
+        version: 4.5.3
       fetch-mock:
         specifier: ^9.11.0
         version: 9.11.0(node-fetch@2.7.0)
@@ -1629,6 +1647,12 @@ packages:
   "@hapi/topo@5.1.0":
     resolution:
       { integrity: sha512-foQZKJig7Ob0BMAYBfcJk8d77QtOe7Wo4ox7ff1lQYoNNAb6jwcY1ncdoy2e9wQZzvNy7ODZCYJkK8kzmcAnAg== }
+
+  "@hookform/resolvers@5.2.2":
+    resolution:
+      { integrity: sha512-A/IxlMLShx3KjV/HeTcTfaMxdwy690+L/ZADoeaTltLx+CVuzkeVIPuybK3jrRfw7YZnmdKsVVHAlEPIAEUNlA== }
+    peerDependencies:
+      react-hook-form: ^7.55.0
 
   "@humanfs/core@0.19.1":
     resolution:
@@ -3865,6 +3889,10 @@ packages:
     resolution:
       { integrity: sha512-V4BG07kuYSUkTCSBHG8G8TNhM+F19jXFWnQtzj+we8DrkpSBCee9Z3Ms8yiGer/dlmhe35/Xdgyo3/0rQKg7YA== }
 
+  "@standard-schema/utils@0.3.0":
+    resolution:
+      { integrity: sha512-e7Mew686owMaPJVNNLs55PUvgz371nKgwsc4vxE49zsODpJEnxgxRo2y/OKrqueavXgZNMDVj3DdHFlaSAeU8g== }
+
   "@storybook/addon-actions@8.6.14":
     resolution:
       { integrity: sha512-mDQxylxGGCQSK7tJPkD144J8jWh9IU9ziJMHfB84PKpI/V5ZgqMDnpr2bssTrUaGDqU5e1/z8KcRF+Melhs9pQ== }
@@ -4131,6 +4159,42 @@ packages:
       { integrity: sha512-dAbL0XOekyT6XsF49R6Etj3WxQ/LpdJDIswUUeHgVJ6/yd2opZOGbPxnwA3zlmAh1c0tvpPyhSDXxSG79u8e4Q== }
     peerDependencies:
       storybook: ^8.2.0 || ^8.3.0-0 || ^8.4.0-0 || ^8.5.0-0 || ^8.6.0-0
+
+  "@supabase/auth-js@2.97.0":
+    resolution:
+      { integrity: sha512-2Og/1lqp+AIavr8qS2X04aSl8RBY06y4LrtIAGxat06XoXYiDxKNQMQzWDAKm1EyZFZVRNH48DO5YvIZ7la5fQ== }
+    engines: { node: ">=20.0.0" }
+
+  "@supabase/functions-js@2.97.0":
+    resolution:
+      { integrity: sha512-fSaA0ZeBUS9hMgpGZt5shIZvfs3Mvx2ZdajQT4kv/whubqDBAp3GU5W8iIXy21MRvKmO2NpAj8/Q6y+ZkZyF/w== }
+    engines: { node: ">=20.0.0" }
+
+  "@supabase/postgrest-js@2.97.0":
+    resolution:
+      { integrity: sha512-g4Ps0eaxZZurvfv/KGoo2XPZNpyNtjth9aW8eho9LZWM0bUuBtxPZw3ZQ6ERSpEGogshR+XNgwlSPIwcuHCNww== }
+    engines: { node: ">=20.0.0" }
+
+  "@supabase/realtime-js@2.97.0":
+    resolution:
+      { integrity: sha512-37Jw0NLaFP0CZd7qCan97D1zWutPrTSpgWxAw6Yok59JZoxp4IIKMrPeftJ3LZHmf+ILQOPy3i0pRDHM9FY36Q== }
+    engines: { node: ">=20.0.0" }
+
+  "@supabase/ssr@0.8.0":
+    resolution:
+      { integrity: sha512-/PKk8kNFSs8QvvJ2vOww1mF5/c5W8y42duYtXvkOSe+yZKRgTTZywYG2l41pjhNomqESZCpZtXuWmYjFRMV+dw== }
+    peerDependencies:
+      "@supabase/supabase-js": ^2.76.1
+
+  "@supabase/storage-js@2.97.0":
+    resolution:
+      { integrity: sha512-9f6NniSBfuMxOWKwEFb+RjJzkfMdJUwv9oHuFJKfe/5VJR8cd90qw68m6Hn0ImGtwG37TUO+QHtoOechxRJ1Yg== }
+    engines: { node: ">=20.0.0" }
+
+  "@supabase/supabase-js@2.97.0":
+    resolution:
+      { integrity: sha512-kTD91rZNO4LvRUHv4x3/4hNmsEd2ofkYhuba2VMUPRVef1RCmnHtm7rIws38Fg0yQnOSZOplQzafn0GSiy6GVg== }
+    engines: { node: ">=20.0.0" }
 
   "@swc/core-darwin-arm64@1.15.11":
     resolution:
@@ -4493,6 +4557,10 @@ packages:
     resolution:
       { integrity: sha512-dISoDXWWQwUquiKsyZ4Ng+HX2KsPL7LyHKHQwgGFEA3IaKac4Obd+h2a/a6waisAoepJlBcx9paWqjA8/HVjCw== }
 
+  "@types/phoenix@1.6.7":
+    resolution:
+      { integrity: sha512-oN9ive//QSBkf19rfDv45M7eZPi0eEXylht2OLEXicu5b4KoQ1OzXIw+xDSGWxSxe1JmepRR/ZH283vsu518/Q== }
+
   "@types/prop-types@15.7.15":
     resolution:
       { integrity: sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw== }
@@ -4534,6 +4602,10 @@ packages:
   "@types/wait-on@5.3.4":
     resolution:
       { integrity: sha512-EBsPjFMrFlMbbUFf9D1Fp+PAB2TwmUn7a3YtHyD9RLuTIk1jDd8SxXVAoez2Ciy+8Jsceo2MYEYZzJ/DvorOKw== }
+
+  "@types/ws@8.18.1":
+    resolution:
+      { integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg== }
 
   "@types/yargs-parser@21.0.3":
     resolution:
@@ -5673,6 +5745,11 @@ packages:
     resolution:
       { integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg== }
 
+  cookie@1.1.1:
+    resolution:
+      { integrity: sha512-ei8Aos7ja0weRpFzJnEA9UHJ/7XQmqglbRwnf2ATjcB9Wq874VKH9kfjjirM6UhU2/E5fFYadylyhFldcqSidQ== }
+    engines: { node: ">=18" }
+
   core-js-compat@3.48.0:
     resolution:
       { integrity: sha512-OM4cAF3D6VtH/WkLtWvyNC56EZVXsZdU3iqaMG2B4WvYrlqU831pc4UtG5yp0sE9z8Y02wVN7PjW5Zf9Gt0f1Q== }
@@ -6415,6 +6492,11 @@ packages:
       { integrity: sha512-hMQ4CX1p1izmuLYyZqLMO/qGNw10wSv9QDCPfzXfyFrOaCSSoRfqE1Kf1s5an66J5JZC62NewG+mK49jOCtQew== }
     engines: { node: ">=4" }
 
+  fast-check@4.5.3:
+    resolution:
+      { integrity: sha512-IE9csY7lnhxBnA8g/WI5eg/hygA6MGWJMSNfFRrBlXUciADEhS1EDB0SIsMSvzubzIlOBbVITSsypCsW717poA== }
+    engines: { node: ">=12.17.0" }
+
   fast-content-type-parse@3.0.0:
     resolution:
       { integrity: sha512-ZvLdcY8P+N8mGQJahJV5G4U88CSvT1rP8ApL6uETe88MBXrBHAkZlSEySdUlyztF7ccb+Znos3TFqaepHxdhBg== }
@@ -6993,6 +7075,11 @@ packages:
       { integrity: sha512-5gs5ytaNjBrh5Ow3zrvdUUY+0VxIuWVL4i9irt6friV+BqdCfmV11CQTWMiBYWHbXhco+J1kHfTOUkePhCDvMA== }
     engines: { node: ">=18" }
     hasBin: true
+
+  iceberg-js@0.8.1:
+    resolution:
+      { integrity: sha512-1dhVQZXhcHje7798IVM+xoo/1ZdVfzOMIc8/rgVSijRK38EDqOJoGula9N/8ZI5RD8QTxNQtK/Gozpr+qUqRRA== }
+    engines: { node: ">=20.0.0" }
 
   iconv-lite@0.4.24:
     resolution:
@@ -7975,6 +8062,11 @@ packages:
   lru-cache@10.4.3:
     resolution:
       { integrity: sha512-JNAzZcXrCt42VGLuYz0zfAzDfAvJWW6AfYlDBQyDV5DClI2m5sAmK+OIO7s59XfsRsWHp02jAJrRadPRGTt6SQ== }
+
+  lru-cache@11.2.6:
+    resolution:
+      { integrity: sha512-ESL2CrkS/2wTPfuend7Zhkzo2u0daGJ/A2VucJOgQ/C48S/zB8MMeMHSGKYpXhIjbPxfuezITkaBH1wqv00DDQ== }
+    engines: { node: 20 || >=22 }
 
   lru-cache@5.1.1:
     resolution:
@@ -9035,6 +9127,10 @@ packages:
     resolution:
       { integrity: sha512-bVWawvoZoBYpp6yIoQtQXHZjmz35RSVHnUOTefl8Vcjr8snTPY1wnpSPMWekcFwbxI6gtmT7rSYPFvz71ldiOA== }
 
+  pure-rand@7.0.1:
+    resolution:
+      { integrity: sha512-oTUZM/NAZS8p7ANR3SHh30kXB+zK2r2BPcEn/awJIbOvq82WoMN4p62AWWp3Hhw50G0xMsw1mhIBLqHw64EcNQ== }
+
   qs@6.14.2:
     resolution:
       { integrity: sha512-V/yCWTTF7VJ9hIh18Ugr2zhJMP01MY7c5kh4J870L7imm6/DIzBsNLTXzMwUA3yZ5b/KBqLx8Kp3uRvd7xSe3Q== }
@@ -9097,6 +9193,13 @@ packages:
       { integrity: sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw== }
     peerDependencies:
       react: ^18.3.1
+
+  react-hook-form@7.71.2:
+    resolution:
+      { integrity: sha512-1CHvcDYzuRUNOflt4MOq3ZM46AronNJtQ1S7tnX6YN4y72qhgiUItpacZUAQ0TyWYci3yz1X+rXaSxiuEm86PA== }
+    engines: { node: ">=18.0.0" }
+    peerDependencies:
+      react: ^16.8.0 || ^17 || ^18 || ^19
 
   react-is@17.0.2:
     resolution:
@@ -11904,6 +12007,11 @@ snapshots:
     dependencies:
       "@hapi/hoek": 9.3.0
 
+  "@hookform/resolvers@5.2.2(react-hook-form@7.71.2(react@18.3.1))":
+    dependencies:
+      "@standard-schema/utils": 0.3.0
+      react-hook-form: 7.71.2(react@18.3.1)
+
   "@humanfs/core@0.19.1": {}
 
   "@humanfs/node@0.16.7":
@@ -13890,6 +13998,8 @@ snapshots:
     dependencies:
       "@sinonjs/commons": 3.0.1
 
+  "@standard-schema/utils@0.3.0": {}
+
   "@storybook/addon-actions@8.6.14(storybook@8.6.15(prettier@3.8.1))":
     dependencies:
       "@storybook/global": 5.0.0
@@ -14292,6 +14402,49 @@ snapshots:
     dependencies:
       storybook: 8.6.15(prettier@3.8.1)
 
+  "@supabase/auth-js@2.97.0":
+    dependencies:
+      tslib: 2.8.1
+
+  "@supabase/functions-js@2.97.0":
+    dependencies:
+      tslib: 2.8.1
+
+  "@supabase/postgrest-js@2.97.0":
+    dependencies:
+      tslib: 2.8.1
+
+  "@supabase/realtime-js@2.97.0":
+    dependencies:
+      "@types/phoenix": 1.6.7
+      "@types/ws": 8.18.1
+      tslib: 2.8.1
+      ws: 8.19.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
+  "@supabase/ssr@0.8.0(@supabase/supabase-js@2.97.0)":
+    dependencies:
+      "@supabase/supabase-js": 2.97.0
+      cookie: 1.1.1
+
+  "@supabase/storage-js@2.97.0":
+    dependencies:
+      iceberg-js: 0.8.1
+      tslib: 2.8.1
+
+  "@supabase/supabase-js@2.97.0":
+    dependencies:
+      "@supabase/auth-js": 2.97.0
+      "@supabase/functions-js": 2.97.0
+      "@supabase/postgrest-js": 2.97.0
+      "@supabase/realtime-js": 2.97.0
+      "@supabase/storage-js": 2.97.0
+    transitivePeerDependencies:
+      - bufferutil
+      - utf-8-validate
+
   "@swc/core-darwin-arm64@1.15.11":
     optional: true
 
@@ -14573,6 +14726,8 @@ snapshots:
 
   "@types/parse-json@4.0.2": {}
 
+  "@types/phoenix@1.6.7": {}
+
   "@types/prop-types@15.7.15": {}
 
   "@types/react-dom@18.3.7(@types/react@18.3.28)":
@@ -14598,6 +14753,10 @@ snapshots:
   "@types/uuid@9.0.8": {}
 
   "@types/wait-on@5.3.4":
+    dependencies:
+      "@types/node": 20.19.33
+
+  "@types/ws@8.18.1":
     dependencies:
       "@types/node": 20.19.33
 
@@ -15638,6 +15797,8 @@ snapshots:
 
   convert-source-map@2.0.0: {}
 
+  cookie@1.1.1: {}
+
   core-js-compat@3.48.0:
     dependencies:
       browserslist: 4.28.1
@@ -16444,6 +16605,10 @@ snapshots:
       iconv-lite: 0.4.24
       tmp: 0.0.33
 
+  fast-check@4.5.3:
+    dependencies:
+      pure-rand: 7.0.1
+
   fast-content-type-parse@3.0.0: {}
 
   fast-deep-equal@3.1.3: {}
@@ -16943,6 +17108,8 @@ snapshots:
   human-signals@8.0.1: {}
 
   husky@9.1.7: {}
+
+  iceberg-js@0.8.1: {}
 
   iconv-lite@0.4.24:
     dependencies:
@@ -17943,6 +18110,8 @@ snapshots:
 
   lru-cache@10.4.3: {}
 
+  lru-cache@11.2.6: {}
+
   lru-cache@5.1.1:
     dependencies:
       yallist: 3.1.1
@@ -18709,6 +18878,8 @@ snapshots:
 
   pure-rand@6.1.0: {}
 
+  pure-rand@7.0.1: {}
+
   qs@6.14.2:
     dependencies:
       side-channel: 1.1.0
@@ -18767,6 +18938,10 @@ snapshots:
       loose-envify: 1.4.0
       react: 18.3.1
       scheduler: 0.23.2
+
+  react-hook-form@7.71.2(react@18.3.1):
+    dependencies:
+      react: 18.3.1
 
   react-is@17.0.2: {}
 
