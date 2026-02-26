@@ -10,11 +10,11 @@ type AuthFooterLinkProps = {
 
 export function AuthFooterLink({ text, linkText, href }: AuthFooterLinkProps) {
   return (
-    <p className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+    <p className="mt-6 py-2 text-center text-sm text-gray-500 dark:text-gray-400">
       {text}{" "}
       <Link
         href={href}
-        className="font-semibold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
+        className="inline-block py-1 font-semibold text-emerald-600 transition-colors hover:text-emerald-500 dark:text-emerald-400 dark:hover:text-emerald-300"
       >
         {linkText}
       </Link>

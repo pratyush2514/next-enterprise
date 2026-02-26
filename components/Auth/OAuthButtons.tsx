@@ -41,7 +41,7 @@ export function OAuthButtons() {
         type="button"
         onClick={handleGoogleSignIn}
         className={cn(
-          "flex w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition-all duration-300",
+          "flex min-h-[44px] w-full items-center justify-center gap-3 rounded-full border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-700 transition-all duration-300",
           "hover:bg-gray-50 hover:shadow-sm",
           "dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
         )}
