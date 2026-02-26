@@ -131,7 +131,7 @@ export default function NotFoundContent() {
         {/* 404 — with vinyl record as the "0" */}
         <motion.p
           variants={childVariants}
-          className="text-[8rem] leading-none font-bold tracking-tighter text-gray-900 sm:text-[10rem] md:text-[12rem] dark:text-white"
+          className="text-[5rem] leading-none font-bold tracking-tighter text-gray-900 sm:text-[8rem] md:text-[10rem] lg:text-[12rem] dark:text-white"
         >
           4<VinylRecord reducedMotion={prefersReducedMotion} />4
         </motion.p>

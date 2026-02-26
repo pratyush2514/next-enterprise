@@ -66,7 +66,12 @@ function PosterSection({
   return (
     <div className={className}>
       <h3 className="mb-2.5 text-sm font-bold text-white">{title}</h3>
-      <div className="grid gap-3" style={{ gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` }}>
+      <div
+        className={cn(
+          "grid gap-3",
+          columns === 5 ? "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5" : "grid-cols-2 sm:grid-cols-4"
+        )}
+      >
         {posters.map((poster, i) => (
           <PosterCard key={`${keyPrefix}-${i}`} poster={poster} label={labels?.[i]} />
         ))}
