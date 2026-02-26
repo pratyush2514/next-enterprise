@@ -1,6 +1,7 @@
 "use client"
 
 import React from "react"
+import { useTranslations } from "next-intl"
 
 import type { FavoriteTrack } from "hooks/useFavorites"
 import { useFavorites } from "hooks/useFavorites"
@@ -13,6 +14,7 @@ interface FavoriteButtonProps {
 }
 
 export function FavoriteButton({ track, className, size = "sm" }: FavoriteButtonProps) {
+  const t = useTranslations("songs.favorites")
   const { isFavorite, toggleFavorite } = useFavorites()
   const favorited = isFavorite(track.trackId)
 
@@ -38,7 +40,7 @@ export function FavoriteButton({ track, className, size = "sm" }: FavoriteButton
           : "bg-black/40 text-white/80 backdrop-blur-sm hover:bg-black/60 hover:text-white",
         className
       )}
-      aria-label={favorited ? `Remove ${track.trackName} from favorites` : `Add ${track.trackName} to favorites`}
+      aria-label={favorited ? t("remove", { track: track.trackName }) : t("add", { track: track.trackName })}
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"

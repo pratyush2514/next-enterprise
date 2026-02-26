@@ -5,7 +5,7 @@
  * @author @dorianbaffier
  * @license MIT
  * @website https://kokonutui.com
- *
+ * @pratyush2514
  * Adapted for this project:
  * - Import paths changed from @/ to bare paths
  * - NotificationCenter demo removed (replaced by AudioPreviewOverlay)
@@ -194,52 +194,55 @@ type ProgressBarProps = {
   currentTime: number
   totalDuration: number
   onSeek: (newTime: number) => void
+  ariaLabel?: string
 }
 
-const ProgressBar = React.memo(({ currentTime, totalDuration, onSeek }: ProgressBarProps) => {
-  const progress = totalDuration > 0 ? (currentTime / totalDuration) * PROGRESS_PERCENTAGE_MULTIPLIER : 0
+const ProgressBar = React.memo(
+  ({ currentTime, totalDuration, onSeek, ariaLabel = "Playback progress" }: ProgressBarProps) => {
+    const progress = totalDuration > 0 ? (currentTime / totalDuration) * PROGRESS_PERCENTAGE_MULTIPLIER : 0
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const bar = e.currentTarget
-    const rect = bar.getBoundingClientRect()
-    const x = e.clientX - rect.left
-    const percent = x / rect.width
-    const newTime = Math.min(Math.max(MIN_TIME, percent * totalDuration), totalDuration)
-    onSeek(newTime)
-  }
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === "ArrowRight") {
-      e.preventDefault()
-      onSeek(Math.min(currentTime + SEEK_STEP_SECONDS, totalDuration))
-    } else if (e.key === "ArrowLeft") {
-      e.preventDefault()
-      onSeek(Math.max(currentTime - SEEK_STEP_SECONDS, MIN_TIME))
+    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+      const bar = e.currentTarget
+      const rect = bar.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const percent = x / rect.width
+      const newTime = Math.min(Math.max(MIN_TIME, percent * totalDuration), totalDuration)
+      onSeek(newTime)
     }
-  }
 
-  return (
-    <>
-      <div className="flex justify-between text-xs font-medium text-zinc-400 dark:text-zinc-500">
-        <span className="tabular-nums">{formatTime(currentTime)}</span>
-        <span className="tabular-nums">{formatTime(totalDuration)}</span>
-      </div>
-      <div
-        aria-label="Playback progress"
-        aria-valuemax={totalDuration}
-        aria-valuemin={MIN_TIME}
-        aria-valuenow={currentTime}
-        className="relative z-10 h-1 w-full cursor-pointer overflow-hidden rounded-full bg-white/20"
-        onClick={handleClick}
-        onKeyDown={handleKeyDown}
-        role="slider"
-        tabIndex={0}
-      >
-        <div className="h-full bg-gradient-to-r from-[#FF2E55] to-[#FF6B88]" style={{ width: `${progress}%` }} />
-      </div>
-    </>
-  )
-})
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === "ArrowRight") {
+        e.preventDefault()
+        onSeek(Math.min(currentTime + SEEK_STEP_SECONDS, totalDuration))
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault()
+        onSeek(Math.max(currentTime - SEEK_STEP_SECONDS, MIN_TIME))
+      }
+    }
+
+    return (
+      <>
+        <div className="flex justify-between text-xs font-medium text-zinc-400 dark:text-zinc-500">
+          <span className="tabular-nums">{formatTime(currentTime)}</span>
+          <span className="tabular-nums">{formatTime(totalDuration)}</span>
+        </div>
+        <div
+          aria-label={ariaLabel}
+          aria-valuemax={totalDuration}
+          aria-valuemin={MIN_TIME}
+          aria-valuenow={currentTime}
+          className="relative z-10 h-1 w-full cursor-pointer overflow-hidden rounded-full bg-white/20"
+          onClick={handleClick}
+          onKeyDown={handleKeyDown}
+          role="slider"
+          tabIndex={0}
+        >
+          <div className="h-full bg-gradient-to-r from-[#FF2E55] to-[#FF6B88]" style={{ width: `${progress}%` }} />
+        </div>
+      </>
+    )
+  }
+)
 ProgressBar.displayName = "ProgressBar"
 
 export { LiquidButton, LiquidGlassCard, VolumeBars, ProgressBar, formatTime, Pause, Play }
