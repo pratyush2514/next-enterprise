@@ -50,7 +50,9 @@
       "favorites": "Favorites",
       "noFavorites": "No favorites yet",
       "collapse": "Collapse sidebar",
-      "expand": "Expand sidebar"
+      "expand": "Expand sidebar",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
     },
 
     "hero": {

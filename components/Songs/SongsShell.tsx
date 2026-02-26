@@ -6,6 +6,7 @@ import { AudioPreviewProvider } from "hooks/useAudioPreview"
 import { FavoritesProvider } from "hooks/useFavorites"
 import { useSidebarState } from "hooks/useSidebarState"
 
+import { MenuIcon } from "./icons"
 import { PlaybackBar } from "./PlaybackBar"
 import { ProfileDropdown } from "./ProfileDropdown"
 import { Sidebar } from "./Sidebar"
@@ -30,6 +31,7 @@ export function useUpdatePlaybackTrack() {
 
 function SongsShellInner({ children }: { children: React.ReactNode }) {
   const [currentTrack, setCurrentTrack] = useState<PlaybackTrackInfo | null>(null)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { isCollapsed, toggle } = useSidebarState()
 
   const updateCurrentTrack = useCallback((track: PlaybackTrackInfo) => {
@@ -38,13 +40,25 @@ function SongsShellInner({ children }: { children: React.ReactNode }) {
 
   return (
     <SongsPlaybackContext.Provider value={updateCurrentTrack}>
-      <div className="flex h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
-        <Sidebar isCollapsed={isCollapsed} onToggle={toggle} />
+      <div className="flex h-[100dvh] bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
+        <Sidebar
+          isCollapsed={isCollapsed}
+          onToggle={toggle}
+          mobileOpen={mobileMenuOpen}
+          onMobileClose={() => setMobileMenuOpen(false)}
+        />
         <div className="flex flex-1 flex-col overflow-hidden">
           {/* Top bar */}
           <header className="flex shrink-0 items-center justify-between border-b border-gray-100 px-4 py-2.5 lg:px-6 dark:border-white/5">
-            {/* Left side — mobile menu (placeholder for future hamburger) */}
-            <div className="md:hidden" />
+            {/* Left side — mobile hamburger */}
+            <button
+              type="button"
+              onClick={() => setMobileMenuOpen(true)}
+              className="flex size-10 items-center justify-center rounded-lg text-gray-600 transition-colors hover:bg-gray-100 md:hidden dark:text-gray-400 dark:hover:bg-white/5"
+              aria-label="Open menu"
+            >
+              <MenuIcon className="size-5" />
+            </button>
             {/* Right side — profile */}
             <div className="ml-auto">
               <ProfileDropdown />
