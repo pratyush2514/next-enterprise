@@ -52,7 +52,10 @@
       "collapse": "Collapse sidebar",
       "expand": "Expand sidebar",
       "openMenu": "Open menu",
-      "closeMenu": "Close menu"
+      "closeMenu": "Close menu",
+      "createPlaylist": "Create",
+      "playlists": "Playlists",
+      "noPlaylists": "No playlists yet"
     },
 
     "hero": {
@@ -87,6 +90,16 @@
       "account": "Account",
       "signOut": "Sign out",
       "logIn": "Log in"
+    },
+
+    "playlist": {
+      "createNew": "Create New",
+      "playlistOption": "Playlist",
+      "playlistDescription": "Create a curated collection of your favorite songs",
+      "syncModeOption": "Sync Mode",
+      "syncModeDescription": "Collaborative playlists synced in real-time",
+      "comingSoon": "Coming Soon",
+      "close": "Close"
     },
 
     "authOverlay": {
