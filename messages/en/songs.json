@@ -1,0 +1,100 @@
+{
+  "songs": {
+    "pageTitle": "Songs",
+    "heading": "Your Music",
+    "subtext": "Discover, search, and play millions of tracks.",
+    "searchLabel": "Search songs",
+    "searchPlaceholder": "Search for songs, artists, or albums...",
+    "clearSearch": "Clear search",
+    "trendingNow": "Trending Now",
+    "newReleases": "New Releases",
+    "featuredTracks": "Featured tracks",
+    "searchResults": "Search results",
+    "noResults": "No results for \u201c{query}\u201d",
+    "noResultsHint": "Try searching for an artist, song, or album name",
+    "loadMore": "Load more",
+    "loading": "Loading...",
+    "loadingResults": "Loading results",
+    "tryAgain": "Try again",
+    "noPreview": "No preview",
+    "noPreviewAvailable": "No preview available",
+    "free": "Free",
+
+    "audioPreview": {
+      "label": "Audio preview for {track}",
+      "pausePreview": "Pause preview",
+      "playPreview": "Play preview",
+      "openInItunes": "Open {track} in iTunes Store"
+    },
+
+    "favorites": {
+      "add": "Add {track} to favorites",
+      "remove": "Remove {track} from favorites",
+      "title": "Your Favorites",
+      "count": "{count, plural, one {# song} other {# songs}}",
+      "empty": "No favorites yet",
+      "emptyTitle": "No favorites yet",
+      "emptyHint": "Heart the songs you love and they\u2019ll appear here.",
+      "discoverMusic": "Discover Music",
+      "signInRequired": "Sign in to see your favorites",
+      "signInDescription": "Log in or create an account to save your favorite tracks.",
+      "signIn": "Sign In",
+      "play": "Play {track}",
+      "previewUnavailable": "Preview unavailable"
+    },
+
+    "sidebar": {
+      "home": "Home",
+      "search": "Search",
+      "settings": "Settings",
+      "favorites": "Favorites",
+      "noFavorites": "No favorites yet",
+      "collapse": "Collapse sidebar",
+      "expand": "Expand sidebar"
+    },
+
+    "hero": {
+      "featured": "Featured",
+      "listenNow": "Listen Now",
+      "nowPlaying": "Now Playing"
+    },
+
+    "playbackBar": {
+      "nowPlaying": "Now Playing",
+      "play": "Play",
+      "pause": "Pause",
+      "next": "Next track",
+      "previous": "Previous track",
+      "shuffle": "Shuffle",
+      "repeat": "Repeat",
+      "volume": "Volume",
+      "mute": "Mute",
+      "unmute": "Unmute",
+      "queue": "Queue",
+      "progress": "Playback progress"
+    },
+
+    "settings": {
+      "title": "Settings",
+      "close": "Close",
+      "appearance": "Appearance",
+      "darkMode": "Dark mode"
+    },
+
+    "profile": {
+      "account": "Account",
+      "signOut": "Sign out",
+      "logIn": "Log in"
+    },
+
+    "authOverlay": {
+      "startListening": "Start listening to",
+      "byArtist": "by {artist}",
+      "subtitle": "Sign up free to play previews and save your favorite tracks.",
+      "signUpFree": "Sign Up Free",
+      "haveAccount": "Already have an account? ",
+      "logIn": "Log in",
+      "close": "Close"
+    }
+  }
+}
