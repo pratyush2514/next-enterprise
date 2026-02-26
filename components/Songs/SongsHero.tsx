@@ -188,7 +188,7 @@ export function SongsHero({ featured }: SongsHeroProps) {
                         <div
                           className={cn(
                             "flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200",
-                            isActive ? "scale-100" : "scale-0 group-hover:scale-100"
+                            isActive ? "scale-100" : "scale-75 sm:scale-0 sm:group-hover:scale-100"
                           )}
                         >
                           <PlayLargeIcon className="size-4" />

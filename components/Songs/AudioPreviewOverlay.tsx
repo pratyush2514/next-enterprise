@@ -58,8 +58,10 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
         className="flex h-full flex-col items-center justify-center gap-2 overflow-hidden rounded-lg border-0 bg-black/50 p-3 dark:bg-black/60"
       >
         {/* Track info */}
-        <h4 className="w-full min-w-0 truncate text-center text-sm font-semibold text-white">{result.trackName}</h4>
-        <p className="w-full min-w-0 truncate text-center text-xs text-white/70">{result.artistName}</p>
+        <h4 className="w-full min-w-0 truncate text-center text-xs font-semibold text-white sm:text-sm">
+          {result.trackName}
+        </h4>
+        <p className="w-full min-w-0 truncate text-center text-[10px] text-white/70 sm:text-xs">{result.artistName}</p>
 
         {/* Volume bars + play control */}
         <div className="flex items-center gap-3">
@@ -67,7 +69,7 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
 
           <LiquidButton
             aria-label={isThisTrackPlaying ? t("audioPreview.pausePreview") : t("audioPreview.playPreview")}
-            className="h-10 w-10 rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
+            className="h-11 min-h-[44px] w-11 min-w-[44px] rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
             size="icon"
             variant="ghost"
             onClick={handleToggle}

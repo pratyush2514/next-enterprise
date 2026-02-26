@@ -87,7 +87,8 @@ export const SongsTrackCard = React.memo(function SongsTrackCard({
   return (
     <motion.div
       {...containerProps}
-      whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
+      whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 200, damping: 30 }}
       className={cn(
         "group relative flex cursor-pointer flex-col overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.06] dark:bg-gray-900",
