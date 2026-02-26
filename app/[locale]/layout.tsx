@@ -4,8 +4,8 @@ import { getMessages, setRequestLocale } from "next-intl/server"
 
 import { PostHogProvider } from "components/PostHogProvider/PostHogProvider"
 import { ThemeProvider } from "components/ThemeProvider/ThemeProvider"
-import { ThemeToggle } from "components/ThemeToggle/ThemeToggle"
 import { routing } from "i18n/routing"
+import { AuthProvider } from "lib/contexts/auth-context"
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }))
@@ -32,8 +32,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider>
             <PostHogProvider>
-              <ThemeToggle />
-              {children}
+              <AuthProvider>{children}</AuthProvider>
             </PostHogProvider>
           </ThemeProvider>
         </NextIntlClientProvider>

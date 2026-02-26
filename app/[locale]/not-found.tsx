@@ -1,8 +1,9 @@
 "use client"
 
 import { motion, useReducedMotion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
-import { ArrowRightIcon, HomeIcon } from "components/Landing/icons"
+import { ArrowRightIcon } from "components/Landing/icons"
 import { Link } from "i18n/navigation"
 import { trackNotFoundClicked } from "lib/analytics"
 import { cn } from "lib/utils"
@@ -78,6 +79,7 @@ function VinylRecord({ reducedMotion }: { reducedMotion: boolean | null }) {
 /* ------------------------------------------------------------------ */
 
 export default function NotFound() {
+  const t = useTranslations("notFound")
   const prefersReducedMotion = useReducedMotion()
 
   const containerVariants = {
@@ -141,7 +143,7 @@ export default function NotFound() {
           variants={childVariants}
           className="mt-4 text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl md:text-4xl dark:text-white"
         >
-          Track not found
+          {t("heading")}
         </motion.h1>
 
         {/* Subtext */}
@@ -149,7 +151,7 @@ export default function NotFound() {
           variants={childVariants}
           className="mx-auto mt-4 max-w-md text-base leading-relaxed text-gray-500 dark:text-gray-400"
         >
-          The song you&apos;re looking for seems to have skipped off the playlist. Let&apos;s get you back to the music.
+          {t("subtext")}
         </motion.p>
 
         {/* CTAs */}
@@ -168,13 +170,19 @@ export default function NotFound() {
               "dark:focus-visible:ring-offset-gray-950"
             )}
           >
-            <HomeIcon className="size-5" />
-            Back Home
+            <svg viewBox="0 0 20 20" fill="currentColor" className="size-5" aria-hidden="true">
+              <path
+                fillRule="evenodd"
+                d="M9.293 2.293a1 1 0 011.414 0l7 7A1 1 0 0117 11h-1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-3a1 1 0 00-1-1H9a1 1 0 00-1 1v3a1 1 0 01-1 1H5a1 1 0 01-1-1v-6H3a1 1 0 01-.707-1.707l7-7z"
+                clipRule="evenodd"
+              />
+            </svg>
+            {t("backHome")}
           </Link>
 
           <Link
-            href="/catalog"
-            onClick={() => trackNotFoundClicked("catalog")}
+            href="/song"
+            onClick={() => trackNotFoundClicked("song")}
             className={cn(
               "inline-flex items-center gap-2 rounded-full border px-8 py-3.5 text-base font-semibold",
               "border-gray-200 bg-white text-gray-700",
@@ -184,7 +192,7 @@ export default function NotFound() {
               "dark:focus-visible:ring-offset-gray-950"
             )}
           >
-            Start Listening
+            {t("exploreCatalog")}
             <ArrowRightIcon className="size-5" />
           </Link>
         </motion.div>

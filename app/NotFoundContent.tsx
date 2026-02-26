@@ -178,7 +178,7 @@ export default function NotFoundContent() {
           </Link>
 
           <Link
-            href="/catalog"
+            href="/song"
             className={cn(
               "inline-flex items-center gap-2 rounded-full border px-8 py-3.5 text-base font-semibold",
               "border-gray-200 bg-white text-gray-700",
