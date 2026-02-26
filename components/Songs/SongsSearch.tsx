@@ -38,7 +38,7 @@ export function SongsSearch({ value, onChange, className }: SongsSearchProps) {
       {value && (
         <button
           onClick={() => onChange("")}
-          className="absolute top-1/2 right-3.5 -translate-y-1/2 rounded-full p-0.5 text-white/30 transition-colors duration-200 hover:text-white/60"
+          className="absolute top-1/2 right-2 flex min-h-[44px] min-w-[44px] -translate-y-1/2 items-center justify-center rounded-full text-white/30 transition-colors duration-200 hover:text-white/60"
           aria-label={t("clearSearch")}
           type="button"
         >
