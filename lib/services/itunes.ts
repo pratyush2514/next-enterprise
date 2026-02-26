@@ -1,9 +1,5 @@
-/** Shared type for poster artwork returned by the iTunes API */
-export interface PreviewPoster {
-  trackName: string
-  artistName: string
-  artworkUrl: string
-}
+import type { PreviewPoster } from "components/Landing/AppPreview"
+export type { PreviewPoster }
 
 import { env } from "../../env.mjs"
 
@@ -16,9 +12,11 @@ export const POSTER_GENRES = {
 } as const
 
 interface ITunesTrack {
+  trackId: number
   trackName: string
   artistName: string
   artworkUrl100: string
+  previewUrl?: string
 }
 
 /** Fetch poster artwork from the iTunes Search API */
@@ -36,9 +34,11 @@ export async function fetchPosters(term: string, limit: number): Promise<Preview
     return (data.results ?? [])
       .filter((t) => t.trackName && t.artistName && t.artworkUrl100)
       .map((t) => ({
+        trackId: t.trackId,
         trackName: t.trackName,
         artistName: t.artistName,
         artworkUrl: t.artworkUrl100.replace("100x100", "300x300"),
+        previewUrl: t.previewUrl,
       }))
   } catch {
     return []
