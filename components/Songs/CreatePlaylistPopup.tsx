@@ -53,7 +53,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                 transition={{ duration: 0.2 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild>
+            <Dialog.Content asChild aria-describedby={undefined}>
               <motion.div
                 className={cn(
                   "fixed top-1/2 left-1/2 z-50 w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 sm:max-w-sm",

@@ -83,7 +83,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
                 />
               </Dialog.Overlay>
 
-              <Dialog.Content asChild>
+              <Dialog.Content asChild aria-describedby={undefined}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
