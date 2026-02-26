@@ -45,7 +45,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
           artist_name: track.artistName,
           artwork_url: track.artworkUrl100?.replace("100x100", "300x300") ?? "",
           preview_url: track.previewUrl ?? "",
-          duration_ms: track.trackTimeMillis ?? 0,
+          duration_ms: 0,
           position: count ?? 0,
         })
 

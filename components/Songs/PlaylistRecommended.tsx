@@ -35,26 +35,17 @@ export function PlaylistRecommended() {
         })
         if (!res.ok) return
 
-        const data = await res.json()
+        const data = (await res.json()) as { results?: RecommendedTrack[] }
         if (data.results) {
           setTracks(
-            data.results.map(
-              (r: {
-                trackId: number
-                trackName: string
-                artistName: string
-                artworkUrl100: string
-                previewUrl?: string
-                trackTimeMillis?: number
-              }) => ({
-                trackId: r.trackId,
-                trackName: r.trackName,
-                artistName: r.artistName,
-                artworkUrl100: r.artworkUrl100,
-                previewUrl: r.previewUrl,
-                trackTimeMillis: r.trackTimeMillis,
-              })
-            )
+            data.results.map((r) => ({
+              trackId: r.trackId,
+              trackName: r.trackName,
+              artistName: r.artistName,
+              artworkUrl100: r.artworkUrl100,
+              previewUrl: r.previewUrl,
+              trackTimeMillis: r.trackTimeMillis,
+            }))
           )
         }
       } catch {
