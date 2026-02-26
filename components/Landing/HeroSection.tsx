@@ -36,7 +36,7 @@ export function HeroSection() {
       {/* Content */}
       <div className="relative mx-auto max-w-7xl px-6 pt-28 pb-24 sm:pt-36 sm:pb-28 lg:px-8 lg:pt-44 lg:pb-32">
         {/* Heading */}
-        <h1 className="mx-auto max-w-3xl text-center text-4xl leading-[1.1] font-bold tracking-tight text-white sm:text-5xl md:text-6xl lg:text-7xl">
+        <h1 className="mx-auto max-w-3xl text-center text-3xl leading-[1.1] font-bold tracking-tight text-white sm:text-4xl md:text-5xl lg:text-7xl">
           {prefersReducedMotion
             ? t("heading")
             : headingWords.map((word, i) => (

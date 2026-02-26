@@ -9,7 +9,9 @@
     "selectLanguage": "Select language",
     "cta": {
       "control": "Start Listening"
-    }
+    },
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "cta": {
     "heading": "Ready to Find Your Next Favorite Song?",
