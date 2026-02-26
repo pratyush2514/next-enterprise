@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react"
 import { motion } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import type { ITunesResult } from "hooks/useCatalogSearch"
@@ -14,6 +15,7 @@ interface AudioPreviewOverlayProps {
 }
 
 export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ result }: AudioPreviewOverlayProps) {
+  const t = useTranslations("songs")
   const { activeTrackId, isPlaying, currentTime, duration, toggle, seek } = useAudioPreview()
   const [reducedMotion, setReducedMotion] = useState(false)
 
@@ -49,7 +51,7 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
       transition={reducedMotion ? { duration: 0 } : { duration: 0.2, ease: "easeOut" }}
       className="absolute inset-0 z-10"
       role="region"
-      aria-label={`Audio preview for ${result.trackName}`}
+      aria-label={t("audioPreview.label", { track: result.trackName })}
     >
       <LiquidGlassCard
         glassSize="sm"
@@ -64,7 +66,7 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
           <VolumeBars isPlaying={isThisTrackPlaying} reducedMotion={reducedMotion} />
 
           <LiquidButton
-            aria-label={isThisTrackPlaying ? "Pause preview" : "Play preview"}
+            aria-label={isThisTrackPlaying ? t("audioPreview.pausePreview") : t("audioPreview.playPreview")}
             className="h-10 w-10 rounded-full bg-white/20 text-white transition-colors hover:bg-white/30"
             size="icon"
             variant="ghost"
@@ -80,7 +82,7 @@ export const AudioPreviewOverlay = React.memo(function AudioPreviewOverlay({ res
             target="_blank"
             rel="noopener noreferrer"
             className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 transition-colors hover:text-white"
-            aria-label={`Open ${result.trackName} in iTunes Store`}
+            aria-label={t("audioPreview.openInItunes", { track: result.trackName })}
             onClick={(e) => e.stopPropagation()}
           >
             <ExternalLinkIcon className="size-4" />
