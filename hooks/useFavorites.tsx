@@ -1,8 +1,10 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react"
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react"
 
-const STORAGE_KEY = "melodix-favorites"
+import { createClient } from "lib/supabase/client"
+
+import { useSession } from "./useSession"
 
 export interface FavoriteTrack {
   trackId: number
@@ -16,59 +18,119 @@ interface FavoritesContextValue {
   isFavorite: (trackId: number) => boolean
   toggleFavorite: (track: FavoriteTrack) => void
   count: number
+  isLoading: boolean
 }
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null)
 
-function loadFavorites(): FavoriteTrack[] {
-  if (typeof window === "undefined") return []
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    return stored ? (JSON.parse(stored) as FavoriteTrack[]) : []
-  } catch {
-    return []
-  }
-}
-
-function saveFavorites(favorites: FavoriteTrack[]): void {
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(favorites))
-  } catch {
-    // Storage full or unavailable — silently ignore
-  }
-}
-
 export function FavoritesProvider({ children }: { children: React.ReactNode }) {
   const [favorites, setFavorites] = useState<FavoriteTrack[]>([])
-  const [mounted, setMounted] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
+  const { user, isAuthenticated } = useSession()
 
-  // Load from localStorage after mount (SSR-safe)
+  // Use the singleton client via a ref for stable reference
+  const supabaseRef = useRef(createClient())
+
+  // Fetch favorites from Supabase when authenticated
   useEffect(() => {
-    setFavorites(loadFavorites())
-    setMounted(true)
-  }, [])
+    if (!isAuthenticated || !user) {
+      setFavorites([])
+      setIsLoading(false)
+      return
+    }
+
+    const supabase = supabaseRef.current
+
+    async function fetchFavorites() {
+      try {
+        const { data, error } = await supabase
+          .from("favorites")
+          .select("track_id, track_name, artist_name, artwork_url")
+          .order("created_at", { ascending: false })
+
+        if (!error && data) {
+          setFavorites(
+            data.map((row: { track_id: number; track_name: string; artist_name: string; artwork_url: string }) => ({
+              trackId: row.track_id,
+              trackName: row.track_name,
+              artistName: row.artist_name,
+              artworkUrl100: row.artwork_url,
+            }))
+          )
+        }
+      } catch {
+        // Network error — Supabase unreachable, keep empty favorites
+      }
+      setIsLoading(false)
+    }
+
+    fetchFavorites()
+  }, [isAuthenticated, user])
 
   const favoriteIds = useMemo(() => new Set(favorites.map((f) => f.trackId)), [favorites])
 
   const isFavorite = useCallback((trackId: number) => favoriteIds.has(trackId), [favoriteIds])
 
-  const toggleFavorite = useCallback((track: FavoriteTrack) => {
-    setFavorites((prev) => {
-      const exists = prev.some((f) => f.trackId === track.trackId)
-      const next = exists ? prev.filter((f) => f.trackId !== track.trackId) : [...prev, track]
-      saveFavorites(next)
-      return next
-    })
-  }, [])
+  const toggleFavorite = useCallback(
+    async (track: FavoriteTrack) => {
+      if (!user) return
+
+      const supabase = supabaseRef.current
+      const exists = favorites.some((f) => f.trackId === track.trackId)
+
+      try {
+        if (exists) {
+          // Optimistic removal
+          setFavorites((prev) => prev.filter((f) => f.trackId !== track.trackId))
+
+          const { error } = await supabase
+            .from("favorites")
+            .delete()
+            .eq("user_id", user.id)
+            .eq("track_id", track.trackId)
+
+          if (error) {
+            // Revert on error
+            setFavorites((prev) => [...prev, track])
+          }
+        } else {
+          // Optimistic addition
+          setFavorites((prev) => [track, ...prev])
+
+          const { error } = await supabase.from("favorites").insert({
+            user_id: user.id,
+            track_id: track.trackId,
+            track_name: track.trackName,
+            artist_name: track.artistName,
+            artwork_url: track.artworkUrl100,
+          })
+
+          if (error) {
+            // Revert on error
+            setFavorites((prev) => prev.filter((f) => f.trackId !== track.trackId))
+          }
+        }
+      } catch {
+        // Network error — revert optimistic update
+        if (exists) {
+          setFavorites((prev) => [...prev, track])
+        } else {
+          setFavorites((prev) => prev.filter((f) => f.trackId !== track.trackId))
+        }
+      }
+    },
+    [user, favorites]
+  )
 
   const value = useMemo(
     () => ({
-      favorites: mounted ? favorites : [],
-      isFavorite: mounted ? isFavorite : () => false,
+      favorites,
+      isFavorite,
       toggleFavorite,
-      count: mounted ? favorites.length : 0,
+      count: favorites.length,
+      isLoading,
     }),
-    [favorites, isFavorite, toggleFavorite, mounted]
+    [favorites, isFavorite, toggleFavorite, isLoading]
   )
 
   return <FavoritesContext.Provider value={value}>{children}</FavoritesContext.Provider>
