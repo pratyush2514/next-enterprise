@@ -5,7 +5,7 @@ import { motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 
 import { Link } from "i18n/navigation"
-import { trackNavCtaClicked } from "lib/analytics"
+import { trackCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
 import { ROUTES } from "./constants"
@@ -20,9 +20,9 @@ type NavbarProps = {
 }
 
 export function Navbar({ variant = "transparent" }: NavbarProps) {
-  const t = useTranslations("nav")
   const [scrolled, setScrolled] = useState(false)
   const prefersReducedMotion = useReducedMotion()
+  const t = useTranslations("nav")
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > SCROLL_THRESHOLD)
@@ -92,20 +92,19 @@ export function Navbar({ variant = "transparent" }: NavbarProps) {
 
         {/* Right controls — mr-11 leaves room for the fixed ThemeToggle (z-50) */}
         <div className="mr-11 flex items-center gap-3">
-          <a href="#" className={navLinkClasses}>
+          <Link
+            href={ROUTES.LOGIN}
+            onClick={() => trackCtaClicked("cta_banner", ROUTES.LOGIN)}
+            className={navLinkClasses}
+          >
             {t("logIn")}
-          </a>
+          </Link>
 
           <button type="button" className={globeButtonClasses} aria-label={t("selectLanguage")}>
             <GlobeIcon />
           </button>
 
-          {/* Favorites link */}
-          <Link href="/catalog/favorites" className={navLinkClasses}>
-            Favorites
-          </Link>
-
-          <Link href={ROUTES.CATALOG} onClick={() => trackNavCtaClicked(ROUTES.CATALOG)} className={ctaClasses}>
+          <Link href={ROUTES.SONG} className={ctaClasses}>
             {t("cta.control")}
           </Link>
         </div>
