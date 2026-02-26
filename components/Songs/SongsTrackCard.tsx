@@ -13,6 +13,7 @@ import { useSession } from "hooks/useSession"
 import { cn } from "lib/utils"
 
 import { FavoriteButton } from "./FavoriteButton"
+import { PlusIcon } from "./icons"
 import { useUpdatePlaybackTrack } from "./SongsShell"
 
 const AudioPreviewOverlay = dynamic(
@@ -24,6 +25,7 @@ interface SongsTrackCardProps {
   result: ITunesResult
   allResults: ITunesResult[]
   onAuthRequired: (track: ITunesResult) => void
+  onAddToPlaylist?: (track: ITunesResult) => void
   className?: string
 }
 
@@ -31,6 +33,7 @@ export const SongsTrackCard = React.memo(function SongsTrackCard({
   result,
   allResults,
   onAuthRequired,
+  onAddToPlaylist,
   className,
 }: SongsTrackCardProps) {
   const t = useTranslations("songs")
@@ -126,8 +129,21 @@ export const SongsTrackCard = React.memo(function SongsTrackCard({
           <p className="truncate text-[10px] text-white/60">{result.artistName}</p>
         </div>
 
-        {/* Favorite button — always visible on mobile, hover-reveal on desktop */}
-        <div className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+        {/* Favorite + Add to playlist buttons — always visible on mobile, hover-reveal on desktop */}
+        <div className="absolute top-2 right-2 z-20 flex items-center gap-1 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
+          {onAddToPlaylist && isAuthenticated && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                onAddToPlaylist(result)
+              }}
+              className="flex size-8 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
+              aria-label={t("addToPlaylist", { track: result.trackName })}
+            >
+              <PlusIcon className="size-4" />
+            </button>
+          )}
           <FavoriteButton
             track={{
               trackId: result.trackId,
