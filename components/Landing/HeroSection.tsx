@@ -4,15 +4,13 @@ import { motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 
 import { Link } from "i18n/navigation"
-import { trackCtaClicked } from "lib/analytics"
 import { cn } from "lib/utils"
 
-import { ROUTES } from "./constants"
 import { ArrowRightIcon } from "./icons"
 
 export function HeroSection() {
-  const t = useTranslations("hero")
   const prefersReducedMotion = useReducedMotion()
+  const t = useTranslations("hero")
 
   const headingWords = t("heading").split(" ")
 
@@ -62,17 +60,19 @@ export function HeroSection() {
         {/* Tagline + CTA */}
         <motion.div
           className="mx-auto mt-12 flex max-w-lg flex-col items-center gap-5 text-center"
-          initial={prefersReducedMotion ? false : { opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={
-            prefersReducedMotion ? { duration: 0 } : { type: "spring", stiffness: 60, damping: 18, delay: 0.6 }
-          }
+          transition={{
+            type: "spring",
+            stiffness: 60,
+            damping: 18,
+            delay: 0.6,
+          }}
         >
           <p className="text-base leading-relaxed text-white/60 sm:text-lg">{t("tagline")}</p>
 
           <Link
-            href={ROUTES.CATALOG}
-            onClick={() => trackCtaClicked("hero", ROUTES.CATALOG)}
+            href="/song"
             className={cn(
               "inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-base font-semibold text-white",
               "bg-emerald-600 shadow-lg shadow-emerald-600/25",
