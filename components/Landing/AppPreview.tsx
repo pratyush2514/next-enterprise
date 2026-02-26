@@ -4,7 +4,6 @@ import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
-import type { PreviewPoster } from "lib/services/itunes"
 import { cn } from "lib/utils"
 
 import {
@@ -21,7 +20,13 @@ import { ScrollReveal } from "./ScrollReveal"
 
 /* ── Shared types ────────────────────────────────────────────────── */
 
-export type { PreviewPoster }
+export interface PreviewPoster {
+  trackName: string
+  artistName: string
+  artworkUrl: string
+  trackId?: number
+  previewUrl?: string
+}
 
 export interface AppPreviewData {
   quickStart: PreviewPoster[]
@@ -30,7 +35,7 @@ export interface AppPreviewData {
   nowPlaying: PreviewPoster | null
 }
 
-/* ── Sidebar navigation (icons + keys — labels resolved via i18n) ── */
+/* ── Sidebar navigation ──────────────────────────────────────────── */
 
 const SIDEBAR_ITEMS: { key: string; icon: SidebarIconType; active?: boolean }[] = [
   { key: "agendas", icon: "calendar" },
@@ -104,13 +109,8 @@ function PosterCard({ poster, label }: { poster: PreviewPoster; label?: string }
 
 /* ── Mini Player ─────────────────────────────────────────────────── */
 
-function MiniPlayer({
-  nowPlaying,
-  ariaLabels,
-}: {
-  nowPlaying?: PreviewPoster | null
-  ariaLabels: { queue: string; pause: string; next: string; moreOptions: string }
-}) {
+function MiniPlayer({ nowPlaying }: { nowPlaying?: PreviewPoster | null }) {
+  const t = useTranslations("appPreview.miniPlayer")
   const track = nowPlaying ?? { trackName: "The Hipsters", artistName: "Deacon Blue", artworkUrl: "" }
 
   return (
@@ -134,23 +134,23 @@ function MiniPlayer({
 
       {/* Controls */}
       <div className="flex items-center gap-1.5">
-        <button type="button" className="text-white/40" aria-label={ariaLabels.queue}>
+        <button type="button" className="text-white/40" aria-label={t("queue")}>
           <QueueIcon />
         </button>
         <button
           type="button"
           className="flex size-7 items-center justify-center rounded-full bg-white text-gray-900"
-          aria-label={ariaLabels.pause}
+          aria-label={t("pause")}
         >
           <PauseIcon />
         </button>
-        <button type="button" className="text-white/40" aria-label={ariaLabels.next}>
+        <button type="button" className="text-white/40" aria-label={t("next")}>
           <SkipNextIcon />
         </button>
       </div>
 
       {/* More menu */}
-      <button type="button" className="text-white/30" aria-label={ariaLabels.moreOptions}>
+      <button type="button" className="text-white/30" aria-label={t("moreOptions")}>
         <MoreMenuIcon />
       </button>
     </div>
@@ -160,18 +160,16 @@ function MiniPlayer({
 /* ── Main section ────────────────────────────────────────────────── */
 
 export function AppPreview({ data }: { data?: AppPreviewData }) {
-  const t = useTranslations("appPreview")
   const prefersReducedMotion = useReducedMotion()
+  const t = useTranslations("appPreview")
 
   const quickStart = data?.quickStart ?? []
   const mood = data?.mood ?? []
   const discover = data?.discover ?? []
   const nowPlaying = data?.nowPlaying ?? null
 
-  const rawQuickStart = t.raw("quickStartLabels")
-  const quickStartLabels = Array.isArray(rawQuickStart) ? (rawQuickStart as string[]) : []
-  const rawMood = t.raw("moodLabels")
-  const moodLabels = Array.isArray(rawMood) ? (rawMood as string[]) : []
+  const quickStartLabels = (t.raw("quickStartLabels") ?? []) as string[]
+  const moodLabels = (t.raw("moodLabels") ?? []) as string[]
 
   return (
     <section className="from-brand-900 to-brand-950 relative bg-gradient-to-b pb-24 lg:pb-32">
@@ -236,15 +234,7 @@ export function AppPreview({ data }: { data?: AppPreviewData }) {
                 </div>
 
                 {/* Mini Player */}
-                <MiniPlayer
-                  nowPlaying={nowPlaying}
-                  ariaLabels={{
-                    queue: t("miniPlayer.queue"),
-                    pause: t("miniPlayer.pause"),
-                    next: t("miniPlayer.next"),
-                    moreOptions: t("miniPlayer.moreOptions"),
-                  }}
-                />
+                <MiniPlayer nowPlaying={nowPlaying} />
               </div>
             </div>
           </motion.div>
