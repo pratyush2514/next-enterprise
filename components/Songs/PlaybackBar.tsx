@@ -200,22 +200,59 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
           </Slider.Root>
         </div>
 
-        {/* Mobile — simplified play/pause */}
-        <div className="flex items-center md:hidden">
-          <button
-            type="button"
-            onClick={handlePlayPause}
-            className={cn(
-              "flex size-9 items-center justify-center rounded-full transition-all duration-200",
-              hasTrack
-                ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
-            )}
-            aria-label={isPlaying ? t("pause") : t("play")}
-            disabled={!hasTrack}
-          >
-            {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
-          </button>
+        {/* Mobile — prev/play/next + mini progress */}
+        <div className="flex flex-col items-center gap-1 md:hidden">
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={playPrev}
+              disabled={!hasTrack}
+              className={cn(
+                "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                hasTrack
+                  ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                  : "text-gray-200 dark:text-white/20"
+              )}
+              aria-label={t("previous")}
+            >
+              <SkipPrevIcon className="size-4" />
+            </button>
+            <button
+              type="button"
+              onClick={handlePlayPause}
+              className={cn(
+                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-all duration-200",
+                hasTrack
+                  ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                  : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
+              )}
+              aria-label={isPlaying ? t("pause") : t("play")}
+              disabled={!hasTrack}
+            >
+              {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
+            </button>
+            <button
+              type="button"
+              onClick={playNext}
+              disabled={!hasTrack}
+              className={cn(
+                "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                hasTrack
+                  ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                  : "text-gray-200 dark:text-white/20"
+              )}
+              aria-label={t("next")}
+            >
+              <SkipNextLargeIcon className="size-4" />
+            </button>
+          </div>
+          <div className="w-full max-w-[200px]">
+            <ProgressBar
+              currentTime={hasTrack ? currentTime : 0}
+              totalDuration={hasTrack ? duration : 0}
+              onSeek={seek}
+            />
+          </div>
         </div>
       </div>
     </motion.div>

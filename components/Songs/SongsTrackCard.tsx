@@ -125,8 +125,8 @@ export const SongsTrackCard = React.memo(function SongsTrackCard({
           <p className="truncate text-[10px] text-white/60">{result.artistName}</p>
         </div>
 
-        {/* Favorite button */}
-        <div className="absolute top-2 right-2 z-20 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+        {/* Favorite button — always visible on mobile, hover-reveal on desktop */}
+        <div className="absolute top-2 right-2 z-20 opacity-100 transition-opacity duration-200 sm:opacity-0 sm:group-hover:opacity-100">
           <FavoriteButton
             track={{
               trackId: result.trackId,
