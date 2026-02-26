@@ -19,7 +19,7 @@
     "noPreview": "No preview",
     "noPreviewAvailable": "No preview available",
     "free": "Free",
-    "addToPlaylist": "Add {track} to playlist",
+    "addToPlaylistLabel": "Add {track} to playlist",
 
     "audioPreview": {
       "label": "Audio preview for {track}",

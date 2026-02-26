@@ -139,7 +139,7 @@ export const SongsTrackCard = React.memo(function SongsTrackCard({
                 onAddToPlaylist(result)
               }}
               className="flex size-8 min-h-[44px] min-w-[44px] items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-sm transition-colors hover:bg-black/60"
-              aria-label={t("addToPlaylist", { track: result.trackName })}
+              aria-label={t("addToPlaylistLabel", { track: result.trackName })}
             >
               <PlusIcon className="size-4" />
             </button>
