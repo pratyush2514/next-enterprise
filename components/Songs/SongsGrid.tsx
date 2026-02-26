@@ -4,20 +4,21 @@ import { useState } from "react"
 import { motion, useReducedMotion } from "framer-motion"
 import { useTranslations } from "next-intl"
 
-import { AudioPreviewProvider } from "hooks/useAudioPreview"
 import { useCatalogSearch } from "hooks/useCatalogSearch"
+import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useDebounce } from "hooks/useDebounce"
 import { cn } from "lib/utils"
 
-import { CatalogCard } from "./CatalogCard"
-import { CatalogSearch } from "./CatalogSearch"
-import { CatalogSkeleton } from "./CatalogSkeleton"
+import { AuthOverlay } from "./AuthOverlay"
 import { SearchIcon, TrendingIcon, WarningCircleIcon } from "./icons"
+import { SongsSearch } from "./SongsSearch"
+import { SongsSkeleton } from "./SongsSkeleton"
+import { SongsTrackCard } from "./SongsTrackCard"
 
 const PAGE_SIZE = 20
 
-export function CatalogGrid() {
-  const t = useTranslations("catalog")
+export function SongsGrid() {
+  const t = useTranslations("songs")
   const [query, setQuery] = useState("")
   const [retryKey, setRetryKey] = useState(0)
   const debouncedQuery = useDebounce(query, 300)
@@ -27,35 +28,38 @@ export function CatalogGrid() {
   )
   const prefersReducedMotion = useReducedMotion()
 
+  /* ── Auth overlay state ──────────────────────────────────────────── */
+  const [authOverlayTrack, setAuthOverlayTrack] = useState<ITunesResult | null>(null)
+
   return (
-    <div className="mx-auto max-w-7xl px-6 py-12 lg:px-8 lg:py-16">
+    <div className="px-5 py-8 sm:px-6 lg:px-8 lg:py-12">
       {/* Header */}
-      <div className="mb-12 flex flex-col items-center gap-3">
-        <h1 className="text-center text-3xl leading-tight font-bold tracking-tight text-gray-900 sm:text-4xl dark:text-white">
+      <div className="mb-10 flex flex-col items-center gap-3">
+        <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:text-white/30">
+          {t("pageTitle")}
+        </p>
+        <h1 className="text-center text-2xl leading-tight font-bold tracking-tight text-gray-900 sm:text-3xl dark:text-white">
           {t("heading")}
         </h1>
-        <p className="max-w-md text-center text-base leading-relaxed text-gray-500 dark:text-gray-400">
-          {t("subtext")}
-        </p>
+        <p className="max-w-md text-center text-sm leading-relaxed text-gray-500 dark:text-white/50">{t("subtext")}</p>
         <div className="mt-4 w-full max-w-lg">
-          <CatalogSearch value={query} onChange={setQuery} />
+          <SongsSearch value={query} onChange={setQuery} />
         </div>
       </div>
 
       {/* Error state */}
       {error && (
         <div className="flex flex-col items-center gap-4 py-16 text-center" role="alert">
-          <div className="flex size-14 items-center justify-center rounded-full bg-red-50 dark:bg-red-950/30">
+          <div className="flex size-14 items-center justify-center rounded-full bg-red-100 dark:bg-red-950/30">
             <WarningCircleIcon className="size-7 text-red-400" />
           </div>
-          <p className="text-base font-medium text-red-600 dark:text-red-400">{error}</p>
+          <p className="text-base font-medium text-red-400">{error}</p>
           <button
             onClick={() => setRetryKey((k) => k + 1)}
             className={cn(
               "rounded-full bg-emerald-500 px-6 py-2.5 text-sm font-semibold text-white",
               "transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-600 active:scale-[0.98]",
-              "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none",
-              "dark:focus-visible:ring-offset-gray-950"
+              "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none dark:focus-visible:ring-offset-gray-950"
             )}
           >
             {t("tryAgain")}
@@ -65,14 +69,14 @@ export function CatalogGrid() {
 
       {/* Results grid */}
       {!error && (isLoading || results.length > 0) && (
-        <AudioPreviewProvider>
+        <>
           {/* Trending label when showing default featured results */}
           {isFeatured && !isLoading && results.length > 0 && (
             <div className="mb-6 flex items-center gap-3">
               <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40">
                 <TrendingIcon className="size-4 text-emerald-600 dark:text-emerald-400" />
               </div>
-              <h2 className="text-sm font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+              <h2 className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:text-white/30">
                 {t("trendingNow")}
               </h2>
             </div>
@@ -84,7 +88,7 @@ export function CatalogGrid() {
               role="list"
               aria-label={t("loadingResults")}
             >
-              <CatalogSkeleton count={10} />
+              <SongsSkeleton count={10} />
             </div>
           ) : (
             <div
@@ -105,28 +109,28 @@ export function CatalogGrid() {
                     delay: (index % PAGE_SIZE) * 0.04,
                   }}
                 >
-                  <CatalogCard result={result} />
+                  <SongsTrackCard result={result} allResults={results} onAuthRequired={setAuthOverlayTrack} />
                 </motion.div>
               ))}
             </div>
           )}
-        </AudioPreviewProvider>
+        </>
       )}
 
-      {/* Empty state — only for explicit user searches with no results */}
+      {/* Empty state */}
       {!isLoading && !error && !isFeatured && debouncedQuery && results.length === 0 && (
         <div className="flex flex-col items-center py-20 text-center">
-          <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800">
-            <SearchIcon className="size-7 text-gray-400 dark:text-gray-500" />
+          <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-gray-100 dark:bg-white/5">
+            <SearchIcon className="size-7 text-gray-300 dark:text-white/30" />
           </div>
-          <p className="text-base font-medium text-gray-600 dark:text-gray-300">
+          <p className="text-base font-medium text-gray-600 dark:text-white/60">
             {t("noResults", { query: debouncedQuery })}
           </p>
-          <p className="mt-1.5 text-sm text-gray-400 dark:text-gray-500">{t("noResultsHint")}</p>
+          <p className="mt-1.5 text-sm text-gray-400 dark:text-white/30">{t("noResultsHint")}</p>
         </div>
       )}
 
-      {/* Load More — only for search results, not featured */}
+      {/* Load More */}
       {hasMore && !isFeatured && !isLoading && results.length > 0 && (
         <div className="mt-12 flex justify-center">
           <button
@@ -136,14 +140,16 @@ export function CatalogGrid() {
               "rounded-full bg-emerald-500 px-8 py-3 text-sm font-semibold text-white",
               "transition-all duration-300 hover:scale-[1.02] hover:bg-emerald-600 active:scale-[0.98]",
               "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100",
-              "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none",
-              "dark:focus-visible:ring-offset-gray-950"
+              "focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:outline-none dark:focus-visible:ring-offset-gray-950"
             )}
           >
             {isLoadingMore ? t("loading") : t("loadMore")}
           </button>
         </div>
       )}
+
+      {/* Auth overlay */}
+      <AuthOverlay track={authOverlayTrack} onClose={() => setAuthOverlayTrack(null)} />
     </div>
   )
 }
