@@ -25,7 +25,7 @@ export function FavoriteButton({ track, className, size = "sm" }: FavoriteButton
   }
 
   const iconSize = size === "sm" ? "size-4" : "size-5"
-  const buttonSize = size === "sm" ? "size-8" : "size-10"
+  const buttonSize = size === "sm" ? "size-10 min-h-[44px] min-w-[44px]" : "size-12 min-h-[44px] min-w-[44px]"
 
   return (
     <button
