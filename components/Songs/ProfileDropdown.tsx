@@ -16,7 +16,7 @@ export function ProfileDropdown() {
   const { user, profile, loading, signOut } = useAuth()
 
   if (loading) {
-    return <div className="size-8 animate-pulse rounded-full bg-gray-200 dark:bg-white/10" />
+    return <div className="size-10 animate-pulse rounded-full bg-gray-200 dark:bg-white/10" />
   }
 
   if (!user) {
@@ -45,7 +45,7 @@ export function ProfileDropdown() {
       <DropdownMenu.Trigger asChild>
         <button
           type="button"
-          className="relative flex size-8 items-center justify-center rounded-full transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-offset-gray-950"
+          className="relative flex size-10 min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-opacity hover:opacity-80 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2 focus-visible:outline-none dark:focus-visible:ring-offset-gray-950"
           aria-label={displayName}
         >
           {profile?.avatar_url ? (

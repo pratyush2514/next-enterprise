@@ -145,7 +145,7 @@ export function SongsHero({ featured }: SongsHeroProps) {
         {/* Secondary featured tracks */}
         {secondaryTracks.length > 0 && (
           <motion.div
-            className="mt-10 flex gap-4 overflow-x-auto pb-2"
+            className="mt-10 flex gap-4 overflow-x-auto scroll-smooth pb-2"
             initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.3 }}

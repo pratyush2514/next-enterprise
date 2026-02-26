@@ -68,7 +68,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
             <Dialog.Content asChild>
               <motion.div
                 className={cn(
-                  "fixed top-1/2 left-1/2 z-50 w-full max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6",
+                  "fixed top-1/2 left-1/2 z-50 w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 sm:max-w-sm",
                   "border-gray-200 bg-white shadow-xl dark:border-white/10 dark:bg-gray-900"
                 )}
                 initial={prefersReducedMotion ? { opacity: 1 } : { opacity: 0, scale: 0.95 }}

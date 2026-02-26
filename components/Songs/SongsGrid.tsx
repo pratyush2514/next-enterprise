@@ -84,7 +84,7 @@ export function SongsGrid() {
 
           {isLoading ? (
             <div
-              className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5"
               role="list"
               aria-label={t("loadingResults")}
             >
@@ -92,7 +92,7 @@ export function SongsGrid() {
             </div>
           ) : (
             <div
-              className="grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5"
+              className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-5 md:grid-cols-4 lg:grid-cols-5"
               role="list"
               aria-label={isFeatured ? t("featuredTracks") : t("searchResults")}
             >
