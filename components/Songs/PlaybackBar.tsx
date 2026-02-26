@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import * as Slider from "@radix-ui/react-slider"
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
@@ -8,6 +9,7 @@ import { useTranslations } from "next-intl"
 import { useAudioPreview } from "hooks/useAudioPreview"
 import { cn } from "lib/utils"
 
+import { FullscreenPlayer } from "./FullscreenPlayer"
 import {
   MusicNoteIcon,
   PauseLargeIcon,
@@ -48,6 +50,7 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
     playPrev,
   } = useAudioPreview()
   const prefersReducedMotion = useReducedMotion()
+  const [isFullscreen, setIsFullscreen] = useState(false)
 
   const hasTrack = currentTrack && activeTrackId !== null
 
@@ -71,8 +74,13 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
       transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
     >
       <div className="mx-auto flex h-20 max-w-screen-2xl items-center gap-4 px-4 lg:px-6">
-        {/* Left — Track info */}
-        <div className="flex min-w-0 flex-1 items-center gap-3 lg:w-[280px] lg:flex-none">
+        {/* Left — Track info (click to open fullscreen) */}
+        <button
+          type="button"
+          onClick={() => hasTrack && setIsFullscreen(true)}
+          disabled={!hasTrack}
+          className="flex min-w-0 flex-1 items-center gap-3 text-left lg:w-[280px] lg:flex-none"
+        >
           <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
             {hasTrack && currentTrack.artworkUrl ? (
               <Image src={currentTrack.artworkUrl} alt="" fill unoptimized className="object-cover" sizes="48px" />
@@ -90,7 +98,7 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
               {hasTrack ? currentTrack.artistName : "\u00A0"}
             </p>
           </div>
-        </div>
+        </button>
 
         {/* Center — Transport controls + progress */}
         <div className="hidden flex-1 flex-col items-center gap-1.5 md:flex">
@@ -255,6 +263,15 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
           </div>
         </div>
       </div>
+
+      {/* Fullscreen player overlay */}
+      <FullscreenPlayer
+        open={isFullscreen}
+        onClose={() => setIsFullscreen(false)}
+        trackName={hasTrack ? currentTrack.trackName : ""}
+        artistName={hasTrack ? currentTrack.artistName : ""}
+        artworkUrl={hasTrack ? currentTrack.artworkUrl : ""}
+      />
     </motion.div>
   )
 }
