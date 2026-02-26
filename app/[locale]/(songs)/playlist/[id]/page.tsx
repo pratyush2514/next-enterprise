@@ -8,6 +8,8 @@ import { DeletePlaylistDialog } from "components/Songs/DeletePlaylistDialog"
 import { PlaylistHeader } from "components/Songs/PlaylistHeader"
 import { PlaylistRecommended } from "components/Songs/PlaylistRecommended"
 import { PlaylistSongList } from "components/Songs/PlaylistSongList"
+import { useUpdatePlaybackTrack } from "components/Songs/SongsShell"
+import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
 import { usePlaylists } from "hooks/usePlaylists"
 import { PlaylistSongsProvider, usePlaylistSongs } from "hooks/usePlaylistSongs"
 import { Link, useRouter } from "i18n/navigation"
@@ -71,10 +73,48 @@ function PlaylistPageContent() {
   const router = useRouter()
   const { playlists, deletePlaylist } = usePlaylists()
   const { songs, removeSong } = usePlaylistSongs()
+  const { activeTrackId, isPlaying, replaceQueue, pause } = useAudioPreview()
+  const updatePlaybackTrack = useUpdatePlaybackTrack()
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const playlist = playlists.find((p) => p.id === params.id)
   if (!playlist) return null
+
+  const buildQueue = (): QueueTrack[] =>
+    songs.map((s) => ({
+      trackId: s.trackId,
+      previewUrl: s.previewUrl,
+      trackName: s.trackName,
+      artistName: s.artistName,
+      artworkUrl: s.artworkUrl,
+    }))
+
+  const hasActiveSong = songs.some((s) => s.trackId === activeTrackId)
+  const isPlaylistPlaying = hasActiveSong && isPlaying
+
+  const handlePlayAll = () => {
+    if (isPlaylistPlaying) {
+      pause()
+      return
+    }
+    if (songs.length === 0) return
+    const queue = buildQueue()
+    const startIndex = hasActiveSong ? songs.findIndex((s) => s.trackId === activeTrackId) : 0
+    replaceQueue(queue, startIndex)
+    const track = songs[startIndex]
+    if (track && updatePlaybackTrack) {
+      updatePlaybackTrack({ trackName: track.trackName, artistName: track.artistName, artworkUrl: track.artworkUrl })
+    }
+  }
+
+  const handlePlaySong = (index: number) => {
+    const queue = buildQueue()
+    replaceQueue(queue, index)
+    const track = songs[index]
+    if (track && updatePlaybackTrack) {
+      updatePlaybackTrack({ trackName: track.trackName, artistName: track.artistName, artworkUrl: track.artworkUrl })
+    }
+  }
 
   const handleDelete = () => {
     deletePlaylist(playlist.id)
@@ -87,11 +127,12 @@ function PlaylistPageContent() {
       <PlaylistHeader
         playlist={playlist}
         songCount={songs.length}
-        onPlay={() => {}}
+        onPlay={handlePlayAll}
         onDelete={() => setDeleteDialogOpen(true)}
+        isPlaying={isPlaylistPlaying}
       />
 
-      <PlaylistSongList songs={songs} onRemove={removeSong} onPlay={() => {}} />
+      <PlaylistSongList songs={songs} onRemove={removeSong} onPlay={handlePlaySong} />
 
       {/* Empty state */}
       {songs.length === 0 && (

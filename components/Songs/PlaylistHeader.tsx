@@ -8,17 +8,17 @@ import { useAuth } from "lib/contexts/auth-context"
 import { cn } from "lib/utils"
 import type { Playlist } from "types/playlist"
 
-
-import { PlayLargeIcon, PlaylistIcon } from "./icons"
+import { PauseLargeIcon, PlayLargeIcon, PlaylistIcon } from "./icons"
 
 interface PlaylistHeaderProps {
   playlist: Playlist
   songCount: number
   onPlay: () => void
   onDelete: () => void
+  isPlaying?: boolean
 }
 
-export function PlaylistHeader({ playlist, songCount, onPlay, onDelete }: PlaylistHeaderProps) {
+export function PlaylistHeader({ playlist, songCount, onPlay, onDelete, isPlaying = false }: PlaylistHeaderProps) {
   const t = useTranslations("songs.playlistPage")
   const { profile } = useAuth()
   const { renamePlaylist } = usePlaylists()
@@ -107,8 +107,8 @@ export function PlaylistHeader({ playlist, songCount, onPlay, onDelete }: Playli
               songCount > 0 ? "bg-emerald-500 hover:bg-emerald-600" : "cursor-not-allowed bg-gray-300 dark:bg-white/10"
             )}
           >
-            <PlayLargeIcon className="size-4" />
-            {t("playAll")}
+            {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
+            {isPlaying ? t("pause") : t("playAll")}
           </button>
 
           <button
