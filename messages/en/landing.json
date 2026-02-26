@@ -4,10 +4,94 @@
     "tagline": "Search millions of tracks, preview on hover, and discover your next favorite song.",
     "cta": "Start Listening"
   },
+  "nav": {
+    "logIn": "Log In",
+    "selectLanguage": "Select language",
+    "cta": {
+      "control": "Start Listening"
+    }
+  },
   "cta": {
     "heading": "Ready to Find Your Next Favorite Song?",
     "description": "Search millions of tracks, preview them instantly, and discover music across every genre — all in one place.",
     "button": "Start Listening"
+  },
+  "faq": {
+    "title": "FAQs",
+    "description": "Dive into our FAQ section for more information on Melodix.",
+    "items": {
+      "faq1": {
+        "question": "What is Melodix?",
+        "answer": "Melodix is a curated music platform designed for businesses. We provide handpicked music channels for bars, restaurants, retail stores, salons, and any space that deserves a great soundtrack."
+      },
+      "faq2": {
+        "question": "How does the music catalog work?",
+        "answer": "Our catalog lets you search millions of tracks, preview them instantly on hover, and discover the perfect sound for your space. Browse by genre, mood, or artist to find exactly what you need."
+      },
+      "faq3": {
+        "question": "Can I preview songs before saving?",
+        "answer": "Yes. Simply hover over any track in the catalog to hear a 30-second preview. You can control playback, seek through the track, and browse without interruption."
+      },
+      "faq4": {
+        "question": "What genres and moods are available?",
+        "answer": "We cover everything from jazz and lo-fi to pop hits and classical. Our curated channels include Quick Start playlists, mood-based collections like Barista Bar and Chill Out Zone, and constantly updated discovery feeds."
+      },
+      "faq5": {
+        "question": "Is Melodix free to use?",
+        "answer": "You can explore the catalog and preview tracks for free. Premium plans unlock unlimited playback, custom playlists, and scheduling features tailored for your business."
+      },
+      "faq6": {
+        "question": "Where can I go if I have questions?",
+        "answer": "You can reach our support team via email at info@melodix.com or call us at 0800 023 3029. Our Help Center also has detailed articles covering every feature."
+      }
+    }
+  },
+  "footer": {
+    "brandName": "melodix",
+    "otherCountries": "Other countries",
+    "heading": "Melodix",
+    "about": "About",
+    "helpCenter": "Help Center",
+    "email": "info@melodix.com",
+    "phone": "0800 023 3029",
+    "appStore": {
+      "downloadOn": "Download on the",
+      "appStore": "App Store",
+      "appStoreLabel": "Download on the App Store",
+      "getItOn": "GET IT ON",
+      "googlePlay": "Google Play",
+      "googlePlayLabel": "Get it on Google Play"
+    },
+    "copyright": "© 2026 Melodix",
+    "privacy": "Privacy",
+    "generalTerms": "General terms"
+  },
+  "value": {
+    "eyebrow": "How it works",
+    "heading": "Search. Preview. Discover.",
+    "description": "Melodix connects you to millions of songs through the iTunes Search API. Find tracks instantly, preview them on hover, and explore by genre — all from one interface.",
+    "step": "Step {number}",
+    "features": {
+      "instantSearch": {
+        "title": "Instant Search",
+        "description": "Type any song, artist, or album and get real-time results from the iTunes catalog. Debounced queries keep things fast without hammering the API."
+      },
+      "hoverToPreview": {
+        "title": "Hover to Preview",
+        "description": "Hover over any track to hear a 30-second preview instantly. No clicks, no popups — just hover and listen. Scrub the seekbar to jump around."
+      },
+      "browseByGenre": {
+        "title": "Browse by Genre",
+        "description": "Every result includes genre tags, album info, and pricing. Quickly scan Pop, Rock, Hip-Hop, Jazz, and everything in between — all in one grid."
+      },
+      "responsiveGrid": {
+        "title": "Clean, Responsive Grid",
+        "description": "A polished card-based layout that adapts from mobile to desktop. Album art, pricing, and metadata at a glance — no clutter, no noise."
+      }
+    }
+  },
+  "socialProof": {
+    "heading": "Join over 10,000 bars, restaurants, stores, and other businesses!"
   },
   "appPreview": {
     "sectionLabel": "Music Channels",
