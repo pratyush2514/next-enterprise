@@ -2,6 +2,7 @@
 
 import { useRef } from "react"
 import { motion, useMotionTemplate, useReducedMotion, useScroll, useTransform } from "framer-motion"
+import { useTranslations } from "next-intl"
 
 import { cn } from "lib/utils"
 
@@ -11,7 +12,9 @@ import { ScrollReveal } from "./ScrollReveal"
 
 const NOISE_TEXTURE = `url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`
 
-const FEATURES = [
+const FEATURE_KEYS = ["instantSearch", "hoverToPreview", "browseByGenre", "responsiveGrid"] as const
+
+const FEATURE_VISUALS = [
   {
     icon: (
       <svg
@@ -27,9 +30,6 @@ const FEATURES = [
         <path d="m21 21-4.35-4.35" />
       </svg>
     ),
-    title: "Instant Search",
-    description:
-      "Type any song, artist, or album and get real-time results from the iTunes catalog. Debounced queries keep things fast without hammering the API.",
     gradient: "radial-gradient(ellipse 80% 60% at 50% 40%, #065F46 0%, #064E3B 50%, #052E23 100%)",
     glowColor: "rgba(52, 211, 153, 0.12)",
     accentColor: "rgba(110, 231, 183, 0.08)",
@@ -48,9 +48,6 @@ const FEATURES = [
         <polygon points="5 3 19 12 5 21 5 3" />
       </svg>
     ),
-    title: "Hover to Preview",
-    description:
-      "Hover over any track to hear a 30-second preview instantly. No clicks, no popups — just hover and listen. Scrub the seekbar to jump around.",
     gradient: "radial-gradient(ellipse 80% 60% at 50% 40%, #7C3AED 0%, #581C87 50%, #3B0764 100%)",
     glowColor: "rgba(167, 139, 250, 0.12)",
     accentColor: "rgba(196, 181, 253, 0.08)",
@@ -71,9 +68,6 @@ const FEATURES = [
         <circle cx="18" cy="16" r="3" />
       </svg>
     ),
-    title: "Browse by Genre",
-    description:
-      "Every result includes genre tags, album info, and pricing. Quickly scan Pop, Rock, Hip-Hop, Jazz, and everything in between — all in one grid.",
     gradient: "radial-gradient(ellipse 80% 60% at 50% 40%, #B45309 0%, #92400E 50%, #6B2F0A 100%)",
     glowColor: "rgba(251, 191, 36, 0.12)",
     accentColor: "rgba(252, 211, 77, 0.08)",
@@ -94,16 +88,13 @@ const FEATURES = [
         <rect x="3" y="3" width="18" height="18" rx="2" />
       </svg>
     ),
-    title: "Clean, Responsive Grid",
-    description:
-      "A polished card-based layout that adapts from mobile to desktop. Album art, pricing, and metadata at a glance — no clutter, no noise.",
     gradient: "radial-gradient(ellipse 80% 60% at 50% 40%, #155E75 0%, #164E63 50%, #0E3740 100%)",
     glowColor: "rgba(34, 211, 238, 0.12)",
     accentColor: "rgba(103, 232, 249, 0.08)",
   },
 ]
 
-type Feature = (typeof FEATURES)[number]
+type FeatureVisual = (typeof FEATURE_VISUALS)[number]
 
 /* ── Per-card decorative accents ──────────────────────────────────── */
 
@@ -162,7 +153,8 @@ function CardDecoration({ index }: { index: number }) {
 
 /* ── Sticky card with layered scroll-driven animation ─────────────── */
 
-function StickyCard({ feature, index }: { feature: Feature; index: number }) {
+function StickyCard({ visual, featureKey, index }: { visual: FeatureVisual; featureKey: string; index: number }) {
+  const t = useTranslations("value")
   const cardRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({
     target: cardRef,
@@ -202,7 +194,7 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
     <div ref={cardRef} className="sticky top-0 overflow-hidden" style={{ zIndex: 10 + index }}>
       <div className="relative flex min-h-screen items-center justify-center">
         {/* Gradient background — always fully opaque, no ghosting */}
-        <div className="absolute inset-0" style={{ background: feature.gradient }} />
+        <div className="absolute inset-0" style={{ background: visual.gradient }} />
 
         {/* Noise texture for grain depth */}
         <div
@@ -218,7 +210,7 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
             height: "45vw",
             maxWidth: 700,
             maxHeight: 700,
-            background: feature.glowColor,
+            background: visual.glowColor,
             scale: glowScale,
           }}
         />
@@ -226,15 +218,15 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
         {/* Floating parallax shapes */}
         <motion.div
           className="pointer-events-none absolute rounded-full blur-2xl"
-          style={{ width: 200, height: 200, top: "12%", left: "8%", background: feature.accentColor, y: bgY1 }}
+          style={{ width: 200, height: 200, top: "12%", left: "8%", background: visual.accentColor, y: bgY1 }}
         />
         <motion.div
           className="pointer-events-none absolute rounded-full blur-3xl"
-          style={{ width: 280, height: 280, bottom: "8%", right: "5%", background: feature.accentColor, y: bgY2 }}
+          style={{ width: 280, height: 280, bottom: "8%", right: "5%", background: visual.accentColor, y: bgY2 }}
         />
         <motion.div
           className="pointer-events-none absolute rounded-full blur-2xl"
-          style={{ width: 150, height: 150, top: "55%", left: "72%", background: feature.accentColor, y: bgY3 }}
+          style={{ width: 150, height: 150, top: "55%", left: "72%", background: visual.accentColor, y: bgY3 }}
         />
 
         {/* Diagonal light sweep */}
@@ -255,14 +247,14 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
             className="mb-6 text-xs font-semibold tracking-[0.25em] text-white/50 uppercase sm:text-sm"
             style={{ opacity: stepOpacity, y: stepY }}
           >
-            Step {index + 1}
+            {t("step", { number: index + 1 })}
           </motion.p>
 
           <motion.div
             className="mb-8 flex size-16 items-center justify-center rounded-2xl bg-white/10 text-white shadow-lg shadow-black/10 backdrop-blur-sm sm:size-20"
             style={{ scale: iconScale, rotate: iconRotate, opacity: iconOpacity }}
           >
-            <div className="size-8 sm:size-10">{feature.icon}</div>
+            <div className="size-8 sm:size-10">{visual.icon}</div>
           </motion.div>
 
           <motion.div
@@ -274,14 +266,14 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
             className="mb-5 text-3xl font-bold text-white sm:text-4xl lg:text-5xl"
             style={{ y: headingY, opacity: headingOpacity, filter: headingFilter }}
           >
-            {feature.title}
+            {t(`features.${featureKey}.title`)}
           </motion.h3>
 
           <motion.p
             className="max-w-xl text-base leading-relaxed text-white/70 sm:text-lg lg:text-xl"
             style={{ y: descY, opacity: descOpacity }}
           >
-            {feature.description}
+            {t(`features.${featureKey}.description`)}
           </motion.p>
         </div>
       </div>
@@ -293,6 +285,7 @@ function StickyCard({ feature, index }: { feature: Feature; index: number }) {
 
 export function ValueSection() {
   const prefersReducedMotion = useReducedMotion()
+  const t = useTranslations("value")
 
   if (prefersReducedMotion) {
     return (
@@ -301,21 +294,20 @@ export function ValueSection() {
           <ScrollReveal>
             <div className="mx-auto max-w-2xl text-center">
               <p className="text-sm font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
-                How it works
+                {t("eyebrow")}
               </p>
               <h2 className="mt-3 text-3xl leading-tight font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
-                Search. Preview. Discover.
+                {t("heading")}
               </h2>
               <p className="mt-4 text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
-                Melodix connects you to millions of songs through the iTunes Search API. Find tracks instantly, preview
-                them on hover, and explore by genre — all from one interface.
+                {t("description")}
               </p>
             </div>
           </ScrollReveal>
           <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:mt-20">
-            {FEATURES.map((feature) => (
+            {FEATURE_KEYS.map((key, i) => (
               <div
-                key={feature.title}
+                key={key}
                 className={cn(
                   "w-full rounded-2xl border border-gray-200/80 p-8",
                   "bg-white shadow-xl shadow-gray-200/50",
@@ -329,10 +321,14 @@ export function ValueSection() {
                     "dark:bg-emerald-900/40 dark:text-emerald-400"
                   )}
                 >
-                  <div className="size-6">{feature.icon}</div>
+                  <div className="size-6">{FEATURE_VISUALS[i]!.icon}</div>
                 </div>
-                <h3 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">{feature.title}</h3>
-                <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400">{feature.description}</p>
+                <h3 className="mb-3 text-xl font-semibold text-gray-900 dark:text-white">
+                  {t(`features.${key}.title`)}
+                </h3>
+                <p className="text-base leading-relaxed text-gray-600 dark:text-gray-400">
+                  {t(`features.${key}.description`)}
+                </p>
               </div>
             ))}
           </div>
@@ -346,20 +342,19 @@ export function ValueSection() {
       {/* Section heading */}
       <div className="flex flex-col items-center justify-center bg-white px-6 py-24 sm:py-32 dark:bg-gray-950">
         <p className="text-sm font-semibold tracking-wide text-emerald-600 uppercase dark:text-emerald-400">
-          How it works
+          {t("eyebrow")}
         </p>
         <h2 className="mt-3 max-w-2xl text-center text-3xl leading-tight font-bold text-gray-900 sm:text-4xl lg:text-5xl dark:text-white">
-          Search. Preview. Discover.
+          {t("heading")}
         </h2>
         <p className="mt-4 max-w-2xl text-center text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
-          Melodix connects you to millions of songs through the iTunes Search API. Find tracks instantly, preview them
-          on hover, and explore by genre — all from one interface.
+          {t("description")}
         </p>
       </div>
 
       {/* Sticky stacking cards */}
-      {FEATURES.map((feature, i) => (
-        <StickyCard key={feature.title} feature={feature} index={i} />
+      {FEATURE_KEYS.map((key, i) => (
+        <StickyCard key={key} visual={FEATURE_VISUALS[i]!} featureKey={key} index={i} />
       ))}
     </section>
   )
