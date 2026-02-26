@@ -51,7 +51,7 @@ export function DeletePlaylistDialog({ open, onOpenChange, playlistName, onConfi
                   <Dialog.Close asChild>
                     <button
                       type="button"
-                      className="rounded-full p-1.5 text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
                       aria-label="Close"
                     >
                       <CloseIcon className="size-4" />

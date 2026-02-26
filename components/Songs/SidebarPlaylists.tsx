@@ -71,7 +71,7 @@ export function SidebarPlaylists({ isCollapsed }: SidebarPlaylistsProps) {
                 key={playlist.id}
                 href={`/playlist/${playlist.id}`}
                 className={cn(
-                  "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors",
+                  "flex min-h-[44px] w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors active:scale-[0.98]",
                   isActive
                     ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
                     : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5"

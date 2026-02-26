@@ -72,7 +72,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                   <Dialog.Close asChild>
                     <button
                       type="button"
-                      className="rounded-full p-1.5 text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
                       aria-label={t("close")}
                     >
                       <CloseIcon className="size-4" />
@@ -88,7 +88,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                     onClick={handleCreatePlaylist}
                     disabled={isCreating}
                     className={cn(
-                      "flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors",
+                      "flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors active:scale-[0.98]",
                       "border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 dark:border-white/10 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/5",
                       isCreating && "pointer-events-none opacity-60"
                     )}
