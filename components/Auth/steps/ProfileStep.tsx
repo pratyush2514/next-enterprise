@@ -97,7 +97,7 @@ export function ProfileStep({ onBack, isSubmitting }: ProfileStepProps) {
                   key={option}
                   value={option}
                   className={cn(
-                    "rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200",
+                    "min-h-[44px] rounded-full border px-4 py-2 text-sm font-medium transition-all duration-200",
                     field.value === option
                       ? "border-emerald-500 bg-emerald-50 text-emerald-700 dark:border-emerald-500 dark:bg-emerald-500/10 dark:text-emerald-400"
                       : "border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600"
@@ -117,7 +117,7 @@ export function ProfileStep({ onBack, isSubmitting }: ProfileStepProps) {
         <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">{t("dobLabel")}</label>
         {/* Hidden input for react-hook-form registration */}
         <input type="hidden" {...register("dateOfBirth")} />
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
           <select
             className={selectClasses}
             aria-label={t("dobMonth")}

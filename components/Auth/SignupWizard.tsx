@@ -81,7 +81,7 @@ export function SignupWizard() {
   return (
     <AuthCard>
       <div className="mb-6 text-center">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t("signup.title")}</h1>
+        <h1 className="text-xl font-bold text-gray-900 sm:text-2xl dark:text-white">{t("signup.title")}</h1>
       </div>
 
       {currentStep === 0 && (

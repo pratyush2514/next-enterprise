@@ -17,7 +17,7 @@ export function StepProgress({ currentStep }: StepProgressProps) {
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="flex items-center gap-2">
+      <div className="flex shrink-0 items-center gap-2">
         {SIGNUP_STEPS.map((_, index) => (
           <motion.div
             key={index}
