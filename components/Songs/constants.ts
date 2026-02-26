@@ -18,4 +18,5 @@ export const SONGS_ROUTES = {
   LOGIN: "/login",
   SIGNUP: "/signup",
   PROFILE: "/profile",
+  PLAYLIST: "/playlist",
 } as const

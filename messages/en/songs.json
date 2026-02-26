@@ -92,6 +92,27 @@
       "logIn": "Log in"
     },
 
+    "playlistPage": {
+      "title": "Playlist",
+      "notFound": "Playlist not found",
+      "notFoundHint": "This playlist may have been deleted or doesn't exist.",
+      "goHome": "Go Home",
+      "playAll": "Play All",
+      "songCount": "{count, plural, one {# song} other {# songs}}",
+      "emptyTitle": "No songs yet",
+      "emptyHint": "Search for songs and add them to this playlist.",
+      "discoverMusic": "Discover Music",
+      "deletePlaylist": "Delete Playlist",
+      "deleteConfirm": "Are you sure you want to delete \"{name}\"? This action cannot be undone.",
+      "deleteCancel": "Cancel",
+      "deleteConfirmButton": "Delete",
+      "editName": "Edit playlist name",
+      "creator": "Created by {name}",
+      "recommended": "Recommended For You",
+      "addSong": "Add",
+      "removeSong": "Remove"
+    },
+
     "playlist": {
       "createNew": "Create New",
       "playlistOption": "Playlist",
