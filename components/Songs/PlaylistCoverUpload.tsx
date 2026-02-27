@@ -25,15 +25,17 @@ export function PlaylistCoverUpload({ playlistId, coverUrl, playlistName }: Play
   const { updatePlaylistCover } = usePlaylists()
   const inputRef = useRef<HTMLInputElement>(null)
   const [isUploading, setIsUploading] = useState(false)
+  const uploadingRef = useRef(false)
 
   const handleUpload = useCallback(
     async (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0]
-      if (!file || !user || isUploading) return
+      if (!file || !user || uploadingRef.current) return
 
       if (!ACCEPTED_TYPES.includes(file.type)) return
       if (file.size > MAX_FILE_SIZE) return
 
+      uploadingRef.current = true
       setIsUploading(true)
 
       try {
@@ -47,6 +49,7 @@ export function PlaylistCoverUpload({ playlistId, coverUrl, playlistName }: Play
         })
 
         if (uploadError) {
+          uploadingRef.current = false
           setIsUploading(false)
           return
         }
@@ -62,6 +65,7 @@ export function PlaylistCoverUpload({ playlistId, coverUrl, playlistName }: Play
         // Upload failed
       }
 
+      uploadingRef.current = false
       setIsUploading(false)
 
       // Reset input so re-uploading the same file triggers onChange
@@ -69,7 +73,7 @@ export function PlaylistCoverUpload({ playlistId, coverUrl, playlistName }: Play
         inputRef.current.value = ""
       }
     },
-    [user, playlistId, isUploading, updatePlaylistCover]
+    [user, playlistId, updatePlaylistCover]
   )
 
   return (
