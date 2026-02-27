@@ -1,11 +1,14 @@
 "use client"
 
+import { useState } from "react"
+import * as Tooltip from "@radix-ui/react-tooltip"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
 import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
 import { useFavorites } from "hooks/useFavorites"
 import { useSession } from "hooks/useSession"
+import { Link, usePathname } from "i18n/navigation"
 import { cn } from "lib/utils"
 
 import { HeartIcon } from "./icons"
@@ -19,47 +22,131 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
   const t = useTranslations("songs.sidebar")
   const { isAuthenticated } = useSession()
   const { favorites, isLoading, count } = useFavorites()
-  const { replaceQueue, activeTrackId } = useAudioPreview()
+  const { replaceQueue, activeTrackId, isPlaying, toggle } = useAudioPreview()
   const updatePlaybackTrack = useUpdatePlaybackTrack()
+  const pathname = usePathname()
+
+  const [loadingTrackId, setLoadingTrackId] = useState<number | null>(null)
 
   if (!isAuthenticated) return null
 
-  const handlePlayFavorite = (index: number) => {
-    const queue: QueueTrack[] = favorites
-      .filter((f) => f.artworkUrl100)
-      .map((f) => ({
+  const handlePlayFavorite = async (index: number) => {
+    const track = favorites[index]
+    if (!track) return
+
+    // If this track is already active, toggle play/pause
+    if (activeTrackId === track.trackId) {
+      toggle(track.trackId, "")
+      return
+    }
+
+    setLoadingTrackId(track.trackId)
+    try {
+      // Fetch preview URL from iTunes API (not stored in favorites)
+      const res = await fetch(`/api/itunes/${track.trackId}`)
+      if (!res.ok) return
+      const data = (await res.json()) as { previewUrl?: string }
+      if (!data.previewUrl) return
+
+      const queue: QueueTrack[] = favorites.map((f) => ({
         trackId: f.trackId,
-        previewUrl: "", // Preview URLs not stored in favorites — playback will use toggle fallback
+        previewUrl: f.trackId === track.trackId ? data.previewUrl! : "",
         trackName: f.trackName,
         artistName: f.artistName,
         artworkUrl: f.artworkUrl100.replace("100x100", "300x300"),
       }))
 
-    const track = favorites[index]
-    if (track) {
+      replaceQueue(queue, index)
       updatePlaybackTrack?.({
         trackName: track.trackName,
         artistName: track.artistName,
         artworkUrl: track.artworkUrl100.replace("100x100", "300x300"),
       })
-      if (queue[index]) {
-        replaceQueue(queue, index)
-      }
+    } finally {
+      setLoadingTrackId(null)
     }
   }
 
-  // Collapsed mode: show heart icon with count badge
+  // Collapsed mode: clickable icon linking to favorites page + mini thumbnails
   if (isCollapsed) {
+    const isFavActive = pathname === "/song/favorites"
+
     return (
-      <div className="mt-4 flex flex-col items-center border-t border-gray-200 pt-4 dark:border-white/5">
-        <div className="relative" aria-label={`${t("favorites")} (${count})`}>
-          <HeartIcon filled={count > 0} className="size-4 text-gray-400 dark:text-white/40" />
-          {count > 0 && (
-            <span className="absolute -top-1.5 -right-2 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
-              {count > 9 ? "9+" : count}
-            </span>
-          )}
-        </div>
+      <div className="mt-4 flex flex-col items-center gap-2 border-t border-gray-200 pt-4 dark:border-white/5">
+        <Tooltip.Root delayDuration={200}>
+          <Tooltip.Trigger asChild>
+            <Link
+              href="/song/favorites"
+              className={cn(
+                "relative flex size-9 items-center justify-center rounded-lg transition-colors",
+                isFavActive
+                  ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-400 hover:bg-gray-200/60 hover:text-gray-600 dark:text-white/40 dark:hover:bg-white/5 dark:hover:text-white/60"
+              )}
+              aria-label={`${t("favorites")} (${count})`}
+            >
+              <HeartIcon filled={count > 0} className={cn("size-4", count > 0 && !isFavActive && "text-red-500")} />
+              {count > 0 && (
+                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                  {count > 9 ? "9+" : count}
+                </span>
+              )}
+            </Link>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              side="right"
+              sideOffset={8}
+              className="z-50 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-gray-900"
+            >
+              {t("favorites")}
+              {count > 0 ? ` (${count})` : ""}
+              <Tooltip.Arrow className="fill-gray-900 dark:fill-white" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+
+        {/* Mini favorite thumbnails */}
+        {!isLoading && count > 0 && (
+          <div className="flex max-h-32 flex-col items-center gap-1 overflow-y-auto">
+            {favorites.slice(0, 8).map((fav, index) => (
+              <Tooltip.Root key={fav.trackId} delayDuration={200}>
+                <Tooltip.Trigger asChild>
+                  <button
+                    type="button"
+                    onClick={() => handlePlayFavorite(index)}
+                    disabled={loadingTrackId === fav.trackId}
+                    className={cn(
+                      "size-8 shrink-0 overflow-hidden rounded transition-opacity hover:opacity-80",
+                      activeTrackId === fav.trackId && "ring-2 ring-emerald-500",
+                      loadingTrackId === fav.trackId && "animate-pulse"
+                    )}
+                  >
+                    {fav.artworkUrl100 ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={fav.artworkUrl100} alt="" className="size-full object-cover" />
+                    ) : (
+                      <div className="flex size-full items-center justify-center bg-gray-100 dark:bg-white/5">
+                        <HeartIcon filled className="size-3 text-red-400" />
+                      </div>
+                    )}
+                  </button>
+                </Tooltip.Trigger>
+                <Tooltip.Portal>
+                  <Tooltip.Content
+                    side="right"
+                    sideOffset={8}
+                    className="z-50 max-w-48 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-gray-900"
+                  >
+                    <p className="truncate">{fav.trackName}</p>
+                    <p className="truncate opacity-60">{fav.artistName}</p>
+                    <Tooltip.Arrow className="fill-gray-900 dark:fill-white" />
+                  </Tooltip.Content>
+                </Tooltip.Portal>
+              </Tooltip.Root>
+            ))}
+          </div>
+        )}
       </div>
     )
   }
@@ -93,11 +180,13 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
               key={fav.trackId}
               type="button"
               onClick={() => handlePlayFavorite(index)}
+              disabled={loadingTrackId === fav.trackId}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors",
                 activeTrackId === fav.trackId
                   ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5",
+                loadingTrackId === fav.trackId && "animate-pulse"
               )}
             >
               <div className="relative size-8 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5">
