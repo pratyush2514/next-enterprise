@@ -110,7 +110,9 @@
       "creator": "Created by {name}",
       "recommended": "Recommended For You",
       "addSong": "Add",
-      "removeSong": "Remove"
+      "removeSong": "Remove",
+      "pause": "Pause",
+      "nowPlaying": "Now Playing"
     },
 
     "playlist": {
