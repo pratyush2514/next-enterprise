@@ -63,7 +63,7 @@ export function PlaylistRecommended() {
   }, [])
 
   const handlePlay = useCallback(
-    (track: RecommendedTrack, index: number) => {
+    (track: RecommendedTrack) => {
       if (!track.previewUrl) return
 
       const isActive = activeTrackId === track.trackId
@@ -73,13 +73,13 @@ export function PlaylistRecommended() {
       }
 
       const queue: QueueTrack[] = tracks
-        .filter((t) => t.previewUrl)
-        .map((t) => ({
-          trackId: t.trackId,
-          previewUrl: t.previewUrl!,
-          trackName: t.trackName,
-          artistName: t.artistName,
-          artworkUrl: t.artworkUrl100,
+        .filter((rt) => rt.previewUrl)
+        .map((rt) => ({
+          trackId: rt.trackId,
+          previewUrl: rt.previewUrl!,
+          trackName: rt.trackName,
+          artistName: rt.artistName,
+          artworkUrl: rt.artworkUrl100,
         }))
 
       const startIndex = queue.findIndex((q) => q.trackId === track.trackId)
@@ -138,7 +138,7 @@ export function PlaylistRecommended() {
       </h3>
 
       <div className="space-y-1">
-        {tracks.map((track, index) => {
+        {tracks.map((track) => {
           const alreadyAdded = hasSong(track.trackId)
           const isActive = activeTrackId === track.trackId
           const hasPreview = Boolean(track.previewUrl)
@@ -151,7 +151,7 @@ export function PlaylistRecommended() {
               {/* Artwork with play/pause overlay */}
               <button
                 type="button"
-                onClick={() => hasPreview && handlePlay(track, index)}
+                onClick={() => hasPreview && handlePlay(track)}
                 disabled={!hasPreview}
                 className={cn(
                   "relative size-10 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5",

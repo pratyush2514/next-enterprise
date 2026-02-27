@@ -22,7 +22,7 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
   const t = useTranslations("songs.sidebar")
   const { isAuthenticated } = useSession()
   const { favorites, isLoading, count } = useFavorites()
-  const { replaceQueue, activeTrackId, isPlaying, toggle } = useAudioPreview()
+  const { replaceQueue, activeTrackId, toggle } = useAudioPreview()
   const updatePlaybackTrack = useUpdatePlaybackTrack()
   const pathname = usePathname()
 
