@@ -126,7 +126,15 @@
       "removeSong": "Remove",
       "pause": "Pause",
       "nowPlaying": "Now Playing",
-      "changeCover": "Change Cover"
+      "changeCover": "Change Cover",
+      "editDetails": "Edit details",
+      "editDescription": "Change playlist name and cover image",
+      "namePlaceholder": "Playlist name",
+      "dropHere": "Drop image here",
+      "save": "Save",
+      "loading": "Saving\u2026",
+      "cancel": "Cancel",
+      "uploadCover": "Upload cover"
     },
 
     "addToPlaylist": {
