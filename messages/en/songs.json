@@ -80,6 +80,17 @@
       "progress": "Playback progress"
     },
 
+    "fullscreenPlayer": {
+      "nowPlaying": "Now Playing",
+      "close": "Close",
+      "play": "Play",
+      "pause": "Pause",
+      "next": "Next track",
+      "previous": "Previous track",
+      "shuffle": "Shuffle",
+      "repeat": "Repeat"
+    },
+
     "settings": {
       "title": "Settings",
       "close": "Close",
