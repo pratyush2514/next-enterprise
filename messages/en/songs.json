@@ -19,6 +19,7 @@
     "noPreview": "No preview",
     "noPreviewAvailable": "No preview available",
     "free": "Free",
+    "addToPlaylist": "Add {track} to playlist",
 
     "audioPreview": {
       "label": "Audio preview for {track}",
@@ -113,6 +114,12 @@
       "removeSong": "Remove",
       "pause": "Pause",
       "nowPlaying": "Now Playing"
+    },
+
+    "addToPlaylist": {
+      "title": "Add to Playlist",
+      "close": "Close",
+      "noPlaylists": "No playlists yet. Create one first!"
     },
 
     "playlist": {

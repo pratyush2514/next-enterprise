@@ -9,6 +9,7 @@ import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useDebounce } from "hooks/useDebounce"
 import { cn } from "lib/utils"
 
+import { AddToPlaylistPopup } from "./AddToPlaylistPopup"
 import { AuthOverlay } from "./AuthOverlay"
 import { SearchIcon, TrendingIcon, WarningCircleIcon } from "./icons"
 import { SongsSearch } from "./SongsSearch"
@@ -30,6 +31,7 @@ export function SongsGrid() {
 
   /* ── Auth overlay state ──────────────────────────────────────────── */
   const [authOverlayTrack, setAuthOverlayTrack] = useState<ITunesResult | null>(null)
+  const [addToPlaylistTrack, setAddToPlaylistTrack] = useState<ITunesResult | null>(null)
 
   return (
     <div className="px-5 py-8 sm:px-6 lg:px-8 lg:py-12">
@@ -109,7 +111,12 @@ export function SongsGrid() {
                     delay: (index % PAGE_SIZE) * 0.04,
                   }}
                 >
-                  <SongsTrackCard result={result} allResults={results} onAuthRequired={setAuthOverlayTrack} />
+                  <SongsTrackCard
+                    result={result}
+                    allResults={results}
+                    onAuthRequired={setAuthOverlayTrack}
+                    onAddToPlaylist={setAddToPlaylistTrack}
+                  />
                 </motion.div>
               ))}
             </div>
@@ -147,6 +154,9 @@ export function SongsGrid() {
           </button>
         </div>
       )}
+
+      {/* Add to playlist popup */}
+      <AddToPlaylistPopup track={addToPlaylistTrack} onClose={() => setAddToPlaylistTrack(null)} />
 
       {/* Auth overlay */}
       <AuthOverlay track={authOverlayTrack} onClose={() => setAuthOverlayTrack(null)} />
