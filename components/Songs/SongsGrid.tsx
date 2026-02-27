@@ -10,9 +10,9 @@ import { useDebounce } from "hooks/useDebounce"
 import { cn } from "lib/utils"
 
 import { AddToPlaylistPopup } from "./AddToPlaylistPopup"
-import { AuthOverlay } from "./AuthOverlay"
 import { SearchIcon, TrendingIcon, WarningCircleIcon } from "./icons"
 import { SongsSearch } from "./SongsSearch"
+import { useAuthOverlay } from "./SongsShell"
 import { SongsSkeleton } from "./SongsSkeleton"
 import { SongsTrackCard } from "./SongsTrackCard"
 
@@ -29,8 +29,7 @@ export function SongsGrid() {
   )
   const prefersReducedMotion = useReducedMotion()
 
-  /* ── Auth overlay state ──────────────────────────────────────────── */
-  const [authOverlayTrack, setAuthOverlayTrack] = useState<ITunesResult | null>(null)
+  const requestAuth = useAuthOverlay() ?? (() => {})
   const [addToPlaylistTrack, setAddToPlaylistTrack] = useState<ITunesResult | null>(null)
 
   return (
@@ -114,7 +113,7 @@ export function SongsGrid() {
                   <SongsTrackCard
                     result={result}
                     allResults={results}
-                    onAuthRequired={setAuthOverlayTrack}
+                    onAuthRequired={requestAuth}
                     onAddToPlaylist={setAddToPlaylistTrack}
                   />
                 </motion.div>
@@ -157,9 +156,6 @@ export function SongsGrid() {
 
       {/* Add to playlist popup */}
       <AddToPlaylistPopup track={addToPlaylistTrack} onClose={() => setAddToPlaylistTrack(null)} />
-
-      {/* Auth overlay */}
-      <AuthOverlay track={authOverlayTrack} onClose={() => setAuthOverlayTrack(null)} />
     </div>
   )
 }
