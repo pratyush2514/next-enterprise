@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
@@ -15,6 +15,11 @@ import { cn } from "lib/utils"
 export default function FavoritesPage() {
   const t = useTranslations("songs.favorites")
   const { isAuthenticated, isLoading: authLoading } = useSession()
+
+  // Set browser tab title
+  useEffect(() => {
+    document.title = `${t("title")} | Melodix`
+  }, [t])
   const { favorites, isLoading, toggleFavorite } = useFavorites()
   const { replaceQueue, activeTrackId, isPlaying } = useAudioPreview()
   const updatePlaybackTrack = useUpdatePlaybackTrack()

@@ -1,14 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
 
+import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
 import { usePlaylistSongs } from "hooks/usePlaylistSongs"
 import { cn } from "lib/utils"
 import type { PlaylistSongInput } from "types/playlist"
 
-import { PlusIcon } from "./icons"
+import { PauseLargeIcon, PlayLargeIcon, PlusIcon } from "./icons"
+import { useUpdatePlaybackTrack } from "./SongsShell"
 
 interface RecommendedTrack {
   trackId: number
@@ -22,6 +24,8 @@ interface RecommendedTrack {
 export function PlaylistRecommended() {
   const t = useTranslations("songs.playlistPage")
   const { addSong, hasSong } = usePlaylistSongs()
+  const { activeTrackId, isPlaying, replaceQueue, toggle } = useAudioPreview()
+  const updatePlaybackTrack = useUpdatePlaybackTrack()
   const [tracks, setTracks] = useState<RecommendedTrack[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -35,26 +39,17 @@ export function PlaylistRecommended() {
         })
         if (!res.ok) return
 
-        const data = await res.json()
+        const data = (await res.json()) as { results?: RecommendedTrack[] }
         if (data.results) {
           setTracks(
-            data.results.map(
-              (r: {
-                trackId: number
-                trackName: string
-                artistName: string
-                artworkUrl100: string
-                previewUrl?: string
-                trackTimeMillis?: number
-              }) => ({
-                trackId: r.trackId,
-                trackName: r.trackName,
-                artistName: r.artistName,
-                artworkUrl100: r.artworkUrl100,
-                previewUrl: r.previewUrl,
-                trackTimeMillis: r.trackTimeMillis,
-              })
-            )
+            data.results.map((r) => ({
+              trackId: r.trackId,
+              trackName: r.trackName,
+              artistName: r.artistName,
+              artworkUrl100: r.artworkUrl100,
+              previewUrl: r.previewUrl,
+              trackTimeMillis: r.trackTimeMillis,
+            }))
           )
         }
       } catch {
@@ -66,6 +61,52 @@ export function PlaylistRecommended() {
     fetchRecommended()
     return () => controller.abort()
   }, [])
+
+  const handlePlay = useCallback(
+    (track: RecommendedTrack, index: number) => {
+      if (!track.previewUrl) return
+
+      const isActive = activeTrackId === track.trackId
+      if (isActive) {
+        toggle(track.trackId, track.previewUrl)
+        return
+      }
+
+      const queue: QueueTrack[] = tracks
+        .filter((t) => t.previewUrl)
+        .map((t) => ({
+          trackId: t.trackId,
+          previewUrl: t.previewUrl!,
+          trackName: t.trackName,
+          artistName: t.artistName,
+          artworkUrl: t.artworkUrl100,
+        }))
+
+      const startIndex = queue.findIndex((q) => q.trackId === track.trackId)
+      replaceQueue(queue, startIndex >= 0 ? startIndex : 0)
+      updatePlaybackTrack?.({
+        trackName: track.trackName,
+        artistName: track.artistName,
+        artworkUrl: track.artworkUrl100,
+      })
+    },
+    [tracks, activeTrackId, toggle, replaceQueue, updatePlaybackTrack]
+  )
+
+  const handleAdd = useCallback(
+    (track: RecommendedTrack) => {
+      const input: PlaylistSongInput = {
+        trackId: track.trackId,
+        trackName: track.trackName,
+        artistName: track.artistName,
+        artworkUrl: track.artworkUrl100,
+        previewUrl: track.previewUrl ?? "",
+        durationMs: track.trackTimeMillis ?? 0,
+      }
+      addSong(input)
+    },
+    [addSong]
+  )
 
   if (isLoading) {
     return (
@@ -90,18 +131,6 @@ export function PlaylistRecommended() {
 
   if (tracks.length === 0) return null
 
-  const handleAdd = (track: RecommendedTrack) => {
-    const input: PlaylistSongInput = {
-      trackId: track.trackId,
-      trackName: track.trackName,
-      artistName: track.artistName,
-      artworkUrl: track.artworkUrl100,
-      previewUrl: track.previewUrl ?? "",
-      durationMs: track.trackTimeMillis ?? 0,
-    }
-    addSong(input)
-  }
-
   return (
     <div className="mt-10">
       <h3 className="mb-4 text-xs font-bold tracking-[0.15em] text-gray-400 uppercase dark:text-white/30">
@@ -109,20 +138,41 @@ export function PlaylistRecommended() {
       </h3>
 
       <div className="space-y-1">
-        {tracks.map((track) => {
+        {tracks.map((track, index) => {
           const alreadyAdded = hasSong(track.trackId)
+          const isActive = activeTrackId === track.trackId
+          const hasPreview = Boolean(track.previewUrl)
 
           return (
             <div
               key={track.trackId}
-              className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-white/5"
+              className="group/rec flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-gray-50 dark:hover:bg-white/5"
             >
-              {/* Artwork */}
-              <div className="relative size-10 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5">
+              {/* Artwork with play/pause overlay */}
+              <button
+                type="button"
+                onClick={() => hasPreview && handlePlay(track, index)}
+                disabled={!hasPreview}
+                className={cn(
+                  "relative size-10 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5",
+                  hasPreview ? "cursor-pointer" : "cursor-default"
+                )}
+              >
                 {track.artworkUrl100 && (
                   <Image src={track.artworkUrl100} alt="" fill unoptimized className="object-cover" sizes="40px" />
                 )}
-              </div>
+                {hasPreview && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
+                      {isActive && isPlaying ? (
+                        <PauseLargeIcon className="size-3" />
+                      ) : (
+                        <PlayLargeIcon className="size-3" />
+                      )}
+                    </div>
+                  </div>
+                )}
+              </button>
 
               {/* Track info */}
               <div className="min-w-0 flex-1">
