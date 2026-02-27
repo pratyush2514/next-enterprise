@@ -162,18 +162,8 @@ export function PlaylistRecommended() {
                   <Image src={track.artworkUrl100} alt="" fill unoptimized className="object-cover" sizes="40px" />
                 )}
                 {hasPreview && (
-                  <div
-                    className={cn(
-                      "absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover/rec:bg-black/30",
-                      isActive && isPlaying && "bg-black/30"
-                    )}
-                  >
-                    <div
-                      className={cn(
-                        "flex size-7 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200",
-                        isActive ? "scale-100" : "scale-0 group-hover/rec:scale-100"
-                      )}
-                    >
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                    <div className="flex size-7 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
                       {isActive && isPlaying ? (
                         <PauseLargeIcon className="size-3" />
                       ) : (

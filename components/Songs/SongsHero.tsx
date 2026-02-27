@@ -125,18 +125,8 @@ export function SongsHero({ featured }: SongsHeroProps) {
 
             {/* Play/pause overlay */}
             {heroHasPreview && (
-              <div
-                className={cn(
-                  "absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover/hero:bg-black/30",
-                  heroIsActive && isPlaying && "bg-black/30"
-                )}
-              >
-                <div
-                  className={cn(
-                    "flex size-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-300",
-                    heroIsActive ? "scale-100" : "scale-0 group-hover/hero:scale-100"
-                  )}
-                >
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="flex size-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
                   {heroIsActive && isPlaying ? (
                     <PauseLargeIcon className="size-6" />
                   ) : (
@@ -211,20 +201,10 @@ export function SongsHero({ featured }: SongsHeroProps) {
                       </div>
                     )}
 
-                    {/* Play/pause overlay on hover */}
+                    {/* Play/pause overlay */}
                     {hasPreview && (
-                      <div
-                        className={cn(
-                          "absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/30",
-                          isActive && isPlaying && "bg-black/30"
-                        )}
-                      >
-                        <div
-                          className={cn(
-                            "flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200",
-                            isActive ? "scale-100" : "scale-75 sm:scale-0 sm:group-hover:scale-100"
-                          )}
-                        >
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
                           {isActive && isPlaying ? (
                             <PauseLargeIcon className="size-4" />
                           ) : (
