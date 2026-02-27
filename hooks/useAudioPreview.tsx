@@ -268,8 +268,8 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
     const audio = audioRef.current
     if (!audio) return
 
-    // Different track — load new source
-    if (activeUrlRef.current !== previewUrl) {
+    // Different track — load new source (skip when previewUrl is empty, i.e. resume)
+    if (previewUrl && activeUrlRef.current !== previewUrl) {
       audio.pause()
       audio.src = previewUrl
       activeUrlRef.current = previewUrl
@@ -441,7 +441,6 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
       replaceQueue,
     ]
   )
-
   return <AudioPreviewContext.Provider value={value}>{children}</AudioPreviewContext.Provider>
 }
 

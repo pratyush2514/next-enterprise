@@ -262,7 +262,7 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
       {/* Mobile drawer overlay */}
       <AnimatePresence>
         {mobileOpen && (
-          <div className="fixed inset-0 z-50 md:hidden">
+          <div className="fixed inset-0 z-50 md:hidden" role="dialog" aria-modal="true" aria-label="Navigation menu">
             {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}

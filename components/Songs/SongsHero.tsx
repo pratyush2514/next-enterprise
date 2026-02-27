@@ -6,12 +6,13 @@ import Image from "next/image"
 import { useTranslations } from "next-intl"
 
 import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
+import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useSession } from "hooks/useSession"
 import type { PreviewPoster } from "lib/services/itunes"
 import { cn } from "lib/utils"
 
-import { MusicNoteIcon, PlayLargeIcon } from "./icons"
-import { useUpdatePlaybackTrack } from "./SongsShell"
+import { MusicNoteIcon, PauseLargeIcon, PlayLargeIcon } from "./icons"
+import { useAuthOverlay, useUpdatePlaybackTrack } from "./SongsShell"
 
 interface SongsHeroProps {
   featured: PreviewPoster[]
@@ -23,13 +24,30 @@ export function SongsHero({ featured }: SongsHeroProps) {
   const { replaceQueue, activeTrackId, isPlaying, toggle } = useAudioPreview()
   const { isAuthenticated } = useSession()
   const updatePlaybackTrack = useUpdatePlaybackTrack()
+  const requestAuth = useAuthOverlay()
 
   const heroTrack = featured[0]
   const secondaryTracks = featured.slice(1, 6)
 
   const playTrack = useCallback(
     (track: PreviewPoster, _index: number) => {
-      if (!track.previewUrl || !isAuthenticated) return
+      if (!track.previewUrl) return
+
+      if (!isAuthenticated) {
+        requestAuth?.({
+          trackId: track.trackId ?? 0,
+          trackName: track.trackName,
+          artistName: track.artistName,
+          collectionName: "",
+          artworkUrl100: track.artworkUrl?.replace(/\d+x\d+bb/, "100x100bb") ?? "",
+          trackPrice: 0,
+          currency: "USD",
+          primaryGenreName: "",
+          trackViewUrl: "",
+          previewUrl: track.previewUrl,
+        } satisfies ITunesResult)
+        return
+      }
 
       const isActive = activeTrackId === track.trackId
       if (isActive) {
@@ -38,13 +56,13 @@ export function SongsHero({ featured }: SongsHeroProps) {
       }
 
       const queue: QueueTrack[] = featured
-        .filter((t) => t.previewUrl && t.trackId)
-        .map((t) => ({
-          trackId: t.trackId!,
-          previewUrl: t.previewUrl!,
-          trackName: t.trackName,
-          artistName: t.artistName,
-          artworkUrl: t.artworkUrl,
+        .filter((ft) => ft.previewUrl && ft.trackId)
+        .map((ft) => ({
+          trackId: ft.trackId!,
+          previewUrl: ft.previewUrl!,
+          trackName: ft.trackName,
+          artistName: ft.artistName,
+          artworkUrl: ft.artworkUrl,
         }))
 
       const startIndex = queue.findIndex((q) => q.trackId === track.trackId)
@@ -55,7 +73,7 @@ export function SongsHero({ featured }: SongsHeroProps) {
         artworkUrl: track.artworkUrl,
       })
     },
-    [featured, replaceQueue, toggle, activeTrackId, isAuthenticated, updatePlaybackTrack]
+    [featured, replaceQueue, toggle, activeTrackId, isAuthenticated, updatePlaybackTrack, requestAuth]
   )
 
   if (!heroTrack) return null
@@ -94,9 +112,15 @@ export function SongsHero({ featured }: SongsHeroProps) {
 
         {/* Hero content */}
         <div className="flex flex-col items-center gap-8 md:flex-row md:items-end md:gap-10">
-          {/* Hero artwork */}
-          <motion.div
-            className="relative size-48 shrink-0 overflow-hidden rounded-xl shadow-2xl shadow-black/50 sm:size-56 lg:size-60"
+          {/* Hero artwork with play/pause overlay */}
+          <motion.button
+            type="button"
+            onClick={() => heroHasPreview && playTrack(heroTrack, 0)}
+            disabled={!heroHasPreview}
+            className={cn(
+              "group/hero relative size-48 shrink-0 overflow-hidden rounded-xl shadow-2xl shadow-black/50 sm:size-56 lg:size-60",
+              heroHasPreview ? "cursor-pointer" : "cursor-default"
+            )}
             initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.1 }}
@@ -116,7 +140,20 @@ export function SongsHero({ featured }: SongsHeroProps) {
                 <MusicNoteIcon className="size-12 text-white/20" />
               </div>
             )}
-          </motion.div>
+
+            {/* Play/pause overlay */}
+            {heroHasPreview && (
+              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                <div className="flex size-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
+                  {heroIsActive && isPlaying ? (
+                    <PauseLargeIcon className="size-6" />
+                  ) : (
+                    <PlayLargeIcon className="size-6" />
+                  )}
+                </div>
+              </div>
+            )}
+          </motion.button>
 
           {/* Hero text */}
           <motion.div
@@ -182,16 +219,15 @@ export function SongsHero({ featured }: SongsHeroProps) {
                       </div>
                     )}
 
-                    {/* Play overlay on hover */}
+                    {/* Play/pause overlay */}
                     {hasPreview && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/30">
-                        <div
-                          className={cn(
-                            "flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200",
-                            isActive ? "scale-100" : "scale-75 sm:scale-0 sm:group-hover:scale-100"
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg">
+                          {isActive && isPlaying ? (
+                            <PauseLargeIcon className="size-4" />
+                          ) : (
+                            <PlayLargeIcon className="size-4" />
                           )}
-                        >
-                          <PlayLargeIcon className="size-4" />
                         </div>
                       </div>
                     )}

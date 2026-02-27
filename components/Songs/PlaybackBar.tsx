@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import * as Slider from "@radix-ui/react-slider"
 import { motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
@@ -8,6 +8,7 @@ import { useTranslations } from "next-intl"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import { cn } from "lib/utils"
+import { extractPalette } from "lib/utils/colorExtraction"
 
 import { FullscreenPlayer } from "./FullscreenPlayer"
 import {
@@ -57,6 +58,15 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
 
   // Derive displayed track from queue (updates on next/prev) or fall back to prop
   const queueTrack = queue[queueIndex] ?? null
+
+  // Pre-warm palette cache so fullscreen player has colors instantly
+  const artworkForPalette = queueTrack?.artworkUrl ?? currentTrack?.artworkUrl
+  useEffect(() => {
+    if (!artworkForPalette) return
+    const highRes = artworkForPalette.replace(/\d+x\d+bb/, "600x600bb")
+    extractPalette(highRes)
+  }, [artworkForPalette])
+
   const displayTrack = queueTrack
     ? { trackName: queueTrack.trackName, artistName: queueTrack.artistName, artworkUrl: queueTrack.artworkUrl }
     : currentTrack
@@ -306,9 +316,9 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
       <FullscreenPlayer
         open={isFullscreen}
         onClose={() => setIsFullscreen(false)}
-        trackName={hasTrack ? displayTrack.trackName : ""}
-        artistName={hasTrack ? displayTrack.artistName : ""}
-        artworkUrl={hasTrack ? displayTrack.artworkUrl : ""}
+        fallbackTrackName={hasTrack ? displayTrack.trackName : ""}
+        fallbackArtistName={hasTrack ? displayTrack.artistName : ""}
+        fallbackArtworkUrl={hasTrack ? displayTrack.artworkUrl : ""}
       />
     </>
   )

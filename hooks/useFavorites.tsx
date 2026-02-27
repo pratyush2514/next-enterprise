@@ -39,6 +39,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
+    let cancelled = false
     const supabase = supabaseRef.current
 
     async function fetchFavorites() {
@@ -47,6 +48,8 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
           .from("favorites")
           .select("track_id, track_name, artist_name, artwork_url")
           .order("created_at", { ascending: false })
+
+        if (cancelled) return
 
         if (!error && data) {
           setFavorites(
@@ -61,13 +64,18 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       } catch {
         // Network error — Supabase unreachable, keep empty favorites
       }
-      setIsLoading(false)
+      if (!cancelled) setIsLoading(false)
     }
 
     fetchFavorites()
+    return () => {
+      cancelled = true
+    }
   }, [isAuthenticated, user])
 
   const favoriteIds = useMemo(() => new Set(favorites.map((f) => f.trackId)), [favorites])
+  const favoriteIdsRef = useRef(favoriteIds)
+  favoriteIdsRef.current = favoriteIds
 
   const isFavorite = useCallback((trackId: number) => favoriteIds.has(trackId), [favoriteIds])
 
@@ -76,11 +84,11 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
       if (!user) return
 
       const supabase = supabaseRef.current
-      const exists = favorites.some((f) => f.trackId === track.trackId)
+      // Read from ref to avoid stale closure on rapid toggling
+      const exists = favoriteIdsRef.current.has(track.trackId)
 
       try {
         if (exists) {
-          // Optimistic removal
           setFavorites((prev) => prev.filter((f) => f.trackId !== track.trackId))
 
           const { error } = await supabase
@@ -90,11 +98,9 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
             .eq("track_id", track.trackId)
 
           if (error) {
-            // Revert on error
             setFavorites((prev) => [...prev, track])
           }
         } else {
-          // Optimistic addition
           setFavorites((prev) => [track, ...prev])
 
           const { error } = await supabase.from("favorites").insert({
@@ -106,12 +112,10 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
           })
 
           if (error) {
-            // Revert on error
             setFavorites((prev) => prev.filter((f) => f.trackId !== track.trackId))
           }
         }
       } catch {
-        // Network error — revert optimistic update
         if (exists) {
           setFavorites((prev) => [...prev, track])
         } else {
@@ -119,7 +123,7 @@ export function FavoritesProvider({ children }: { children: React.ReactNode }) {
         }
       }
     },
-    [user, favorites]
+    [user]
   )
 
   const value = useMemo(

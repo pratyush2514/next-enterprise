@@ -103,6 +103,7 @@ export function useCatalogSearch(debouncedTerm: string, retryKey: number = 0) {
 
     return () => {
       controller.abort()
+      loadMoreControllerRef.current?.abort()
     }
   }, [fetchResults, retryKey])
 
