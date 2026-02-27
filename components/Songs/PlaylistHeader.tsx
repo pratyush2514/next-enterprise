@@ -26,6 +26,7 @@ export function PlaylistHeader({ playlist, songCount, onPlay, onDelete, isPlayin
   const [isEditing, setIsEditing] = useState(false)
   const [editValue, setEditValue] = useState(playlist.name)
   const inputRef = useRef<HTMLInputElement>(null)
+  const savingRef = useRef(false)
 
   const handleStartEdit = () => {
     setEditValue(playlist.name)
@@ -34,16 +35,25 @@ export function PlaylistHeader({ playlist, songCount, onPlay, onDelete, isPlayin
   }
 
   const handleSave = useCallback(() => {
+    // Guard against double-fire from blur + Enter key
+    if (savingRef.current) return
+    savingRef.current = true
+
     const trimmed = editValue.trim()
     if (trimmed && trimmed !== playlist.name) {
       renamePlaylist(playlist.id, trimmed)
     }
     setIsEditing(false)
+
+    // Reset guard after React processes state update
+    requestAnimationFrame(() => {
+      savingRef.current = false
+    })
   }, [editValue, playlist.id, playlist.name, renamePlaylist])
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      handleSave()
+      inputRef.current?.blur()
     } else if (e.key === "Escape") {
       setEditValue(playlist.name)
       setIsEditing(false)

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useParams } from "next/navigation"
 import { useTranslations } from "next-intl"
 
@@ -78,6 +78,14 @@ function PlaylistPageContent() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
 
   const playlist = playlists.find((p) => p.id === params.id)
+
+  // Set browser tab title to playlist name
+  useEffect(() => {
+    if (playlist) {
+      document.title = `${playlist.name} | Melodix`
+    }
+  }, [playlist?.name])
+
   if (!playlist) return null
 
   const buildQueue = (): QueueTrack[] =>
@@ -116,10 +124,11 @@ function PlaylistPageContent() {
     }
   }
 
-  const handleDelete = () => {
-    deletePlaylist(playlist.id)
+  const handleDelete = async () => {
     setDeleteDialogOpen(false)
     router.push("/song")
+    // Fire delete after navigation to avoid rendering with null playlist
+    await deletePlaylist(playlist.id)
   }
 
   return (

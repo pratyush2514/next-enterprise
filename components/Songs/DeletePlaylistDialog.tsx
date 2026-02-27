@@ -52,7 +52,7 @@ export function DeletePlaylistDialog({ open, onOpenChange, playlistName, onConfi
                     <button
                       type="button"
                       className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-                      aria-label="Close"
+                      aria-label={t("deleteCancel")}
                     >
                       <CloseIcon className="size-4" />
                     </button>

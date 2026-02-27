@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import * as Tooltip from "@radix-ui/react-tooltip"
 import { useTranslations } from "next-intl"
 
 import { usePlaylists } from "hooks/usePlaylists"
@@ -27,18 +28,79 @@ export function SidebarPlaylists({ isCollapsed }: SidebarPlaylistsProps) {
 
   const count = playlists.length
 
-  // Collapsed mode: show playlist icon with count badge
+  // Collapsed mode: clickable playlist links with tooltips
   if (isCollapsed) {
     return (
-      <div className="mt-4 flex flex-col items-center border-t border-gray-200 pt-4 dark:border-white/5">
-        <div className="relative" aria-label={`${t("playlists")} (${count})`}>
-          <PlaylistIcon className="size-4 text-gray-400 dark:text-white/40" />
-          {count > 0 && (
-            <span className="absolute -top-1.5 -right-2 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
-              {count > 9 ? "9+" : count}
-            </span>
-          )}
-        </div>
+      <div className="mt-4 flex flex-col items-center gap-2 border-t border-gray-200 pt-4 dark:border-white/5">
+        {/* Section icon with count */}
+        <Tooltip.Root delayDuration={200}>
+          <Tooltip.Trigger asChild>
+            <div
+              className="relative flex size-9 items-center justify-center"
+              aria-label={`${t("playlists")} (${count})`}
+            >
+              <PlaylistIcon className="size-4 text-gray-400 dark:text-white/40" />
+              {count > 0 && (
+                <span className="absolute -top-1 -right-1 flex size-3.5 items-center justify-center rounded-full bg-emerald-500 text-[8px] font-bold text-white">
+                  {count > 9 ? "9+" : count}
+                </span>
+              )}
+            </div>
+          </Tooltip.Trigger>
+          <Tooltip.Portal>
+            <Tooltip.Content
+              side="right"
+              sideOffset={8}
+              className="z-50 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-gray-900"
+            >
+              {t("playlists")}
+              {count > 0 ? ` (${count})` : ""}
+              <Tooltip.Arrow className="fill-gray-900 dark:fill-white" />
+            </Tooltip.Content>
+          </Tooltip.Portal>
+        </Tooltip.Root>
+
+        {/* Mini playlist thumbnails */}
+        {!isLoading && count > 0 && (
+          <div className="flex max-h-32 flex-col items-center gap-1 overflow-y-auto">
+            {playlists.map((playlist) => {
+              const isActive = pathname === `/playlist/${playlist.id}`
+
+              return (
+                <Tooltip.Root key={playlist.id} delayDuration={200}>
+                  <Tooltip.Trigger asChild>
+                    <Link
+                      href={`/playlist/${playlist.id}`}
+                      className={cn(
+                        "size-8 shrink-0 overflow-hidden rounded transition-opacity hover:opacity-80",
+                        isActive && "ring-2 ring-emerald-500"
+                      )}
+                    >
+                      {playlist.coverUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img src={playlist.coverUrl} alt="" className="size-full object-cover" />
+                      ) : (
+                        <div className="flex size-full items-center justify-center bg-gray-100 dark:bg-white/5">
+                          <PlaylistIcon className="size-3.5 text-gray-400 dark:text-white/30" />
+                        </div>
+                      )}
+                    </Link>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                    <Tooltip.Content
+                      side="right"
+                      sideOffset={8}
+                      className="z-50 max-w-48 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium text-white shadow-lg dark:bg-white dark:text-gray-900"
+                    >
+                      {playlist.name}
+                      <Tooltip.Arrow className="fill-gray-900 dark:fill-white" />
+                    </Tooltip.Content>
+                  </Tooltip.Portal>
+                </Tooltip.Root>
+              )
+            })}
+          </div>
+        )}
       </div>
     )
   }

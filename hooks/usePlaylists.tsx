@@ -51,22 +51,26 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       return
     }
 
+    let cancelled = false
     const supabase = supabaseRef.current
 
     async function fetchPlaylists() {
       try {
         const { data, error } = await supabase.from("playlists").select("*").order("created_at", { ascending: false })
 
-        if (!error && data) {
+        if (!cancelled && !error && data) {
           setPlaylists(data.map(mapRow))
         }
       } catch {
         // Network error — keep empty playlists
       }
-      setIsLoading(false)
+      if (!cancelled) setIsLoading(false)
     }
 
     fetchPlaylists()
+    return () => {
+      cancelled = true
+    }
   }, [isAuthenticated, user])
 
   const createPlaylist = useCallback(
@@ -117,24 +121,27 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       if (!user) return
 
       const supabase = supabaseRef.current
-      const backup = playlists.find((p) => p.id === id)
+      let backup: Playlist | undefined
 
-      // Optimistic removal
-      setPlaylists((prev) => prev.filter((p) => p.id !== id))
+      // Capture backup inside updater to avoid stale closure
+      setPlaylists((prev) => {
+        backup = prev.find((p) => p.id === id)
+        return prev.filter((p) => p.id !== id)
+      })
 
       try {
         const { error } = await supabase.from("playlists").delete().eq("id", id)
 
         if (error && backup) {
-          setPlaylists((prev) => [...prev, backup])
+          setPlaylists((prev) => [...prev, backup!])
         }
       } catch {
         if (backup) {
-          setPlaylists((prev) => [...prev, backup])
+          setPlaylists((prev) => [...prev, backup!])
         }
       }
     },
-    [user, playlists]
+    [user]
   )
 
   const renamePlaylist = useCallback(
@@ -142,11 +149,18 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       if (!user) return
 
       const supabase = supabaseRef.current
-      const prev = playlists.find((p) => p.id === id)
-      const prevName = prev?.name ?? ""
+      let prevName = ""
 
-      // Optimistic update
-      setPlaylists((list) => list.map((p) => (p.id === id ? { ...p, name } : p)))
+      // Capture previous name inside updater to avoid stale closure
+      setPlaylists((list) =>
+        list.map((p) => {
+          if (p.id === id) {
+            prevName = p.name
+            return { ...p, name }
+          }
+          return p
+        })
+      )
 
       try {
         const { error } = await supabase.from("playlists").update({ name }).eq("id", id)
@@ -158,7 +172,7 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
         setPlaylists((list) => list.map((p) => (p.id === id ? { ...p, name: prevName } : p)))
       }
     },
-    [user, playlists]
+    [user]
   )
 
   const updatePlaylistCover = useCallback(
@@ -166,11 +180,18 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
       if (!user) return
 
       const supabase = supabaseRef.current
-      const prev = playlists.find((p) => p.id === id)
-      const prevCover = prev?.coverUrl ?? null
+      let prevCover: string | null = null
 
-      // Optimistic update
-      setPlaylists((list) => list.map((p) => (p.id === id ? { ...p, coverUrl } : p)))
+      // Capture previous cover inside updater to avoid stale closure
+      setPlaylists((list) =>
+        list.map((p) => {
+          if (p.id === id) {
+            prevCover = p.coverUrl
+            return { ...p, coverUrl }
+          }
+          return p
+        })
+      )
 
       try {
         const { error } = await supabase.from("playlists").update({ cover_url: coverUrl }).eq("id", id)
@@ -182,7 +203,7 @@ export function PlaylistsProvider({ children }: { children: React.ReactNode }) {
         setPlaylists((list) => list.map((p) => (p.id === id ? { ...p, coverUrl: prevCover } : p)))
       }
     },
-    [user, playlists]
+    [user]
   )
 
   const value = useMemo(

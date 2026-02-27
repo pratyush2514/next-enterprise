@@ -77,7 +77,8 @@
       "mute": "Mute",
       "unmute": "Unmute",
       "queue": "Queue",
-      "progress": "Playback progress"
+      "progress": "Playback progress",
+      "expand": "Expand to fullscreen"
     },
 
     "fullscreenPlayer": {

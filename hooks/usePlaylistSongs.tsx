@@ -58,6 +58,7 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
       return
     }
 
+    let cancelled = false
     const supabase = supabaseRef.current
 
     async function fetchSongs() {
@@ -68,16 +69,19 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
           .eq("playlist_id", playlistId)
           .order("position", { ascending: true })
 
-        if (!error && data) {
+        if (!cancelled && !error && data) {
           setSongs(data.map(mapRow))
         }
       } catch {
         // Network error
       }
-      setIsLoading(false)
+      if (!cancelled) setIsLoading(false)
     }
 
     fetchSongs()
+    return () => {
+      cancelled = true
+    }
   }, [isAuthenticated, user, playlistId])
 
   const songIds = useMemo(() => new Set(songs.map((s) => s.trackId)), [songs])
@@ -89,24 +93,27 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
       if (!user || hasSong(input.trackId)) return
 
       const supabase = supabaseRef.current
-      const position = songs.length
       const now = new Date().toISOString()
       const optimisticId = crypto.randomUUID()
 
-      const optimistic: PlaylistSong = {
-        id: optimisticId,
-        playlistId,
-        trackId: input.trackId,
-        trackName: input.trackName,
-        artistName: input.artistName,
-        artworkUrl: input.artworkUrl,
-        previewUrl: input.previewUrl,
-        durationMs: input.durationMs,
-        position,
-        addedAt: now,
-      }
-
-      setSongs((prev) => [...prev, optimistic])
+      // Use functional updater to get accurate position from current state
+      let position = 0
+      setSongs((prev) => {
+        position = prev.length
+        const optimistic: PlaylistSong = {
+          id: optimisticId,
+          playlistId,
+          trackId: input.trackId,
+          trackName: input.trackName,
+          artistName: input.artistName,
+          artworkUrl: input.artworkUrl,
+          previewUrl: input.previewUrl,
+          durationMs: input.durationMs,
+          position,
+          addedAt: now,
+        }
+        return [...prev, optimistic]
+      })
 
       try {
         const { data, error } = await supabase
@@ -135,7 +142,7 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
         setSongs((prev) => prev.filter((s) => s.id !== optimisticId))
       }
     },
-    [user, playlistId, songs.length, hasSong]
+    [user, playlistId, hasSong]
   )
 
   const removeSong = useCallback(
@@ -143,9 +150,13 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
       if (!user) return
 
       const supabase = supabaseRef.current
-      const backup = songs.find((s) => s.trackId === trackId)
+      let backup: PlaylistSong | undefined
 
-      setSongs((prev) => prev.filter((s) => s.trackId !== trackId))
+      // Capture backup inside updater to avoid stale closure
+      setSongs((prev) => {
+        backup = prev.find((s) => s.trackId === trackId)
+        return prev.filter((s) => s.trackId !== trackId)
+      })
 
       try {
         const { error } = await supabase
@@ -155,15 +166,15 @@ export function PlaylistSongsProvider({ playlistId, children }: { playlistId: st
           .eq("track_id", trackId)
 
         if (error && backup) {
-          setSongs((prev) => [...prev, backup].sort((a, b) => a.position - b.position))
+          setSongs((prev) => [...prev, backup!].sort((a, b) => a.position - b.position))
         }
       } catch {
         if (backup) {
-          setSongs((prev) => [...prev, backup].sort((a, b) => a.position - b.position))
+          setSongs((prev) => [...prev, backup!].sort((a, b) => a.position - b.position))
         }
       }
     },
-    [user, playlistId, songs]
+    [user, playlistId]
   )
 
   const value = useMemo(

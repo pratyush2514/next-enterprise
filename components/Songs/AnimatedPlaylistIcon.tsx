@@ -24,6 +24,10 @@ export function AnimatedPlaylistIcon({ className, playing = false }: AnimatedPla
       video.pause()
       video.currentTime = 0
     }
+
+    return () => {
+      video.pause()
+    }
   }, [playing])
 
   return (
