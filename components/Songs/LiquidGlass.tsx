@@ -170,7 +170,7 @@ const VolumeBars = React.memo(({ isPlaying, reducedMotion = false }: VolumeBarsP
           style={{
             height: isPlaying && !reducedMotion ? undefined : STATIC_BAR_HEIGHT,
             animationDelay: `${bar.delay}s`,
-            background: "linear-gradient(to top, #FF2E55, #FF6B88)",
+            background: "linear-gradient(to top, #10b981, #34d399)",
           }}
         />
       ))}
@@ -200,15 +200,46 @@ type ProgressBarProps = {
 const ProgressBar = React.memo(
   ({ currentTime, totalDuration, onSeek, ariaLabel = "Playback progress" }: ProgressBarProps) => {
     const progress = totalDuration > 0 ? (currentTime / totalDuration) * PROGRESS_PERCENTAGE_MULTIPLIER : 0
+    const trackRef = React.useRef<HTMLDivElement>(null)
+    const isDraggingRef = React.useRef(false)
 
-    const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-      const bar = e.currentTarget
-      const rect = bar.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const percent = x / rect.width
-      const newTime = Math.min(Math.max(MIN_TIME, percent * totalDuration), totalDuration)
-      onSeek(newTime)
-    }
+    const getTimeFromPointerEvent = React.useCallback(
+      (e: React.PointerEvent<HTMLDivElement> | PointerEvent) => {
+        const rect = trackRef.current?.getBoundingClientRect()
+        if (!rect) return currentTime
+        const x = e.clientX - rect.left
+        const percent = Math.min(Math.max(0, x / rect.width), 1)
+        return percent * totalDuration
+      },
+      [totalDuration, currentTime]
+    )
+
+    const handlePointerDown = React.useCallback(
+      (e: React.PointerEvent<HTMLDivElement>) => {
+        isDraggingRef.current = true
+        ;(e.target as HTMLElement).setPointerCapture(e.pointerId)
+        onSeek(getTimeFromPointerEvent(e))
+      },
+      [onSeek, getTimeFromPointerEvent]
+    )
+
+    const handlePointerMove = React.useCallback(
+      (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDraggingRef.current) return
+        onSeek(getTimeFromPointerEvent(e))
+      },
+      [onSeek, getTimeFromPointerEvent]
+    )
+
+    const handlePointerUp = React.useCallback(
+      (e: React.PointerEvent<HTMLDivElement>) => {
+        if (!isDraggingRef.current) return
+        isDraggingRef.current = false
+        ;(e.target as HTMLElement).releasePointerCapture(e.pointerId)
+        onSeek(getTimeFromPointerEvent(e))
+      },
+      [onSeek, getTimeFromPointerEvent]
+    )
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (e.key === "ArrowRight") {
@@ -227,17 +258,28 @@ const ProgressBar = React.memo(
           <span className="tabular-nums">{formatTime(totalDuration)}</span>
         </div>
         <div
+          ref={trackRef}
           aria-label={ariaLabel}
           aria-valuemax={totalDuration}
           aria-valuemin={MIN_TIME}
           aria-valuenow={currentTime}
-          className="relative z-10 h-1 w-full cursor-pointer overflow-hidden rounded-full bg-white/20"
-          onClick={handleClick}
+          className="group/seek relative z-10 h-1.5 w-full cursor-pointer rounded-full bg-white/20"
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
           onKeyDown={handleKeyDown}
           role="slider"
           tabIndex={0}
         >
-          <div className="h-full bg-gradient-to-r from-[#FF2E55] to-[#FF6B88]" style={{ width: `${progress}%` }} />
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-emerald-400"
+            style={{ width: `${progress}%` }}
+          />
+          {/* Thumb */}
+          <div
+            className="absolute top-1/2 size-3 -translate-y-1/2 rounded-full bg-white opacity-0 shadow-md transition-opacity group-hover/seek:opacity-100"
+            style={{ left: `${progress}%`, marginLeft: "-6px" }}
+          />
         </div>
       </>
     )
