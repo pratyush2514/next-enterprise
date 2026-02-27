@@ -84,6 +84,7 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
   } = useAudioPreview()
 
   const [dominantColor, setDominantColor] = useState("rgb(24,24,27)")
+  const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
 
   // Lock body scroll when fullscreen is open
   useEffect(() => {
@@ -95,11 +96,23 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
     }
   }, [open])
 
-  // Close on Escape key
+  // Close on Escape/Space key
   useEffect(() => {
     if (!open) return
     const handleKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose()
+      const target = e.target as HTMLElement | null
+      const isEditableTarget =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        !!target?.isContentEditable
+
+      if (isEditableTarget) return
+
+      if (e.key === "Escape" || e.code === "Space") {
+        e.preventDefault()
+        onClose()
+      }
     }
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
@@ -122,6 +135,34 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
     toggle(activeTrackId, "")
   }, [activeTrackId, toggle])
 
+  const handleTouchStart = useCallback((e: React.TouchEvent<HTMLDivElement>) => {
+    const touch = e.touches[0]
+    if (!touch) return
+    setTouchStart({ x: touch.clientX, y: touch.clientY })
+  }, [])
+
+  const handleTouchEnd = useCallback(
+    (e: React.TouchEvent<HTMLDivElement>) => {
+      if (!touchStart) return
+      const touch = e.changedTouches[0]
+      if (!touch) return
+
+      const deltaX = touch.clientX - touchStart.x
+      const deltaY = touch.clientY - touchStart.y
+
+      // Swipe down to dismiss fullscreen, ignore mostly horizontal swipes.
+      if (deltaY > 100 && Math.abs(deltaX) < 80) {
+        onClose()
+      }
+      setTouchStart(null)
+    },
+    [onClose, touchStart]
+  )
+
+  const handleTouchCancel = useCallback(() => {
+    setTouchStart(null)
+  }, [])
+
   return (
     <AnimatePresence>
       {open && (
@@ -130,6 +171,9 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
           animate={{ y: 0 }}
           exit={{ y: "100%" }}
           transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          onTouchStart={handleTouchStart}
+          onTouchEnd={handleTouchEnd}
+          onTouchCancel={handleTouchCancel}
           className="fixed inset-0 z-50 overflow-hidden"
           style={{
             background: `linear-gradient(to bottom, ${dominantColor} 0%, rgb(0,0,0) 100%)`,

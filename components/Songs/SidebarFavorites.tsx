@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import * as Tooltip from "@radix-ui/react-tooltip"
 import Image from "next/image"
 import { useTranslations } from "next-intl"
@@ -21,33 +22,48 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
   const t = useTranslations("songs.sidebar")
   const { isAuthenticated } = useSession()
   const { favorites, isLoading, count } = useFavorites()
-  const { replaceQueue, activeTrackId } = useAudioPreview()
+  const { replaceQueue, activeTrackId, isPlaying, toggle } = useAudioPreview()
   const updatePlaybackTrack = useUpdatePlaybackTrack()
   const pathname = usePathname()
 
+  const [loadingTrackId, setLoadingTrackId] = useState<number | null>(null)
+
   if (!isAuthenticated) return null
 
-  const handlePlayFavorite = (index: number) => {
-    const queue: QueueTrack[] = favorites
-      .filter((f) => f.artworkUrl100)
-      .map((f) => ({
+  const handlePlayFavorite = async (index: number) => {
+    const track = favorites[index]
+    if (!track) return
+
+    // If this track is already active, toggle play/pause
+    if (activeTrackId === track.trackId) {
+      toggle(track.trackId, "")
+      return
+    }
+
+    setLoadingTrackId(track.trackId)
+    try {
+      // Fetch preview URL from iTunes API (not stored in favorites)
+      const res = await fetch(`/api/itunes/${track.trackId}`)
+      if (!res.ok) return
+      const data = (await res.json()) as { previewUrl?: string }
+      if (!data.previewUrl) return
+
+      const queue: QueueTrack[] = favorites.map((f) => ({
         trackId: f.trackId,
-        previewUrl: "", // Preview URLs not stored in favorites — playback will use toggle fallback
+        previewUrl: f.trackId === track.trackId ? data.previewUrl! : "",
         trackName: f.trackName,
         artistName: f.artistName,
         artworkUrl: f.artworkUrl100.replace("100x100", "300x300"),
       }))
 
-    const track = favorites[index]
-    if (track) {
+      replaceQueue(queue, index)
       updatePlaybackTrack?.({
         trackName: track.trackName,
         artistName: track.artistName,
         artworkUrl: track.artworkUrl100.replace("100x100", "300x300"),
       })
-      if (queue[index]) {
-        replaceQueue(queue, index)
-      }
+    } finally {
+      setLoadingTrackId(null)
     }
   }
 
@@ -99,9 +115,11 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
                   <button
                     type="button"
                     onClick={() => handlePlayFavorite(index)}
+                    disabled={loadingTrackId === fav.trackId}
                     className={cn(
                       "size-8 shrink-0 overflow-hidden rounded transition-opacity hover:opacity-80",
-                      activeTrackId === fav.trackId && "ring-2 ring-emerald-500"
+                      activeTrackId === fav.trackId && "ring-2 ring-emerald-500",
+                      loadingTrackId === fav.trackId && "animate-pulse"
                     )}
                   >
                     {fav.artworkUrl100 ? (
@@ -162,11 +180,13 @@ export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
               key={fav.trackId}
               type="button"
               onClick={() => handlePlayFavorite(index)}
+              disabled={loadingTrackId === fav.trackId}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors",
                 activeTrackId === fav.trackId
                   ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
-                  : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5",
+                loadingTrackId === fav.trackId && "animate-pulse"
               )}
             >
               <div className="relative size-8 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5">

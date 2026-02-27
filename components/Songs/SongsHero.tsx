@@ -10,7 +10,7 @@ import { useSession } from "hooks/useSession"
 import type { PreviewPoster } from "lib/services/itunes"
 import { cn } from "lib/utils"
 
-import { MusicNoteIcon, PlayLargeIcon } from "./icons"
+import { MusicNoteIcon, PauseLargeIcon, PlayLargeIcon } from "./icons"
 import { useUpdatePlaybackTrack } from "./SongsShell"
 
 interface SongsHeroProps {
@@ -94,9 +94,15 @@ export function SongsHero({ featured }: SongsHeroProps) {
 
         {/* Hero content */}
         <div className="flex flex-col items-center gap-8 md:flex-row md:items-end md:gap-10">
-          {/* Hero artwork */}
-          <motion.div
-            className="relative size-48 shrink-0 overflow-hidden rounded-xl shadow-2xl shadow-black/50 sm:size-56 lg:size-60"
+          {/* Hero artwork with play/pause overlay */}
+          <motion.button
+            type="button"
+            onClick={() => heroHasPreview && playTrack(heroTrack, 0)}
+            disabled={!heroHasPreview}
+            className={cn(
+              "group/hero relative size-48 shrink-0 overflow-hidden rounded-xl shadow-2xl shadow-black/50 sm:size-56 lg:size-60",
+              heroHasPreview ? "cursor-pointer" : "cursor-default"
+            )}
             initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: "spring", stiffness: 80, damping: 20, delay: 0.1 }}
@@ -116,7 +122,30 @@ export function SongsHero({ featured }: SongsHeroProps) {
                 <MusicNoteIcon className="size-12 text-white/20" />
               </div>
             )}
-          </motion.div>
+
+            {/* Play/pause overlay */}
+            {heroHasPreview && (
+              <div
+                className={cn(
+                  "absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-300 group-hover/hero:bg-black/30",
+                  heroIsActive && isPlaying && "bg-black/30"
+                )}
+              >
+                <div
+                  className={cn(
+                    "flex size-14 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-300",
+                    heroIsActive ? "scale-100" : "scale-0 group-hover/hero:scale-100"
+                  )}
+                >
+                  {heroIsActive && isPlaying ? (
+                    <PauseLargeIcon className="size-6" />
+                  ) : (
+                    <PlayLargeIcon className="size-6" />
+                  )}
+                </div>
+              </div>
+            )}
+          </motion.button>
 
           {/* Hero text */}
           <motion.div
@@ -182,16 +211,25 @@ export function SongsHero({ featured }: SongsHeroProps) {
                       </div>
                     )}
 
-                    {/* Play overlay on hover */}
+                    {/* Play/pause overlay on hover */}
                     {hasPreview && (
-                      <div className="absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/30">
+                      <div
+                        className={cn(
+                          "absolute inset-0 flex items-center justify-center bg-black/0 transition-all duration-200 group-hover:bg-black/30",
+                          isActive && isPlaying && "bg-black/30"
+                        )}
+                      >
                         <div
                           className={cn(
                             "flex size-10 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg transition-all duration-200",
                             isActive ? "scale-100" : "scale-75 sm:scale-0 sm:group-hover:scale-100"
                           )}
                         >
-                          <PlayLargeIcon className="size-4" />
+                          {isActive && isPlaying ? (
+                            <PauseLargeIcon className="size-4" />
+                          ) : (
+                            <PlayLargeIcon className="size-4" />
+                          )}
                         </div>
                       </div>
                     )}
