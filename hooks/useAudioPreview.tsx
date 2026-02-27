@@ -42,8 +42,18 @@ interface AudioPreviewContextValue extends AudioPreviewState {
 /* ── Constants ──────────────────────────────────────────────────────── */
 
 const VOLUME_STORAGE_KEY = "melodix-volume"
+const PLAYBACK_SESSION_KEY = "melodix-playback-session"
 const DEFAULT_VOLUME = 0.7
 const RESTART_THRESHOLD_SECONDS = 3
+const SESSION_SAVE_INTERVAL_MS = 3000
+
+interface PersistedSession {
+  queue: QueueTrack[]
+  queueIndex: number
+  currentTime: number
+  isShuffleOn: boolean
+  isRepeatOn: boolean
+}
 
 /* ── Provider ───────────────────────────────────────────────────────── */
 
@@ -95,6 +105,46 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
       audio.volume = DEFAULT_VOLUME
     }
 
+    // Restore persisted playback session (paused at saved position)
+    try {
+      const raw = localStorage.getItem(PLAYBACK_SESSION_KEY)
+      if (raw) {
+        const session = JSON.parse(raw) as PersistedSession
+        if (session.queue?.length > 0 && session.queueIndex >= 0) {
+          const track = session.queue[session.queueIndex]
+          if (track?.previewUrl) {
+            setState((s) => ({
+              ...s,
+              queue: session.queue,
+              queueIndex: session.queueIndex,
+              activeTrackId: track.trackId,
+              currentTime: session.currentTime ?? 0,
+              isShuffleOn: session.isShuffleOn ?? false,
+              isRepeatOn: session.isRepeatOn ?? false,
+              isPlaying: false,
+            }))
+
+            audio.src = track.previewUrl
+            activeUrlRef.current = track.previewUrl
+            audio.preload = "metadata"
+            audio.load()
+
+            // Seek to saved position once metadata is available
+            const savedTime = session.currentTime ?? 0
+            if (savedTime > 0) {
+              const onCanSeek = () => {
+                audio.currentTime = savedTime
+                audio.removeEventListener("loadedmetadata", onCanSeek)
+              }
+              audio.addEventListener("loadedmetadata", onCanSeek)
+            }
+          }
+        }
+      }
+    } catch {
+      // Corrupt data — ignore
+    }
+
     const onTimeUpdate = () => {
       setState((s) => ({ ...s, currentTime: audio.currentTime }))
     }
@@ -114,7 +164,7 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
       const hasNext = isShuffleOn ? queue.length > 1 : queueIndex < queue.length - 1
       if (hasNext) {
         // Use a microtask to call playNext logic without stale closure
-        playNextFromEnded()
+        playNext()
       } else {
         setState((s) => ({ ...s, isPlaying: false, currentTime: 0 }))
       }
@@ -136,6 +186,52 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
       audio.pause()
       audio.src = ""
       audioRef.current = null
+    }
+  }, [])
+
+  /* ── Persist playback session ────────────────────────────────────── */
+
+  useEffect(() => {
+    // Periodically snapshot the session to localStorage
+    const interval = setInterval(() => {
+      const s = stateRef.current
+      if (s.queue.length === 0) return
+      try {
+        const session: PersistedSession = {
+          queue: s.queue,
+          queueIndex: s.queueIndex,
+          currentTime: s.currentTime,
+          isShuffleOn: s.isShuffleOn,
+          isRepeatOn: s.isRepeatOn,
+        }
+        localStorage.setItem(PLAYBACK_SESSION_KEY, JSON.stringify(session))
+      } catch {
+        // localStorage full or unavailable
+      }
+    }, SESSION_SAVE_INTERVAL_MS)
+
+    // Also save on page close
+    const handleBeforeUnload = () => {
+      const s = stateRef.current
+      if (s.queue.length === 0) return
+      try {
+        const session: PersistedSession = {
+          queue: s.queue,
+          queueIndex: s.queueIndex,
+          currentTime: s.currentTime,
+          isShuffleOn: s.isShuffleOn,
+          isRepeatOn: s.isRepeatOn,
+        }
+        localStorage.setItem(PLAYBACK_SESSION_KEY, JSON.stringify(session))
+      } catch {
+        // Ignore
+      }
+    }
+    window.addEventListener("beforeunload", handleBeforeUnload)
+
+    return () => {
+      clearInterval(interval)
+      window.removeEventListener("beforeunload", handleBeforeUnload)
     }
   }, [])
 
@@ -201,13 +297,14 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
 
   const toggle = useCallback(
     (trackId: number, previewUrl: string) => {
-      if (state.activeTrackId === trackId && state.isPlaying) {
+      const { activeTrackId, isPlaying } = stateRef.current
+      if (activeTrackId === trackId && isPlaying) {
         pause()
       } else {
         play(trackId, previewUrl)
       }
     },
-    [state.activeTrackId, state.isPlaying, play, pause]
+    [play, pause]
   )
 
   const seek = useCallback((time: number) => {
@@ -272,11 +369,6 @@ export function AudioPreviewProvider({ children }: { children: React.ReactNode }
 
     playTrackByIndex(nextIndex)
   }, [playTrackByIndex])
-
-  // Separate function called from onEnded to avoid stale closure
-  const playNextFromEnded = useCallback(() => {
-    playNext()
-  }, [playNext])
 
   const playPrev = useCallback(() => {
     const audio = audioRef.current
