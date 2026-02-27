@@ -8,7 +8,6 @@ import { useAuth } from "lib/contexts/auth-context"
 import { cn } from "lib/utils"
 import type { Playlist } from "types/playlist"
 
-
 import { PlayLargeIcon, PlaylistIcon } from "./icons"
 
 interface PlaylistHeaderProps {
