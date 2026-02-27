@@ -71,6 +71,70 @@ export interface Database {
           created_at?: string
         }
       }
+      playlists: {
+        Row: {
+          id: string
+          user_id: string
+          name: string
+          cover_url: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          user_id: string
+          name: string
+          cover_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          user_id?: string
+          name?: string
+          cover_url?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
+      playlist_songs: {
+        Row: {
+          id: string
+          playlist_id: string
+          track_id: number
+          track_name: string
+          artist_name: string
+          artwork_url: string
+          preview_url: string
+          duration_ms: number
+          position: number
+          added_at: string
+        }
+        Insert: {
+          id?: string
+          playlist_id: string
+          track_id: number
+          track_name: string
+          artist_name: string
+          artwork_url?: string
+          preview_url?: string
+          duration_ms?: number
+          position?: number
+          added_at?: string
+        }
+        Update: {
+          id?: string
+          playlist_id?: string
+          track_id?: number
+          track_name?: string
+          artist_name?: string
+          artwork_url?: string
+          preview_url?: string
+          duration_ms?: number
+          position?: number
+          added_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
