@@ -6,12 +6,13 @@ import Image from "next/image"
 import { useTranslations } from "next-intl"
 
 import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
+import type { ITunesResult } from "hooks/useCatalogSearch"
 import { useSession } from "hooks/useSession"
 import type { PreviewPoster } from "lib/services/itunes"
 import { cn } from "lib/utils"
 
 import { MusicNoteIcon, PauseLargeIcon, PlayLargeIcon } from "./icons"
-import { useUpdatePlaybackTrack } from "./SongsShell"
+import { useAuthOverlay, useUpdatePlaybackTrack } from "./SongsShell"
 
 interface SongsHeroProps {
   featured: PreviewPoster[]
@@ -23,13 +24,30 @@ export function SongsHero({ featured }: SongsHeroProps) {
   const { replaceQueue, activeTrackId, isPlaying, toggle } = useAudioPreview()
   const { isAuthenticated } = useSession()
   const updatePlaybackTrack = useUpdatePlaybackTrack()
+  const requestAuth = useAuthOverlay()
 
   const heroTrack = featured[0]
   const secondaryTracks = featured.slice(1, 6)
 
   const playTrack = useCallback(
     (track: PreviewPoster, _index: number) => {
-      if (!track.previewUrl || !isAuthenticated) return
+      if (!track.previewUrl) return
+
+      if (!isAuthenticated) {
+        requestAuth?.({
+          trackId: track.trackId ?? 0,
+          trackName: track.trackName,
+          artistName: track.artistName,
+          collectionName: "",
+          artworkUrl100: track.artworkUrl?.replace(/\d+x\d+bb/, "100x100bb") ?? "",
+          trackPrice: 0,
+          currency: "USD",
+          primaryGenreName: "",
+          trackViewUrl: "",
+          previewUrl: track.previewUrl,
+        } satisfies ITunesResult)
+        return
+      }
 
       const isActive = activeTrackId === track.trackId
       if (isActive) {
@@ -38,13 +56,13 @@ export function SongsHero({ featured }: SongsHeroProps) {
       }
 
       const queue: QueueTrack[] = featured
-        .filter((t) => t.previewUrl && t.trackId)
-        .map((t) => ({
-          trackId: t.trackId!,
-          previewUrl: t.previewUrl!,
-          trackName: t.trackName,
-          artistName: t.artistName,
-          artworkUrl: t.artworkUrl,
+        .filter((ft) => ft.previewUrl && ft.trackId)
+        .map((ft) => ({
+          trackId: ft.trackId!,
+          previewUrl: ft.previewUrl!,
+          trackName: ft.trackName,
+          artistName: ft.artistName,
+          artworkUrl: ft.artworkUrl,
         }))
 
       const startIndex = queue.findIndex((q) => q.trackId === track.trackId)
@@ -55,7 +73,7 @@ export function SongsHero({ featured }: SongsHeroProps) {
         artworkUrl: track.artworkUrl,
       })
     },
-    [featured, replaceQueue, toggle, activeTrackId, isAuthenticated, updatePlaybackTrack]
+    [featured, replaceQueue, toggle, activeTrackId, isAuthenticated, updatePlaybackTrack, requestAuth]
   )
 
   if (!heroTrack) return null

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 import * as Dialog from "@radix-ui/react-dialog"
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion"
 import Image from "next/image"
@@ -11,9 +11,12 @@ import type { ITunesResult } from "hooks/useCatalogSearch"
 import { Link } from "i18n/navigation"
 import { createClient } from "lib/supabase/client"
 import { cn } from "lib/utils"
+import { type ExtractedPalette, extractPalette } from "lib/utils/colorExtraction"
 
 import { SONGS_ROUTES } from "./constants"
 import { CloseIcon, MusicNoteIcon } from "./icons"
+
+const FALLBACK_COLORS: [string, string, string] = ["rgb(24,24,27)", "rgb(15,15,20)", "rgb(10,10,12)"]
 
 interface AuthOverlayProps {
   track: ITunesResult | null
@@ -25,17 +28,35 @@ export function AuthOverlay({ track, onClose }: AuthOverlayProps) {
   const tAuth = useTranslations("auth")
   const prefersReducedMotion = useReducedMotion()
   const [oauthError, setOauthError] = useState<string | null>(null)
+  const [palette, setPalette] = useState<[string, string, string]>(FALLBACK_COLORS)
 
   const isOpen = track !== null
   const artworkUrl300 = track?.artworkUrl100?.replace("100x100", "300x300") ?? ""
   const artworkUrl600 = track?.artworkUrl100?.replace("100x100", "600x600") ?? ""
+
+  // Extract dominant colors from artwork for gradient backdrop
+  useEffect(() => {
+    if (!artworkUrl600 || !isOpen) return
+    let cancelled = false
+    extractPalette(artworkUrl600).then((p: ExtractedPalette) => {
+      if (!cancelled) setPalette(p.colors)
+    })
+    return () => {
+      cancelled = true
+    }
+  }, [artworkUrl600, isOpen])
+
+  // Reset palette when overlay closes
+  useEffect(() => {
+    if (!isOpen) setPalette(FALLBACK_COLORS)
+  }, [isOpen])
 
   return (
     <Dialog.Root open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <AnimatePresence>
         {isOpen && (
           <Dialog.Portal forceMount>
-            {/* Backdrop — blurred artwork background */}
+            {/* Backdrop — blurred artwork + dynamic gradient */}
             <Dialog.Overlay asChild>
               <motion.div
                 className="fixed inset-0 z-50"
@@ -45,17 +66,30 @@ export function AuthOverlay({ track, onClose }: AuthOverlayProps) {
                 transition={prefersReducedMotion ? { duration: 0 } : { duration: 0.3, ease: "easeOut" }}
               >
                 <div className="absolute inset-0 overflow-hidden">
+                  {/* Layer 1: blurred artwork for photographic warmth */}
                   {artworkUrl600 && (
                     <Image
                       src={artworkUrl600}
                       alt=""
                       fill
                       unoptimized
-                      className="scale-110 object-cover opacity-60 blur-[60px]"
+                      className="scale-110 object-cover opacity-50 blur-[60px]"
                       sizes="100vw"
                     />
                   )}
-                  <div className="absolute inset-0 bg-black/70" />
+                  {/* Layer 2: dynamic gradient from extracted palette */}
+                  <motion.div
+                    key={palette[0]}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 0.8 }}
+                    transition={{ duration: 0.4 }}
+                    className="absolute inset-0"
+                    style={{
+                      background: `linear-gradient(160deg, ${palette[0]} 0%, ${palette[1]} 50%, rgb(0,0,0) 100%)`,
+                    }}
+                  />
+                  {/* Layer 3: contrast base */}
+                  <div className="absolute inset-0 bg-black/50" />
                 </div>
               </motion.div>
             </Dialog.Overlay>
