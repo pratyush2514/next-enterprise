@@ -8,7 +8,8 @@ import { useAuth } from "lib/contexts/auth-context"
 import { cn } from "lib/utils"
 import type { Playlist } from "types/playlist"
 
-import { PauseLargeIcon, PlayLargeIcon, PlaylistIcon } from "./icons"
+import { PauseLargeIcon, PlayLargeIcon } from "./icons"
+import { PlaylistCoverUpload } from "./PlaylistCoverUpload"
 
 interface PlaylistHeaderProps {
   playlist: Playlist
@@ -51,14 +52,8 @@ export function PlaylistHeader({ playlist, songCount, onPlay, onDelete, isPlayin
 
   return (
     <div className="flex flex-col gap-6 sm:flex-row sm:items-start sm:gap-8">
-      {/* Cover image area */}
-      <div className="flex size-40 shrink-0 items-center justify-center self-center rounded-xl bg-gradient-to-br from-emerald-400/20 to-emerald-600/20 shadow-lg sm:size-48 sm:self-auto dark:from-emerald-400/10 dark:to-emerald-600/10">
-        {playlist.coverUrl ? (
-          <img src={playlist.coverUrl} alt={playlist.name} className="size-full rounded-xl object-cover" />
-        ) : (
-          <PlaylistIcon className="size-16 text-emerald-500/40" />
-        )}
-      </div>
+      {/* Cover image area — click to upload */}
+      <PlaylistCoverUpload playlistId={playlist.id} coverUrl={playlist.coverUrl} playlistName={playlist.name} />
 
       {/* Info */}
       <div className="flex min-w-0 flex-1 flex-col items-center sm:items-start">

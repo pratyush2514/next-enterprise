@@ -124,7 +124,8 @@
       "addSong": "Add",
       "removeSong": "Remove",
       "pause": "Pause",
-      "nowPlaying": "Now Playing"
+      "nowPlaying": "Now Playing",
+      "changeCover": "Change Cover"
     },
 
     "addToPlaylist": {
