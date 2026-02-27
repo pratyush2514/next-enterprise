@@ -90,7 +90,7 @@ export function PlaylistSongList({ songs, onRemove, onPlay }: PlaylistSongListPr
               <button
                 type="button"
                 onClick={() => onRemove(song.trackId)}
-                className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500 dark:text-white/20 dark:hover:text-red-400"
+                className="flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-full text-gray-300 opacity-0 transition-opacity group-hover:opacity-100 hover:text-red-500 focus-visible:opacity-100 dark:text-white/20 dark:hover:text-red-400"
                 aria-label={`${t("removeSong")} ${song.trackName}`}
               >
                 <CloseIcon className="size-4" />
