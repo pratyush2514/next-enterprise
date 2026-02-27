@@ -66,6 +66,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
                 {/* Header */}
+                <Dialog.Description className="sr-only">{t("createNew")}</Dialog.Description>
                 <div className="mb-5 flex items-center justify-between">
                   <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
                     {t("createNew")}

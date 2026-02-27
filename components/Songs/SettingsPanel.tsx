@@ -76,6 +76,7 @@ export function SettingsPanel({ open, onOpenChange }: SettingsPanelProps) {
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
+                <Dialog.Description className="sr-only">{t("title")}</Dialog.Description>
                 <div className="mb-6 flex items-center justify-between">
                   <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-white">{t("title")}</Dialog.Title>
                   <Dialog.Close asChild>

@@ -48,7 +48,7 @@ export function AnimatedPlaylistIcon({ className, playing = false }: AnimatedPla
         muted
         playsInline
         loop
-        preload="auto"
+        preload="none"
         aria-hidden="true"
       />
     </span>
