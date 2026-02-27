@@ -4,6 +4,7 @@ import { createContext, useCallback, useContext, useState } from "react"
 
 import { AudioPreviewProvider } from "hooks/useAudioPreview"
 import { FavoritesProvider } from "hooks/useFavorites"
+import { PlaylistsProvider } from "hooks/usePlaylists"
 import { useSidebarState } from "hooks/useSidebarState"
 
 import { MenuIcon } from "./icons"
@@ -77,9 +78,11 @@ function SongsShellInner({ children }: { children: React.ReactNode }) {
 export function SongsShell({ children }: { children: React.ReactNode }) {
   return (
     <FavoritesProvider>
-      <AudioPreviewProvider>
-        <SongsShellInner>{children}</SongsShellInner>
-      </AudioPreviewProvider>
+      <PlaylistsProvider>
+        <AudioPreviewProvider>
+          <SongsShellInner>{children}</SongsShellInner>
+        </AudioPreviewProvider>
+      </PlaylistsProvider>
     </FavoritesProvider>
   )
 }
