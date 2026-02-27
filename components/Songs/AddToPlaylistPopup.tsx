@@ -10,7 +10,7 @@ import { usePlaylists } from "hooks/usePlaylists"
 import { createClient } from "lib/supabase/client"
 import { cn } from "lib/utils"
 
-import { CloseIcon, PlaylistIcon, PlusIcon } from "./icons"
+import { CloseIcon, PlaylistIcon } from "./icons"
 
 interface AddToPlaylistPopupProps {
   track: ITunesResult | null
@@ -23,6 +23,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
   const [addedTo, setAddedTo] = useState<string | null>(null)
   const [adding, setAdding] = useState(false)
   const supabaseRef = useRef(createClient())
+  const closeTimerRef = useRef<ReturnType<typeof setTimeout>>()
 
   const handleAdd = useCallback(
     async (playlistId: string) => {
@@ -45,13 +46,13 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
           artist_name: track.artistName,
           artwork_url: track.artworkUrl100?.replace("100x100", "300x300") ?? "",
           preview_url: track.previewUrl ?? "",
-          duration_ms: track.trackTimeMillis ?? 0,
+          duration_ms: 0,
           position: count ?? 0,
         })
 
         if (!error) {
           setAddedTo(playlistId)
-          setTimeout(() => onClose(), 600)
+          closeTimerRef.current = setTimeout(() => onClose(), 600)
         }
       } catch {
         // Insert failed (e.g. duplicate)
@@ -63,6 +64,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
+      clearTimeout(closeTimerRef.current)
       setAddedTo(null)
       onClose()
     }
@@ -83,7 +85,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
                 />
               </Dialog.Overlay>
 
-              <Dialog.Content asChild>
+              <Dialog.Content asChild aria-describedby={undefined}>
                 <motion.div
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}

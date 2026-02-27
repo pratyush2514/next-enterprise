@@ -19,7 +19,7 @@
     "noPreview": "No preview",
     "noPreviewAvailable": "No preview available",
     "free": "Free",
-    "addToPlaylist": "Add {track} to playlist",
+    "addToPlaylistLabel": "Add {track} to playlist",
 
     "audioPreview": {
       "label": "Audio preview for {track}",
@@ -77,7 +77,8 @@
       "mute": "Mute",
       "unmute": "Unmute",
       "queue": "Queue",
-      "progress": "Playback progress"
+      "progress": "Playback progress",
+      "expand": "Expand to fullscreen"
     },
 
     "fullscreenPlayer": {

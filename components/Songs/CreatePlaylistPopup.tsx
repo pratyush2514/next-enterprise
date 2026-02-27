@@ -10,7 +10,8 @@ import { useRouter } from "i18n/navigation"
 import { cn } from "lib/utils"
 import { generatePlaylistName } from "lib/utils/playlist-names"
 
-import { CloseIcon, PlaylistIcon, SyncIcon } from "./icons"
+import { AnimatedPlaylistIcon } from "./AnimatedPlaylistIcon"
+import { CloseIcon, SyncIcon } from "./icons"
 
 interface CreatePlaylistPopupProps {
   open: boolean
@@ -53,7 +54,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                 transition={{ duration: 0.2 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild>
+            <Dialog.Content asChild aria-describedby={undefined}>
               <motion.div
                 className={cn(
                   "fixed top-1/2 left-1/2 z-50 w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 sm:max-w-sm",
@@ -72,7 +73,7 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                   <Dialog.Close asChild>
                     <button
                       type="button"
-                      className="rounded-full p-1.5 text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
                       aria-label={t("close")}
                     >
                       <CloseIcon className="size-4" />
@@ -88,13 +89,13 @@ export function CreatePlaylistPopup({ open, onOpenChange }: CreatePlaylistPopupP
                     onClick={handleCreatePlaylist}
                     disabled={isCreating}
                     className={cn(
-                      "flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors",
+                      "flex w-full items-center gap-4 rounded-xl border p-4 text-left transition-colors active:scale-[0.98]",
                       "border-gray-200 hover:border-emerald-300 hover:bg-emerald-50 dark:border-white/10 dark:hover:border-emerald-500/30 dark:hover:bg-emerald-500/5",
                       isCreating && "pointer-events-none opacity-60"
                     )}
                   >
                     <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-emerald-400/10">
-                      <PlaylistIcon className="size-5 text-emerald-500" />
+                      <AnimatedPlaylistIcon className="size-5" playing />
                     </div>
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-semibold text-gray-900 dark:text-white">{t("playlistOption")}</p>

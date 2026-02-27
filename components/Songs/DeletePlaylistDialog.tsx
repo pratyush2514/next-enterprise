@@ -33,7 +33,7 @@ export function DeletePlaylistDialog({ open, onOpenChange, playlistName, onConfi
                 transition={{ duration: 0.2 }}
               />
             </Dialog.Overlay>
-            <Dialog.Content asChild>
+            <Dialog.Content asChild aria-describedby={undefined}>
               <motion.div
                 className={cn(
                   "fixed top-1/2 left-1/2 z-50 w-full max-w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border p-6 sm:max-w-sm",
@@ -51,8 +51,8 @@ export function DeletePlaylistDialog({ open, onOpenChange, playlistName, onConfi
                   <Dialog.Close asChild>
                     <button
                       type="button"
-                      className="rounded-full p-1.5 text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-                      aria-label="Close"
+                      className="flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                      aria-label={t("deleteCancel")}
                     >
                       <CloseIcon className="size-4" />
                     </button>
