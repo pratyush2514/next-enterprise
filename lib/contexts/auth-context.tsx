@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         return null
       }
 
+      setError(null)
       return data
     } catch {
       // Network error — Supabase unreachable, treat as no profile

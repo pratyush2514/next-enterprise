@@ -11,10 +11,15 @@ export async function GET(request: Request) {
     const supabase = await createClient()
     const { error } = await supabase.auth.exchangeCodeForSession(code)
     if (error) {
-      // Redirect to login with error if code exchange fails
       return NextResponse.redirect(new URL("/login?error=auth_callback_error", request.url))
     }
   }
 
-  return NextResponse.redirect(new URL(next, request.url))
+  // Prevent open redirect: only allow relative paths on the same origin
+  const redirectUrl = new URL(next, request.url)
+  if (redirectUrl.origin !== requestUrl.origin) {
+    return NextResponse.redirect(new URL("/song", request.url))
+  }
+
+  return NextResponse.redirect(redirectUrl)
 }
