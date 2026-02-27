@@ -94,6 +94,7 @@ export function AddToPlaylistPopup({ track, onClose }: AddToPlaylistPopupProps) 
                   className="fixed top-1/2 left-1/2 z-50 w-[90vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-gray-900"
                 >
                   {/* Header */}
+                  <Dialog.Description className="sr-only">{t("title")}</Dialog.Description>
                   <div className="mb-4 flex items-center justify-between">
                     <Dialog.Title className="text-base font-bold text-gray-900 dark:text-white">
                       {t("title")}

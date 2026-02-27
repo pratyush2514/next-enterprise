@@ -44,6 +44,7 @@ export function DeletePlaylistDialog({ open, onOpenChange, playlistName, onConfi
                 exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.95 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
               >
+                <Dialog.Description className="sr-only">{t("deletePlaylist")}</Dialog.Description>
                 <div className="mb-4 flex items-center justify-between">
                   <Dialog.Title className="text-lg font-bold text-gray-900 dark:text-white">
                     {t("deletePlaylist")}
