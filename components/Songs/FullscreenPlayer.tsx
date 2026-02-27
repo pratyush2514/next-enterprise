@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 
 import { useAudioPreview } from "hooks/useAudioPreview"
 import { cn } from "lib/utils"
+import { type ExtractedPalette, extractPalette, getCachedPalette, withAlpha } from "lib/utils/colorExtraction"
 
 import {
   ChevronDownIcon,
@@ -22,51 +23,21 @@ import { ProgressBar } from "./LiquidGlass"
 interface FullscreenPlayerProps {
   open: boolean
   onClose: () => void
-  trackName: string
-  artistName: string
-  artworkUrl: string
+  /** Fallback track info for when queue is empty (single-track play from grid) */
+  fallbackTrackName?: string
+  fallbackArtistName?: string
+  fallbackArtworkUrl?: string
 }
 
-/**
- * Extract the dominant color from an image URL via a 1×1 canvas.
- * Falls back to a dark neutral if extraction fails (e.g. CORS).
- */
-function extractDominantColor(url: string): Promise<string> {
-  return new Promise((resolve) => {
-    if (!url) {
-      resolve("rgb(24,24,27)")
-      return
-    }
-    const img = new window.Image()
-    img.crossOrigin = "anonymous"
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas")
-        canvas.width = canvas.height = 1
-        const ctx = canvas.getContext("2d")
-        if (!ctx) {
-          resolve("rgb(24,24,27)")
-          return
-        }
-        ctx.drawImage(img, 0, 0, 1, 1)
-        const d = ctx.getImageData(0, 0, 1, 1).data
-        resolve(`rgb(${d[0]},${d[1]},${d[2]})`)
-      } catch {
-        resolve("rgb(24,24,27)")
-      }
-    }
-    img.onerror = () => resolve("rgb(24,24,27)")
-    img.src = url
-  })
-}
+const FALLBACK_PALETTE: [string, string, string] = ["rgb(24,24,27)", "rgb(15,15,20)", "rgb(10,10,12)"]
 
-function formatTime(seconds: number): string {
-  const m = Math.floor(seconds / 60)
-  const s = Math.floor(seconds % 60)
-  return `${m}:${s.toString().padStart(2, "0")}`
-}
-
-export function FullscreenPlayer({ open, onClose, trackName, artistName, artworkUrl }: FullscreenPlayerProps) {
+export function FullscreenPlayer({
+  open,
+  onClose,
+  fallbackTrackName = "",
+  fallbackArtistName = "",
+  fallbackArtworkUrl = "",
+}: FullscreenPlayerProps) {
   const t = useTranslations("songs.fullscreenPlayer")
   const {
     isPlaying,
@@ -81,9 +52,21 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
     toggleRepeat,
     playNext,
     playPrev,
+    queue,
+    queueIndex,
   } = useAudioPreview()
 
-  const [dominantColor, setDominantColor] = useState("rgb(24,24,27)")
+  // Queue-first track info — falls back to props for single-track plays (no queue)
+  const queueTrack = queue[queueIndex] ?? null
+  const trackName = queueTrack?.trackName || fallbackTrackName
+  const artistName = queueTrack?.artistName || fallbackArtistName
+  const artworkUrl = queueTrack?.artworkUrl || fallbackArtworkUrl
+  const highResUrl = artworkUrl ? artworkUrl.replace(/\d+x\d+bb/, "600x600bb") : ""
+
+  // Palette state — initialize from cache if available
+  const [palette, setPalette] = useState<[string, string, string]>(
+    () => (highResUrl ? getCachedPalette(highResUrl)?.colors : null) ?? FALLBACK_PALETTE
+  )
   const [touchStart, setTouchStart] = useState<{ x: number; y: number } | null>(null)
 
   // Lock body scroll when fullscreen is open
@@ -96,7 +79,7 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
     }
   }, [open])
 
-  // Close on Escape/Space key
+  // Keyboard shortcuts: Escape to close, Space to toggle play/pause
   useEffect(() => {
     if (!open) return
     const handleKey = (e: KeyboardEvent) => {
@@ -109,26 +92,49 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
 
       if (isEditableTarget) return
 
-      if (e.key === "Escape" || e.code === "Space") {
+      if (e.key === "Escape") {
         e.preventDefault()
         onClose()
+      } else if (e.code === "Space") {
+        e.preventDefault()
+        if (activeTrackId) toggle(activeTrackId, "")
       }
     }
     window.addEventListener("keydown", handleKey)
     return () => window.removeEventListener("keydown", handleKey)
-  }, [open, onClose])
+  }, [open, onClose, activeTrackId, toggle])
 
-  // Extract dominant color when artwork changes
+  // Sync palette when track artwork changes — instant from cache, async fallback.
+  // Keeps previous palette visible until new one is ready (no fallback flash).
   useEffect(() => {
-    if (!artworkUrl || !open) return
+    if (!highResUrl) return
+
+    const cached = getCachedPalette(highResUrl)
+    if (cached) {
+      setPalette(cached.colors)
+      return
+    }
+
+    // Cache miss — keep current palette visible, crossfade when extraction completes
     let cancelled = false
-    extractDominantColor(artworkUrl).then((color) => {
-      if (!cancelled) setDominantColor(color)
+    extractPalette(highResUrl).then((p: ExtractedPalette) => {
+      if (!cancelled) setPalette(p.colors)
     })
     return () => {
       cancelled = true
     }
-  }, [artworkUrl, open])
+  }, [highResUrl])
+
+  // Pre-warm palettes for adjacent queue tracks so next/prev transitions are instant
+  useEffect(() => {
+    if (!open) return
+    for (const offset of [-1, 1]) {
+      const track = queue[queueIndex + offset]
+      if (track?.artworkUrl) {
+        extractPalette(track.artworkUrl.replace(/\d+x\d+bb/, "600x600bb"))
+      }
+    }
+  }, [open, queueIndex, queue])
 
   const handlePlayPause = useCallback(() => {
     if (!activeTrackId) return
@@ -174,11 +180,28 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
           onTouchStart={handleTouchStart}
           onTouchEnd={handleTouchEnd}
           onTouchCancel={handleTouchCancel}
-          className="fixed inset-0 z-50 overflow-hidden"
-          style={{
-            background: `linear-gradient(to bottom, ${dominantColor} 0%, rgb(0,0,0) 100%)`,
-          }}
+          className="fixed inset-0 z-50 overflow-hidden bg-black"
         >
+          {/* Multi-color gradient backdrop — default AnimatePresence for true crossfade
+              (both old and new layers overlap during transition, no black gap) */}
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={palette.join(",")}
+              className="absolute inset-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.6 }}
+              style={{
+                background: [
+                  `radial-gradient(ellipse at 30% 0%, ${withAlpha(palette[0], 0.85)} 0%, transparent 55%)`,
+                  `radial-gradient(ellipse at 70% 25%, ${withAlpha(palette[1], 0.55)} 0%, transparent 45%)`,
+                  `linear-gradient(to bottom, ${withAlpha(palette[0], 0.7)} 0%, ${palette[2]} 55%, rgb(0,0,0) 100%)`,
+                ].join(", "),
+              }}
+            />
+          </AnimatePresence>
+
           {/* Content */}
           <div className="pb-safe-bottom pt-safe-top relative flex h-[100dvh] flex-col items-center px-6">
             {/* Header — close + now playing */}
@@ -200,11 +223,7 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
               <div className="aspect-square w-full max-w-[400px] overflow-hidden rounded-lg bg-black/20 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
                 {artworkUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={artworkUrl.replace(/\d+x\d+bb/, "600x600bb")}
-                    alt={trackName}
-                    className="size-full object-cover"
-                  />
+                  <img src={highResUrl} alt={trackName} className="size-full object-cover" />
                 ) : (
                   <div className="flex size-full items-center justify-center">
                     <MusicNoteIcon className="size-20 text-white/10" />
@@ -219,13 +238,9 @@ export function FullscreenPlayer({ open, onClose, trackName, artistName, artwork
               <p className="mt-1 truncate text-sm text-white/60">{artistName}</p>
             </div>
 
-            {/* Progress bar + time */}
+            {/* Progress bar (includes time display) */}
             <div className="mt-6 w-full max-w-lg px-2">
               <ProgressBar currentTime={currentTime} totalDuration={duration} onSeek={seek} />
-              <div className="mt-1 flex justify-between text-[11px] text-white/40">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
-              </div>
             </div>
 
             {/* Transport controls */}
