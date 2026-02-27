@@ -11,6 +11,7 @@ import { cn } from "lib/utils"
 
 import { FullscreenPlayer } from "./FullscreenPlayer"
 import {
+  ChevronUpIcon,
   MusicNoteIcon,
   PauseLargeIcon,
   PlayLargeIcon,
@@ -48,11 +49,18 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
     toggleRepeat,
     playNext,
     playPrev,
+    queue,
+    queueIndex,
   } = useAudioPreview()
   const prefersReducedMotion = useReducedMotion()
   const [isFullscreen, setIsFullscreen] = useState(false)
 
-  const hasTrack = currentTrack && activeTrackId !== null
+  // Derive displayed track from queue (updates on next/prev) or fall back to prop
+  const queueTrack = queue[queueIndex] ?? null
+  const displayTrack = queueTrack
+    ? { trackName: queueTrack.trackName, artistName: queueTrack.artistName, artworkUrl: queueTrack.artworkUrl }
+    : currentTrack
+  const hasTrack = displayTrack && activeTrackId !== null
 
   const handlePlayPause = () => {
     if (!activeTrackId) return
@@ -67,211 +75,241 @@ export function PlaybackBar({ currentTrack }: { currentTrack: PlaybackTrackInfo 
   }
 
   return (
-    <motion.div
-      className="fixed right-0 bottom-0 left-0 z-30 border-t border-gray-200 bg-white/95 backdrop-blur-xl dark:border-white/5 dark:bg-gray-950/95"
-      initial={prefersReducedMotion ? false : { y: 60, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
-    >
-      <div className="mx-auto flex h-20 max-w-screen-2xl items-center gap-4 px-4 lg:px-6">
-        {/* Left — Track info (click to open fullscreen) */}
-        <button
-          type="button"
-          onClick={() => hasTrack && setIsFullscreen(true)}
-          disabled={!hasTrack}
-          className="flex min-w-0 flex-1 items-center gap-3 text-left lg:w-[280px] lg:flex-none"
-        >
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
-            {hasTrack && currentTrack.artworkUrl ? (
-              <Image src={currentTrack.artworkUrl} alt="" fill unoptimized className="object-cover" sizes="48px" />
-            ) : (
-              <div className="flex size-full items-center justify-center">
-                <MusicNoteIcon className="size-5 text-gray-300 dark:text-white/20" />
-              </div>
-            )}
-          </div>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-              {hasTrack ? currentTrack.trackName : t("nowPlaying")}
-            </p>
-            <p className="truncate text-xs text-gray-500 dark:text-white/40">
-              {hasTrack ? currentTrack.artistName : "\u00A0"}
-            </p>
-          </div>
-        </button>
-
-        {/* Center — Transport controls + progress */}
-        <div className="hidden flex-1 flex-col items-center gap-1.5 md:flex">
-          <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={toggleShuffle}
-              className={cn(
-                "transition-colors",
-                isShuffleOn
-                  ? "text-emerald-500 dark:text-emerald-400"
-                  : "text-gray-300 hover:text-gray-500 dark:text-white/30 dark:hover:text-white/60"
-              )}
-              aria-label={t("shuffle")}
-              aria-pressed={isShuffleOn}
-            >
-              <ShuffleIcon className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={playPrev}
-              disabled={!hasTrack}
-              className={cn(
-                "transition-colors",
-                hasTrack
-                  ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-                  : "text-gray-200 dark:text-white/20"
-              )}
-              aria-label={t("previous")}
-            >
-              <SkipPrevIcon className="size-5" />
-            </button>
-            <button
-              type="button"
-              onClick={handlePlayPause}
-              className={cn(
-                "flex size-9 items-center justify-center rounded-full transition-all duration-200",
-                hasTrack
-                  ? "bg-gray-900 text-white hover:scale-105 dark:bg-white dark:text-gray-900"
-                  : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
-              )}
-              aria-label={isPlaying ? t("pause") : t("play")}
-              disabled={!hasTrack}
-            >
-              {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
-            </button>
-            <button
-              type="button"
-              onClick={playNext}
-              disabled={!hasTrack}
-              className={cn(
-                "transition-colors",
-                hasTrack
-                  ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-                  : "text-gray-200 dark:text-white/20"
-              )}
-              aria-label={t("next")}
-            >
-              <SkipNextLargeIcon className="size-5" />
-            </button>
-            <button
-              type="button"
-              onClick={toggleRepeat}
-              className={cn(
-                "transition-colors",
-                isRepeatOn
-                  ? "text-emerald-500 dark:text-emerald-400"
-                  : "text-gray-300 hover:text-gray-500 dark:text-white/30 dark:hover:text-white/60"
-              )}
-              aria-label={t("repeat")}
-              aria-pressed={isRepeatOn}
-            >
-              <RepeatIcon className="size-4" />
-            </button>
-          </div>
-          <div className="w-full max-w-md">
-            <ProgressBar
-              currentTime={hasTrack ? currentTime : 0}
-              totalDuration={hasTrack ? duration : 0}
-              onSeek={seek}
-            />
-          </div>
-        </div>
-
-        {/* Right — Volume */}
-        <div className="group hidden items-center gap-2 lg:flex lg:w-[280px] lg:flex-none lg:justify-end">
+    <>
+      <motion.div
+        className="z-30 shrink-0 border-t border-gray-200 bg-white/95 backdrop-blur-xl dark:border-white/5 dark:bg-gray-950/95"
+        initial={prefersReducedMotion ? false : { y: 60, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 100, damping: 20, delay: 0.2 }}
+      >
+        <div className="mx-auto flex h-20 max-w-screen-2xl items-center gap-4 px-4 lg:px-6">
+          {/* Left — Track info (click to open fullscreen) */}
           <button
             type="button"
-            onClick={toggleMute}
-            className="text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-            aria-label={isMuted ? t("unmute") : t("mute")}
+            onClick={() => hasTrack && setIsFullscreen(true)}
+            disabled={!hasTrack}
+            className="flex min-w-0 flex-1 items-center gap-3 text-left lg:w-[280px] lg:flex-none"
           >
-            {isMuted ? <VolumeMuteIcon className="size-5" /> : <VolumeIcon className="size-5" />}
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-lg bg-gray-100 dark:bg-white/5">
+              {hasTrack && displayTrack.artworkUrl ? (
+                <Image src={displayTrack.artworkUrl} alt="" fill unoptimized className="object-cover" sizes="48px" />
+              ) : (
+                <div className="flex size-full items-center justify-center">
+                  <MusicNoteIcon className="size-5 text-gray-300 dark:text-white/20" />
+                </div>
+              )}
+            </div>
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                {hasTrack ? displayTrack.trackName : t("nowPlaying")}
+              </p>
+              <p className="truncate text-xs text-gray-500 dark:text-white/40">
+                {hasTrack ? displayTrack.artistName : "\u00A0"}
+              </p>
+            </div>
           </button>
-          <Slider.Root
-            className="relative flex h-5 w-24 touch-none items-center select-none"
-            value={[isMuted ? 0 : volume * 100]}
-            onValueChange={handleVolumeChange}
-            max={100}
-            step={1}
-            aria-label={t("volume")}
-          >
-            <Slider.Track className="relative h-1 grow overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
-              <Slider.Range className="absolute h-full rounded-full bg-gray-400 dark:bg-white/40" />
-            </Slider.Track>
-            <Slider.Thumb className="block size-3 cursor-pointer rounded-full bg-gray-600 opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none dark:bg-white" />
-          </Slider.Root>
-        </div>
 
-        {/* Mobile — prev/play/next + mini progress */}
-        <div className="flex flex-col items-center gap-1 md:hidden">
-          <div className="flex items-center gap-2">
+          {/* Center — Transport controls + progress */}
+          <div className="hidden flex-1 flex-col items-center gap-1.5 md:flex">
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={toggleShuffle}
+                className={cn(
+                  "transition-colors",
+                  isShuffleOn
+                    ? "text-emerald-500 dark:text-emerald-400"
+                    : "text-gray-300 hover:text-gray-500 dark:text-white/30 dark:hover:text-white/60"
+                )}
+                aria-label={t("shuffle")}
+                aria-pressed={isShuffleOn}
+              >
+                <ShuffleIcon className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={playPrev}
+                disabled={!hasTrack}
+                className={cn(
+                  "transition-colors",
+                  hasTrack
+                    ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                    : "text-gray-200 dark:text-white/20"
+                )}
+                aria-label={t("previous")}
+              >
+                <SkipPrevIcon className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={handlePlayPause}
+                className={cn(
+                  "flex size-9 items-center justify-center rounded-full transition-all duration-200",
+                  hasTrack
+                    ? "bg-gray-900 text-white hover:scale-105 dark:bg-white dark:text-gray-900"
+                    : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
+                )}
+                aria-label={isPlaying ? t("pause") : t("play")}
+                disabled={!hasTrack}
+              >
+                {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={playNext}
+                disabled={!hasTrack}
+                className={cn(
+                  "transition-colors",
+                  hasTrack
+                    ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                    : "text-gray-200 dark:text-white/20"
+                )}
+                aria-label={t("next")}
+              >
+                <SkipNextLargeIcon className="size-5" />
+              </button>
+              <button
+                type="button"
+                onClick={toggleRepeat}
+                className={cn(
+                  "transition-colors",
+                  isRepeatOn
+                    ? "text-emerald-500 dark:text-emerald-400"
+                    : "text-gray-300 hover:text-gray-500 dark:text-white/30 dark:hover:text-white/60"
+                )}
+                aria-label={t("repeat")}
+                aria-pressed={isRepeatOn}
+              >
+                <RepeatIcon className="size-4" />
+              </button>
+            </div>
+            <div className="w-full max-w-md">
+              <ProgressBar
+                currentTime={hasTrack ? currentTime : 0}
+                totalDuration={hasTrack ? duration : 0}
+                onSeek={seek}
+              />
+            </div>
+          </div>
+
+          {/* Right — Volume + Fullscreen */}
+          <div className="group hidden items-center gap-2 lg:flex lg:w-[280px] lg:flex-none lg:justify-end">
             <button
               type="button"
-              onClick={playPrev}
+              onClick={toggleMute}
+              className="text-gray-400 transition-colors hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+              aria-label={isMuted ? t("unmute") : t("mute")}
+            >
+              {isMuted ? <VolumeMuteIcon className="size-5" /> : <VolumeIcon className="size-5" />}
+            </button>
+            <Slider.Root
+              className="relative flex h-5 w-24 touch-none items-center select-none"
+              value={[isMuted ? 0 : volume * 100]}
+              onValueChange={handleVolumeChange}
+              max={100}
+              step={1}
+              aria-label={t("volume")}
+            >
+              <Slider.Track className="relative h-1 grow overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+                <Slider.Range className="absolute h-full rounded-full bg-gray-400 dark:bg-white/40" />
+              </Slider.Track>
+              <Slider.Thumb className="block size-3 cursor-pointer rounded-full bg-gray-600 opacity-0 transition-opacity group-hover:opacity-100 hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none dark:bg-white" />
+            </Slider.Root>
+            <button
+              type="button"
+              onClick={() => setIsFullscreen(true)}
               disabled={!hasTrack}
               className={cn(
-                "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                "ml-2 flex items-center justify-center rounded-full transition-colors",
                 hasTrack
                   ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
                   : "text-gray-200 dark:text-white/20"
               )}
-              aria-label={t("previous")}
+              aria-label={t("expand")}
             >
-              <SkipPrevIcon className="size-4" />
-            </button>
-            <button
-              type="button"
-              onClick={handlePlayPause}
-              className={cn(
-                "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-all duration-200",
-                hasTrack
-                  ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                  : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
-              )}
-              aria-label={isPlaying ? t("pause") : t("play")}
-              disabled={!hasTrack}
-            >
-              {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
-            </button>
-            <button
-              type="button"
-              onClick={playNext}
-              disabled={!hasTrack}
-              className={cn(
-                "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
-                hasTrack
-                  ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
-                  : "text-gray-200 dark:text-white/20"
-              )}
-              aria-label={t("next")}
-            >
-              <SkipNextLargeIcon className="size-4" />
+              <ChevronUpIcon className="size-5" />
             </button>
           </div>
-          <div className="w-full max-w-[200px]">
-            <ProgressBar
-              currentTime={hasTrack ? currentTime : 0}
-              totalDuration={hasTrack ? duration : 0}
-              onSeek={seek}
-            />
+
+          {/* Mobile — prev/play/next + expand + mini progress */}
+          <div className="flex flex-col items-center gap-1 md:hidden">
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={playPrev}
+                disabled={!hasTrack}
+                className={cn(
+                  "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                  hasTrack
+                    ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                    : "text-gray-200 dark:text-white/20"
+                )}
+                aria-label={t("previous")}
+              >
+                <SkipPrevIcon className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={handlePlayPause}
+                className={cn(
+                  "flex min-h-[44px] min-w-[44px] items-center justify-center rounded-full transition-all duration-200",
+                  hasTrack
+                    ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
+                    : "cursor-not-allowed bg-gray-200 text-gray-400 dark:bg-white/20 dark:text-white/40"
+                )}
+                aria-label={isPlaying ? t("pause") : t("play")}
+                disabled={!hasTrack}
+              >
+                {isPlaying ? <PauseLargeIcon className="size-4" /> : <PlayLargeIcon className="size-4" />}
+              </button>
+              <button
+                type="button"
+                onClick={playNext}
+                disabled={!hasTrack}
+                className={cn(
+                  "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                  hasTrack
+                    ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                    : "text-gray-200 dark:text-white/20"
+                )}
+                aria-label={t("next")}
+              >
+                <SkipNextLargeIcon className="size-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsFullscreen(true)}
+                disabled={!hasTrack}
+                className={cn(
+                  "flex min-h-[44px] min-w-[44px] items-center justify-center transition-colors",
+                  hasTrack
+                    ? "text-gray-400 hover:text-gray-600 dark:text-white/40 dark:hover:text-white/60"
+                    : "text-gray-200 dark:text-white/20"
+                )}
+                aria-label={t("expand")}
+              >
+                <ChevronUpIcon className="size-4" />
+              </button>
+            </div>
+            <div className="w-full max-w-[200px]">
+              <ProgressBar
+                currentTime={hasTrack ? currentTime : 0}
+                totalDuration={hasTrack ? duration : 0}
+                onSeek={seek}
+              />
+            </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
-      {/* Fullscreen player overlay */}
+      {/* Fullscreen player — rendered outside motion.div to avoid transform containment */}
       <FullscreenPlayer
         open={isFullscreen}
         onClose={() => setIsFullscreen(false)}
-        trackName={hasTrack ? currentTrack.trackName : ""}
-        artistName={hasTrack ? currentTrack.artistName : ""}
-        artworkUrl={hasTrack ? currentTrack.artworkUrl : ""}
+        trackName={hasTrack ? displayTrack.trackName : ""}
+        artistName={hasTrack ? displayTrack.artistName : ""}
+        artworkUrl={hasTrack ? displayTrack.artworkUrl : ""}
       />
-    </motion.div>
+    </>
   )
 }
