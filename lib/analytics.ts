@@ -14,7 +14,7 @@ const EVENT = {
   SEARCH_CLEARED: "search_cleared",
   SEARCH_RETRY_CLICKED: "search_retry_clicked",
   NOT_FOUND_HOME_CLICKED: "not_found_home_clicked",
-  NOT_FOUND_CATALOG_CLICKED: "not_found_catalog_clicked",
+  NOT_FOUND_SONG_CLICKED: "not_found_song_clicked",
   SOCIAL_LINK_CLICKED: "social_link_clicked",
   APP_STORE_CLICKED: "app_store_clicked",
   DETAIL_VIEWED: "detail_viewed",
@@ -72,7 +72,7 @@ interface SearchClearedPayload {
 }
 
 interface NotFoundClickedPayload {
-  destination: "home" | "catalog"
+  destination: "home" | "song"
 }
 
 interface SocialLinkClickedPayload {
