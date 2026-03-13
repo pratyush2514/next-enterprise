@@ -1,0 +1,118 @@
+"use client"
+
+import Image from "next/image"
+import { useTranslations } from "next-intl"
+
+import { type QueueTrack, useAudioPreview } from "hooks/useAudioPreview"
+import { useFavorites } from "hooks/useFavorites"
+import { useSession } from "hooks/useSession"
+import { cn } from "lib/utils"
+
+import { HeartIcon } from "./icons"
+import { useUpdatePlaybackTrack } from "./SongsShell"
+
+interface SidebarFavoritesProps {
+  isCollapsed: boolean
+}
+
+export function SidebarFavorites({ isCollapsed }: SidebarFavoritesProps) {
+  const t = useTranslations("songs.sidebar")
+  const { isAuthenticated } = useSession()
+  const { favorites, isLoading, count } = useFavorites()
+  const { replaceQueue, activeTrackId } = useAudioPreview()
+  const updatePlaybackTrack = useUpdatePlaybackTrack()
+
+  if (!isAuthenticated) return null
+
+  const handlePlayFavorite = (index: number) => {
+    const queue: QueueTrack[] = favorites
+      .filter((f) => f.artworkUrl100)
+      .map((f) => ({
+        trackId: f.trackId,
+        previewUrl: "", // Preview URLs not stored in favorites — playback will use toggle fallback
+        trackName: f.trackName,
+        artistName: f.artistName,
+        artworkUrl: f.artworkUrl100.replace("100x100", "300x300"),
+      }))
+
+    const track = favorites[index]
+    if (track) {
+      updatePlaybackTrack?.({
+        trackName: track.trackName,
+        artistName: track.artistName,
+        artworkUrl: track.artworkUrl100.replace("100x100", "300x300"),
+      })
+      if (queue[index]) {
+        replaceQueue(queue, index)
+      }
+    }
+  }
+
+  // Collapsed mode: show heart icon with count badge
+  if (isCollapsed) {
+    return (
+      <div className="mt-4 flex flex-col items-center border-t border-gray-200 pt-4 dark:border-white/5">
+        <div className="relative" aria-label={`${t("favorites")} (${count})`}>
+          <HeartIcon filled={count > 0} className="size-4 text-gray-400 dark:text-white/40" />
+          {count > 0 && (
+            <span className="absolute -top-1.5 -right-2 flex size-4 items-center justify-center rounded-full bg-emerald-500 text-[9px] font-bold text-white">
+              {count > 9 ? "9+" : count}
+            </span>
+          )}
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="mt-4 flex flex-col border-t border-gray-200 pt-4 dark:border-white/5">
+      <h3 className="mb-2 px-3 text-[10px] font-bold tracking-[0.15em] text-gray-400 uppercase dark:text-white/30">
+        {t("favorites")}
+      </h3>
+
+      {isLoading && (
+        <div className="space-y-2 px-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={`fav-skel-${i}`} className="flex animate-pulse items-center gap-2.5">
+              <div className="size-8 shrink-0 rounded bg-gray-200 dark:bg-white/10" />
+              <div className="flex-1 space-y-1.5">
+                <div className="h-2.5 w-3/4 rounded bg-gray-200 dark:bg-white/10" />
+                <div className="h-2 w-1/2 rounded bg-gray-200 dark:bg-white/10" />
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {!isLoading && count === 0 && <p className="px-3 text-xs text-gray-400 dark:text-white/30">{t("noFavorites")}</p>}
+
+      {!isLoading && count > 0 && (
+        <div className="max-h-48 space-y-0.5 overflow-y-auto px-1">
+          {favorites.map((fav, index) => (
+            <button
+              key={fav.trackId}
+              type="button"
+              onClick={() => handlePlayFavorite(index)}
+              className={cn(
+                "flex w-full items-center gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors",
+                activeTrackId === fav.trackId
+                  ? "bg-emerald-400/15 text-emerald-600 dark:text-emerald-400"
+                  : "text-gray-600 hover:bg-gray-100 dark:text-white/60 dark:hover:bg-white/5"
+              )}
+            >
+              <div className="relative size-8 shrink-0 overflow-hidden rounded bg-gray-100 dark:bg-white/5">
+                {fav.artworkUrl100 && (
+                  <Image src={fav.artworkUrl100} alt="" fill unoptimized className="object-cover" sizes="32px" />
+                )}
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-medium">{fav.trackName}</p>
+                <p className="truncate text-[10px] opacity-60">{fav.artistName}</p>
+              </div>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
