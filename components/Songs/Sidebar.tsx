@@ -16,6 +16,7 @@ import { CreatePlaylistPopup } from "./CreatePlaylistPopup"
 import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, HeartIcon, PlusIcon } from "./icons"
 import { SettingsPanel } from "./SettingsPanel"
 import { SidebarFavorites } from "./SidebarFavorites"
+import { SidebarPlaylists } from "./SidebarPlaylists"
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -247,6 +248,9 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
         {/* Favorites list */}
         <SidebarFavorites isCollapsed={isCollapsed} />
 
+        {/* Playlists list */}
+        <SidebarPlaylists isCollapsed={isCollapsed} />
+
         {/* Spacer */}
         <div className="flex-1" />
 
@@ -301,6 +305,9 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
 
               {/* Favorites list */}
               <SidebarFavorites isCollapsed={false} />
+
+              {/* Playlists list */}
+              <SidebarPlaylists isCollapsed={false} />
 
               {/* Spacer */}
               <div className="flex-1" />
