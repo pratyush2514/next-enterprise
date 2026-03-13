@@ -12,9 +12,11 @@ import { Link, usePathname } from "i18n/navigation"
 import { cn } from "lib/utils"
 
 import { SIDEBAR_NAV } from "./constants"
-import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, HeartIcon } from "./icons"
+import { CreatePlaylistPopup } from "./CreatePlaylistPopup"
+import { ChevronLeftIcon, ChevronRightIcon, CloseIcon, HeartIcon, PlusIcon } from "./icons"
 import { SettingsPanel } from "./SettingsPanel"
 import { SidebarFavorites } from "./SidebarFavorites"
+import { SidebarPlaylists } from "./SidebarPlaylists"
 
 interface SidebarProps {
   isCollapsed: boolean
@@ -47,6 +49,7 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
   const t = useTranslations("songs.sidebar")
   const pathname = usePathname()
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [createPopupOpen, setCreatePopupOpen] = useState(false)
   const { isAuthenticated } = useSession()
   const { count } = useFavorites()
 
@@ -157,6 +160,25 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
             </Link>
           </NavTooltip>
         )}
+
+        {/* Create playlist button */}
+        {isAuthenticated && (
+          <NavTooltip label={t("createPlaylist")} enabled={!mobile && isIconOnly}>
+            <button
+              type="button"
+              onClick={() => setCreatePopupOpen(true)}
+              className={cn(
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                !mobile && isIconOnly ? "justify-center" : mobile ? "justify-start" : "justify-center lg:justify-start",
+                "text-gray-500 hover:bg-gray-200/60 hover:text-gray-700 dark:text-white/50 dark:hover:bg-white/5 dark:hover:text-white/80"
+              )}
+              aria-label={t("createPlaylist")}
+            >
+              <PlusIcon className={cn("shrink-0", !mobile && isIconOnly ? "size-5" : "size-4")} />
+              {showLabels && <span className={mobile ? "" : "hidden lg:inline"}>{t("createPlaylist")}</span>}
+            </button>
+          </NavTooltip>
+        )}
       </nav>
     )
   }
@@ -226,11 +248,15 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
         {/* Favorites list */}
         <SidebarFavorites isCollapsed={isCollapsed} />
 
+        {/* Playlists list */}
+        <SidebarPlaylists isCollapsed={isCollapsed} />
+
         {/* Spacer */}
         <div className="flex-1" />
 
         {/* Settings modal */}
         <SettingsPanel open={settingsOpen} onOpenChange={setSettingsOpen} />
+        <CreatePlaylistPopup open={createPopupOpen} onOpenChange={setCreatePopupOpen} />
       </aside>
 
       {/* Mobile drawer overlay */}
@@ -279,6 +305,9 @@ export function Sidebar({ isCollapsed, onToggle, mobileOpen, onMobileClose }: Si
 
               {/* Favorites list */}
               <SidebarFavorites isCollapsed={false} />
+
+              {/* Playlists list */}
+              <SidebarPlaylists isCollapsed={false} />
 
               {/* Spacer */}
               <div className="flex-1" />
