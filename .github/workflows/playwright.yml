@@ -30,7 +30,12 @@ jobs:
         run: pnpm playwright install --with-deps
 
       - name: Run Playwright tests
-        run: pnpm playwright test
+        run: |
+          if find e2e -name "*.spec.ts" -o -name "*.spec.js" 2>/dev/null | grep -q .; then
+            pnpm playwright test
+          else
+            echo "No Playwright test files found, skipping"
+          fi
 
       - uses: actions/upload-artifact@v4
         if: always()
